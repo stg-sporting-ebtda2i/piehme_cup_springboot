@@ -56,7 +56,6 @@ jobs:
           echo "SPRING_DATASOURCE_PASSWORD=password@123" >> $GITHUB_ENV
       - name: Build and Test with Maven inside backend folder
         run: |
-          cd backend
           ./mvnw clean install
           ./mvnw clean test
         env:
