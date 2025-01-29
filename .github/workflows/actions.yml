@@ -11,9 +11,9 @@ jobs:
         image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: rootpass
-          MYSQL_USER: "admin"
-          MYSQL_PASSWORD: "admin"
-          MYSQL_DATABASE: "feedify"
+          MYSQL_USER: "piehme_cup_user"
+          MYSQL_PASSWORD: "password@123"
+          MYSQL_DATABASE: "piehme_cup"
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
@@ -40,11 +40,11 @@ jobs:
 
       - name: Create Database
         run: |
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "CREATE DATABASE IF NOT EXISTS feedify;"
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'admin';"
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "CREATE DATABASE IF NOT EXISTS piehme_cup;"
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "CREATE USER IF NOT EXISTS 'piehme_cup_user'@'%' IDENTIFIED BY 'password@123';"
 
           # Grant all privileges
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "GRANT ALL PRIVILEGES ON feedify.* TO 'admin'@'%';"
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "GRANT ALL PRIVILEGES ON piehme_cup.* TO 'piehme_cup_use'@'%';"
 
           # Apply changes
           mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "FLUSH PRIVILEGES;"
