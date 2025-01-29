@@ -54,12 +54,11 @@ jobs:
           echo "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/piehme_cup" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_USERNAME=piehme_cup_user" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_PASSWORD=password@123" >> $GITHUB_ENV
-      - name: Build and Test with Maven inside backend folder
+      - name: Build and Test with Maven
         run: |
           ./mvnw clean install
           ./mvnw clean test
         env:
           SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ env.SPRING_DATASOURCE_USERNAME }}
-
           SPRING_DATASOURCE_PASSWORD: ${{ env.SPRING_DATASOURCE_PASSWORD }}
