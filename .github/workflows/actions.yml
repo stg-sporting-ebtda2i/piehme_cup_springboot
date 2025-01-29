@@ -44,7 +44,7 @@ jobs:
           mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "CREATE USER IF NOT EXISTS 'piehme_cup_user'@'%' IDENTIFIED BY 'password@123';"
 
           # Grant all privileges
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "GRANT ALL PRIVILEGES ON piehme_cup.* TO 'piehme_cup_use'@'%';"
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "GRANT ALL PRIVILEGES ON piehme_cup.* TO 'piehme_cup_user'@'%';"
 
           # Apply changes
           mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "FLUSH PRIVILEGES;"
