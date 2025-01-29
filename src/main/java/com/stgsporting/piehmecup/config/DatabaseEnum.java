@@ -76,5 +76,4 @@ public class DatabaseEnum {
     public static final String timestamp = "timestamp";
     public static final String attendedLiturgy = "attendedLiturgy";
     public static final String approved = "approved";
-    public static final String ostazId = "ostazId";
 }

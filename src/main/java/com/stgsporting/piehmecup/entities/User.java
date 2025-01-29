@@ -25,4 +25,8 @@ public class User extends BaseEntity {
     @Column(name = DatabaseEnum.password, nullable = false)
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.osraId,nullable = false)
+    private Osra osra;
+
 }

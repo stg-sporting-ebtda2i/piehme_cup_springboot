@@ -22,7 +22,7 @@ import java.util.List;
 @Entity(name = DatabaseEnum.playersTable)
 public class Player extends BaseEntity {
 
-    @Column(name = DatabaseEnum.cardRating, nullable = false)
+    @Column(name = DatabaseEnum.rating, nullable = false)
     private Integer rating;
 
     @Column(name = DatabaseEnum.available, nullable = false)
