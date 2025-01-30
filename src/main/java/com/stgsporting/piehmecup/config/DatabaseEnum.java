@@ -11,7 +11,6 @@ public class DatabaseEnum {
     // USERS TABLE
     public static final String usersTable = "USERS";
     public static final String username = "username";
-    public static final String userImgLink = "imgLink";
     public static final String password = "password";
     public static final String osraId = "osraId";
 
@@ -26,6 +25,7 @@ public class DatabaseEnum {
     public static final String currentCoins = "currentCoins";
     public static final String lineupRating = "lineupRating";
     public static final String cardRating = "cardRating";
+    public static final String waladImgLink = "imgLink";
 
     // OSTAZ TABLE
     public static final String ostazTable = "OSTAZ";

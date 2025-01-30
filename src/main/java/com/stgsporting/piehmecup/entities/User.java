@@ -19,9 +19,6 @@ public class User extends BaseEntity {
     @Column(name = DatabaseEnum.username, nullable = false, unique = true)
     private String username;
 
-    @Column(name = DatabaseEnum.userImgLink, unique = true)
-    private String imgLink;
-
     @Column(name = DatabaseEnum.password, nullable = false)
     private String password;
 
