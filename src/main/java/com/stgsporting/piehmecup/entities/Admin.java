@@ -12,6 +12,6 @@ import lombok.Setter;
 @Entity(name = DatabaseEnum.adminsTable)
 public class Admin extends BaseEntity {
     @OneToOne
-    @JoinColumn(name = DatabaseEnum.baseId)
+    @JoinColumn(name = DatabaseEnum.adminId)
     private User user;
 }

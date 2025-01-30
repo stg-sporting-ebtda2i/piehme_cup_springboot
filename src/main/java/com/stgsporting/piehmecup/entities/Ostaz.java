@@ -12,6 +12,6 @@ import lombok.Setter;
 @Entity(name = DatabaseEnum.ostazTable)
 public class Ostaz extends BaseEntity {
     @OneToOne
-    @JoinColumn(name = DatabaseEnum.baseId)
+    @JoinColumn(name = DatabaseEnum.ostazId)
     private User user;
 }

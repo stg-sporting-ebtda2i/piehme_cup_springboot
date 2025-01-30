@@ -29,9 +29,11 @@ public class DatabaseEnum {
 
     // OSTAZ TABLE
     public static final String ostazTable = "OSTAZ";
+    public static final String ostazId = "ostazId";
 
     // ADMINS TABLE
     public static final String adminsTable = "ADMINS";
+    public static final String adminId = "adminId";
 
     // waladId for OWNED TABLES, ATTENDANCE TABLE
     public static final String waladId = "waladId";
