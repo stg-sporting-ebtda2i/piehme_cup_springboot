@@ -29,6 +29,10 @@ public class Walad extends BaseEntity {
     @Column(name = DatabaseEnum.waladImgLink, unique = true)
     private String imgLink;
 
+    @OneToOne
+    @JoinColumn(name = DatabaseEnum.waladId)
+    private User user;
+
     @ManyToMany
     @JoinTable(name = DatabaseEnum.ownedPlayersTable, joinColumns = @JoinColumn(name = DatabaseEnum.waladId),
             inverseJoinColumns = @JoinColumn(name = DatabaseEnum.playerId))

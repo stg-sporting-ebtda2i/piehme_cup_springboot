@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.enums;
 
-public enum Roles {
+public enum Role {
     ADMIN,
     OSTAZ,
     WALAD
