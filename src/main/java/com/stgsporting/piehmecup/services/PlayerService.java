@@ -19,7 +19,6 @@ public class PlayerService {
 
     public void createPlayer(PlayerDTO player) {
         try{
-            System.out.println(player);
             Player newPlayer = dtoToPlayer(player);
 
             playerRepository.save(newPlayer);
