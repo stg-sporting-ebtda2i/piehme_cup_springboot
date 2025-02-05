@@ -61,7 +61,7 @@ public class UserService {
             return Role.OSTAZ;
 
         else if (adminRepository.findByUser(user).isPresent())
-            return Role.OSTAZ;
+            return Role.ADMIN;
 
         else
             throw new UserNotFoundException("User not found");
