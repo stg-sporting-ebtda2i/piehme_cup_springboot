@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/signup/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers("/ostaz/**").hasAuthority(Role.OSTAZ.name())
+                        .requestMatchers("/ostaz/**").hasAnyAuthority(Role.OSTAZ.name(), Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
