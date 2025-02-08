@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -17,13 +18,16 @@ import java.util.List;
 @Entity(name = DatabaseEnum.weladTable)
 public class Walad extends BaseEntity {
 
-    @Column(name = DatabaseEnum.currentCoins, nullable = false)
-    private Integer currentCoins;
+    @Column(name = DatabaseEnum.coins, nullable = false)
+    @ColumnDefault("0")
+    private Integer coins;
 
     @Column(name = DatabaseEnum.cardRating, nullable = false)
+    @ColumnDefault("50")
     private Integer cardRating;
 
     @Column(name = DatabaseEnum.lineupRating, nullable = false)
+    @ColumnDefault("0")
     private Double lineupRating;
 
     @Column(name = DatabaseEnum.waladImgLink, unique = true)

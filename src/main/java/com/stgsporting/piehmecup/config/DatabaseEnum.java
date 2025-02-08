@@ -22,7 +22,6 @@ public class DatabaseEnum {
 
     // WELAD TABLE
     public static final String weladTable = "WELAD";
-    public static final String currentCoins = "currentCoins";
     public static final String lineupRating = "lineupRating";
     public static final String cardRating = "cardRating";
     public static final String waladImgLink = "imgLink";

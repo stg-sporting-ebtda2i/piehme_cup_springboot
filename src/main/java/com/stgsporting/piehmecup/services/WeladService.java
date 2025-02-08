@@ -15,7 +15,7 @@ public class WeladService {
         Walad walad = new Walad();
         walad.setUser(user);
         walad.setImgLink(imgLink);
-        walad.setCurrentCoins(0);
+        walad.setCoins(0);
         walad.setCardRating(0);
         walad.setLineupRating(0.0);
         waladRepository.save(walad);
