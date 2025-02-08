@@ -1,7 +1,7 @@
 package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.entities.Price;
-import com.stgsporting.piehmecup.repositories.PricesRepository;
+import com.stgsporting.piehmecup.repositories.PriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,16 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class PricesService {
+public class PriceService {
     @Autowired
-    private PricesRepository pricesRepository;
+    private PriceRepository priceRepository;
 
     public void createPrice(String name, Integer price) {
         try {
             Price object = new Price();
             object.setName(name);
             object.setCoins(price);
-            pricesRepository.save(object);
+            priceRepository.save(object);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while creating price");
         }
@@ -27,7 +27,7 @@ public class PricesService {
     @Transactional
     public void updatePrice(String name, Integer price) {
         try {
-            pricesRepository.updatePrice(name, price);
+            priceRepository.updatePrice(name, price);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while updating price");
         }
@@ -36,7 +36,7 @@ public class PricesService {
     @Transactional
     public void deletePrice(String name) {
         try {
-            pricesRepository.deletePricesByName(name);
+            priceRepository.deletePricesByName(name);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while deleting price");
         }
@@ -44,7 +44,7 @@ public class PricesService {
 
     public Price getPrice(String name) {
         try {
-            return pricesRepository.findPricesByName(name).orElse(null);
+            return priceRepository.findPricesByName(name).orElse(null);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while fetching price");
         }
@@ -52,7 +52,7 @@ public class PricesService {
 
     public List<Price> getAllPrices() {
         try {
-            return pricesRepository.findAll();
+            return priceRepository.findAll();
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while fetching prices");
         }

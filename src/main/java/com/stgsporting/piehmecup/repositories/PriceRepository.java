@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface PricesRepository extends JpaRepository<Price, Long> {
+public interface PriceRepository extends JpaRepository<Price, Long> {
     @Modifying
     @Query("update PRICES p set p.coins = :price where p.name = :name")
     void updatePrice(@Param("name") String name, @Param("price") Integer price);
