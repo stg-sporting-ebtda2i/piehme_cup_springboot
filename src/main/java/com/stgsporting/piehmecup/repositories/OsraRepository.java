@@ -1,10 +1,10 @@
 package com.stgsporting.piehmecup.repositories;
 
-import com.stgsporting.piehmecup.entities.Osra;
+import com.stgsporting.piehmecup.entities.SchoolYear;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface OsraRepository extends JpaRepository<Osra, Long> {
-    Optional<Osra> findByName(String name);
+public interface OsraRepository extends JpaRepository<SchoolYear, Long> {
+    Optional<SchoolYear> findByName(String name);
 }

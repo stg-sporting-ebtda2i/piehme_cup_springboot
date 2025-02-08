@@ -17,13 +17,13 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = DatabaseEnum.osraTable)
-public class Osra extends BaseEntity {
+@Entity(name = DatabaseEnum.schoolYearTable)
+public class SchoolYear extends BaseEntity {
 
-    @Column(name = DatabaseEnum.osraName, unique = true, nullable = false)
+    @Column(name = DatabaseEnum.schoolYearName, unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "osra", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "schoolYear", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<User> users;
 }

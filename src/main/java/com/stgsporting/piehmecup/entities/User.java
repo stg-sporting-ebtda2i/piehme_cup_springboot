@@ -23,7 +23,7 @@ public class User extends BaseEntity {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = DatabaseEnum.osraId,nullable = false)
-    private Osra osra;
+    @JoinColumn(name = DatabaseEnum.schoolYearId, nullable = false)
+    private SchoolYear schoolYear;
 
 }

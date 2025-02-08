@@ -4,15 +4,15 @@ public class DatabaseEnum {
     // Base ID for all tables
     public static final String baseId = "id";
 
-    // OSRA TABLE
-    public static final String osraTable = "OSRA";
-    public static final String osraName = "name";
+    // School Year TABLE
+    public static final String schoolYearTable = "SCHOOL_YEARS";
+    public static final String schoolYearName = "name";
 
     // USERS TABLE
     public static final String usersTable = "USERS";
     public static final String username = "username";
     public static final String password = "password";
-    public static final String osraId = "osraId";
+    public static final String schoolYearId = "schoolYearId";
 
     // BUTTONS VISIBILITY TABLE
     public static final String buttonsTable = "BUTTONS_VISIBILITY";

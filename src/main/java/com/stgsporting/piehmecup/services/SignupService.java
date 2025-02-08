@@ -64,7 +64,7 @@ public class SignupService {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         user.setUsername(userSignupDTO.getUsername());
         user.setPassword(encoder.encode(userSignupDTO.getPassword()));
-        user.setOsra(osraService.getOsraByName(userSignupDTO.getOsra()));
+        user.setSchoolYear(osraService.getOsraByName(userSignupDTO.getOsra()));
         return user;
     }
 }
