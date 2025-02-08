@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = DatabaseEnum.pricesTable)
-public class Prices extends BaseEntity {
+public class Price extends BaseEntity {
 
     @Column(name = DatabaseEnum.liturgyName, nullable = false, unique = true)
     private String name;

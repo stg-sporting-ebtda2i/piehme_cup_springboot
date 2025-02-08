@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.entities.Prices;
+import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.repositories.PricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class PricesService {
 
     public void createPrice(String name, Integer price) {
         try {
-            Prices object = new Prices();
+            Price object = new Price();
             object.setName(name);
             object.setCoins(price);
             pricesRepository.save(object);
@@ -42,7 +42,7 @@ public class PricesService {
         }
     }
 
-    public Prices getPrice(String name) {
+    public Price getPrice(String name) {
         try {
             return pricesRepository.findPricesByName(name).orElse(null);
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class PricesService {
         }
     }
 
-    public List<Prices> getAllPrices() {
+    public List<Price> getAllPrices() {
         try {
             return pricesRepository.findAll();
         } catch (Exception e) {

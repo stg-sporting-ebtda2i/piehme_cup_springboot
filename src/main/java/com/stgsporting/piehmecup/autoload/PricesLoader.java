@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.autoload;
 
-import com.stgsporting.piehmecup.entities.Prices;
+import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.repositories.PricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +14,7 @@ public class PricesLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if(pricesRepository.findPricesByName("Rating Price").isEmpty()){
-            pricesRepository.save(new Prices("Rating Price", 74));
+            pricesRepository.save(new Price("Rating Price", 74));
         }
     }
 }

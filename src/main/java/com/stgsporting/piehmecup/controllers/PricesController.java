@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.controllers;
 
+import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.services.PricesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,8 +44,14 @@ public class PricesController {
 
     @GetMapping("/prices/{name}")
     public ResponseEntity<Object> getPrice(@PathVariable String name) {
-        try{
-            return ResponseEntity.ok(pricesService.getPrice(name));
+        Price price = pricesService.getPrice(name);
+
+        if (price == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            return ResponseEntity.ok(price);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
