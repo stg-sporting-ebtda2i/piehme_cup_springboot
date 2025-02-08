@@ -28,3 +28,5 @@ replay_pid*
 
 # Maven target directory
 target/
+
+src/main/resources/application.properties

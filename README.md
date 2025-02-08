@@ -2,7 +2,7 @@
 
 ### Backend Setup
 1. Clone the repository
-2. Install the dependencies
+1. Install the dependencies
     - Java 23
     - MySQL
     Check if you have Java and MySQL installed by running the following commands:
@@ -12,23 +12,27 @@
     ```bash
     mysql --version
     ```
-3. Create a database in MySQL
+1. Copy application.example.properties to application.properties
+    ```bash
+    cp src/main/resources/application.example.properties src/main/resources/application.properties
+    ```
+1. Create a database in MySQL
     ```sql
     CREATE DATABASE piehme_cup;
     ```
-4. Create the user for the database
+1. Create the user for the database
     ```sql
     CREATE USER 'piehme_cup_user'@'%' IDENTIFIED BY 'password@123';
     ```
-5. Grant the user all privileges on the database
+1. Grant the user all privileges on the database
     ```sql
    GRANT ALL PRIVILEGES ON piehme_cup.* TO 'piehme_cup_user'@'%';
     ```
-6. Apply changes to the database
+1. Apply changes to the database
     ```sql
     FLUSH PRIVILEGES;
     ``` 
-7. For maven 
+1. For maven 
     ```bash
     mvn clean install
     ```
