@@ -8,7 +8,6 @@ import lombok.Setter;
 public class UserSignupDTO {
     private String username;
     private String password;
-    private String role;
     private String imgLink;
     private String osra;
 
@@ -17,7 +16,6 @@ public class UserSignupDTO {
         return "UserSignupDTO{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", Role='" + role + '\'' +
                 ", imgLink='" + imgLink + '\'' +
                 ", osra='" + osra + '\'' +
                 '}';

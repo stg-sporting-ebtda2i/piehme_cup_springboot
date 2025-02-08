@@ -17,16 +17,19 @@ public class UserExistsHandler extends LoginHandler{
         if (userLoginDTO.getUsername() == null){
             throw new NullPointerException("Username is required, can't be null");
         }
+
         if (userService.getUserByUsername(userLoginDTO.getUsername()) == null){
             throw new NullPointerException("User does not exist");
         }
-        User user = null;
+        User user;
+
         try {
             user = userService.getUserByUsername(userLoginDTO.getUsername());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return this.setNextHandler(new ValidPasswordHandler(user, userService)).handle(userLoginDTO);
+
+        return this.setNextHandler(new ValidPasswordHandler(user)).handle(userLoginDTO);
     }
 
 }

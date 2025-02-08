@@ -1,14 +1,12 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.enums.Role;
+
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.entities.UserDetail;
 import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
-import com.stgsporting.piehmecup.repositories.AdminRepository;
-import com.stgsporting.piehmecup.repositories.OstazRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
-import com.stgsporting.piehmecup.repositories.WaladRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,12 +17,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private WaladRepository waladRepository;
-    @Autowired
-    private OstazRepository ostazRepository;
-    @Autowired
-    private AdminRepository adminRepository;
 
     public User getUserById(long id){
         return userRepository.findUserById(id)
@@ -53,22 +45,7 @@ public class UserService {
                 .orElseThrow(()-> new UserNotFoundException("Incorrect email or password"));
     }
 
-    public Enum<Role> getRole(User user){
-        if(waladRepository.findByUser(user).isPresent())
-            return Role.WALAD;
-
-        else if (ostazRepository.findByUser(user).isPresent())
-            return Role.OSTAZ;
-
-        else if (adminRepository.findByUser(user).isPresent())
-            return Role.ADMIN;
-
-        else
-            throw new UserNotFoundException("User not found");
-
-    }
-
-    public void saveUser(User user){
+    public void saveUser(User user) {
         userRepository.save(user);
     }
 }

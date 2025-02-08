@@ -10,5 +10,4 @@ public class AuthUserInfo {
     private String JWTToken;
     private Long userId;
     private String username;
-    private Enum<Role> role;
 }

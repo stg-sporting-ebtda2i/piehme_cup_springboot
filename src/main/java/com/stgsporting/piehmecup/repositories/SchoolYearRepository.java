@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface OsraRepository extends JpaRepository<SchoolYear, Long> {
+public interface SchoolYearRepository extends JpaRepository<SchoolYear, Long> {
     Optional<SchoolYear> findByName(String name);
 }

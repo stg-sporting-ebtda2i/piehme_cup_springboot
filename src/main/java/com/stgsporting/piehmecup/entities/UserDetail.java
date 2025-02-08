@@ -1,6 +1,5 @@
 package com.stgsporting.piehmecup.entities;
 
-import com.stgsporting.piehmecup.services.UserService;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,16 +11,14 @@ import java.util.Collections;
 @Setter
 public class UserDetail implements UserDetails {
     private User user;
-    private UserService userService;
 
-    public UserDetail(User user, UserService userService) {
+    public UserDetail(User user) {
         this.user = user;
-        this.userService = userService;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(userService.getRole(user).name()));
+        return Collections.singletonList(new SimpleGrantedAuthority("WALAD"));
     }
 
     @Override

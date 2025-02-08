@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.sql.Timestamp;
 
@@ -17,16 +18,16 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = DatabaseEnum.attendanceTable)
-public class Attendance extends BaseEntity{
-
-    @Column(name = DatabaseEnum.timestamp, nullable = false)
-    private Timestamp timestamp;
-
-    @Column(name = DatabaseEnum.approved, nullable = false)
-    private Boolean approved;
+public class Attendance extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = DatabaseEnum.attendedLiturgy, nullable = false)
-    private Walad walad;
+    @JoinColumn(name = DatabaseEnum.userId, nullable = false)
+    private User user;
 
+    @Column(name = DatabaseEnum.approved, nullable = false)
+    @ColumnDefault("false")
+    private Boolean approved;
+
+    @Column(name = DatabaseEnum.createdAt, nullable = false)
+    private Timestamp createdAt;
 }

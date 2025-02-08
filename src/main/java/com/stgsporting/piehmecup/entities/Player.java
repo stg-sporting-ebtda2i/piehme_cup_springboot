@@ -43,5 +43,5 @@ public class Player extends BaseEntity {
     @ManyToMany(mappedBy = "players")
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Walad> welad;
+    private List<User> user;
 }

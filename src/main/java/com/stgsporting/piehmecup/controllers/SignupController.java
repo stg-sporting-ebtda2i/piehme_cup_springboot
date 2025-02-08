@@ -3,7 +3,7 @@ package com.stgsporting.piehmecup.controllers;
 import com.stgsporting.piehmecup.dtos.UserSignupDTO;
 import com.stgsporting.piehmecup.exceptions.UserAlreadyExistException;
 import com.stgsporting.piehmecup.exceptions.UsernameTakenException;
-import com.stgsporting.piehmecup.services.SignupService;
+import com.stgsporting.piehmecup.services.UserSignupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ import java.net.URI;
 @RequestMapping("/signup")
 public class SignupController {
     @Autowired
-    private SignupService signupService;
+    private UserSignupService userSignupService;
 
     @PostMapping("")
     public ResponseEntity<Object> signup(@RequestBody UserSignupDTO userSignupDTO) {
         try{
-            signupService.signup(userSignupDTO);
+            userSignupService.signup(userSignupDTO);
             return ResponseEntity.created(URI.create("/signup")).build();
         } catch (Exception e){
             if(e instanceof UserAlreadyExistException || e instanceof UsernameTakenException)

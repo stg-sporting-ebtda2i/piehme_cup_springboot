@@ -13,17 +13,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class SignupService {
+public class UserSignupService {
     @Autowired
     private UserService userService;
     @Autowired
-    private OsraService osraService;
-    @Autowired
-    private WeladService weladService;
-    @Autowired
-    private OstazService ostazService;
-    @Autowired
-    private AdminService adminService;
+    private SchoolYearService schoolYearService;
 
     @Transactional
     public void signup(UserSignupDTO userSignupDTO) {
@@ -39,32 +33,34 @@ public class SignupService {
         try {
             User user = createUserFromDTO(userSignupDTO);
             userService.saveUser(user);
-            System.out.println(userSignupDTO);
-            saveInRoleTables(userSignupDTO, user);
+//            System.out.println(userSignupDTO);
+//            saveInRoleTables(userSignupDTO, user);
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyExistException("Username already in use");
         }
     }
 
-    private void saveInRoleTables(UserSignupDTO userSignupDTO, User user) {
-        if (userSignupDTO.getRole() == null) {
-            throw new IllegalArgumentException("Role must not be null");
-        }
-
-        switch (userSignupDTO.getRole() ) {
-            case "WELAD" -> weladService.saveWelad(user, userSignupDTO.getImgLink());
-            case "OSTAZ" -> ostazService.saveOstaz(user);
-            case "ADMIN" -> adminService.saveAdmin(user);
-            default -> throw new IllegalArgumentException("Invalid role: " + userSignupDTO.getRole());
-        }
-    }
+    // TODO: Insecure, allows any user to sign up as any role.....
+//    private void saveInRoleTables(UserSignupDTO userSignupDTO, User user) {
+//        if (userSignupDTO.getRole() == null) {
+//            throw new IllegalArgumentException("Role must not be null");
+//        }
+//
+//        switch (userSignupDTO.getRole() ) {
+//            case "WELAD" -> weladService.saveWelad(user, userSignupDTO.getImgLink());
+//            case "OSTAZ" -> ostazService.saveOstaz(user);
+//            case "ADMIN" -> adminService.saveAdmin(user);
+//            default -> throw new IllegalArgumentException("Invalid role: " + userSignupDTO.getRole());
+//        }
+//    }
 
     private User createUserFromDTO(UserSignupDTO userSignupDTO){
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         user.setUsername(userSignupDTO.getUsername());
         user.setPassword(encoder.encode(userSignupDTO.getPassword()));
-        user.setSchoolYear(osraService.getOsraByName(userSignupDTO.getOsra()));
+        user.setSchoolYear(schoolYearService.getOsraByName(userSignupDTO.getOsra()));
+        user.setImgLink(userSignupDTO.getImgLink());
         return user;
     }
 }

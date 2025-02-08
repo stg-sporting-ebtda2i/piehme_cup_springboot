@@ -36,5 +36,5 @@ public class Icon extends BaseEntity {
     @ManyToMany(mappedBy = "icons")
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Walad> welad;
+    private List<User> user;
 }

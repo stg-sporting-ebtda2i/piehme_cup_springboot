@@ -13,7 +13,7 @@ public class AdminService {
 
     public void saveAdmin(User user) {
         Admin admin = new Admin();
-        admin.setUser(user);
+//        admin.setUser(user);
         adminRepository.save(admin);
     }
 }
