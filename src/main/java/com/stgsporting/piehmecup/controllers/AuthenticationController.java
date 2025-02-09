@@ -6,7 +6,6 @@ import com.stgsporting.piehmecup.exceptions.UserAlreadyExistException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UsernameTakenException;
 import com.stgsporting.piehmecup.services.UserAuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,5 @@
 package com.stgsporting.piehmecup.dtos;
 
-import com.stgsporting.piehmecup.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 
