@@ -2,6 +2,7 @@ package com.stgsporting.piehmecup.services;
 
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
+import com.stgsporting.piehmecup.entities.AdminDetail;
 import com.stgsporting.piehmecup.entities.Details;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.entities.User;
@@ -33,8 +34,11 @@ public class UserService implements AuthenticatableService {
          * We would not have reached this point if the user was not authenticated
          * but for security reasons, we should check this case
          */
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetail))
-            throw new UnauthorizedAccessException("User is not authenticated or invalid principal");
+        if (authentication == null
+                || !(authentication.getPrincipal() instanceof UserDetail)
+                || !(authentication.getPrincipal() instanceof AdminDetail)
+        )
+            throw new UnauthorizedAccessException("User is not authenticated");
 
         return  ((Details) authentication.getPrincipal()).getId();
     }

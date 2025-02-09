@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
@@ -65,4 +66,9 @@ public class User extends BaseEntity implements Authenticatable {
     @JsonManagedReference
     private List<Attendance> attendances;
 
+    public void setPassword(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+        this.password = encoder.encode(password);
+    }
 }

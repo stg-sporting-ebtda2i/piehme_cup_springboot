@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnTransformer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Setter
 @Getter
@@ -25,6 +26,12 @@ public class Admin extends BaseEntity implements Authenticatable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = DatabaseEnum.role, nullable = false)
-    @ColumnTransformer(write = "?::ROLE")
+
     private Role role;
+
+    public void setPassword(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+        this.password = encoder.encode(password);
+    }
 }

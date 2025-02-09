@@ -19,4 +19,11 @@ public class SchoolYearService {
             throw new SchoolYearNotFound("School Year not found");
         return schoolYear.get();
     }
+
+    public SchoolYear getShoolYearById(Long id){
+        Optional<SchoolYear> schoolYear = schoolYearRepository.findById(id);
+        if(schoolYear.isEmpty())
+            throw new SchoolYearNotFound("School Year not found");
+        return schoolYear.get();
+    }
 }

@@ -57,9 +57,8 @@ public class UserAuthenticationService {
 
     private User createUserFromDTO(UserRegisterDTO userRegisterDTO){
         User user = new User();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         user.setUsername(userRegisterDTO.getUsername());
-        user.setPassword(encoder.encode(userRegisterDTO.getPassword()));
+        user.setPassword(userRegisterDTO.getPassword());
         user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
         user.setCardRating(0);
