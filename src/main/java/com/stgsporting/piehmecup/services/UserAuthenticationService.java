@@ -1,16 +1,14 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.AuthUserInfo;
+import com.stgsporting.piehmecup.dtos.AuthInfo;
 import com.stgsporting.piehmecup.dtos.UserLoginDTO;
-import com.stgsporting.piehmecup.dtos.UserSignupDTO;
+import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.UserAlreadyExistException;
-import com.stgsporting.piehmecup.login.LoginHandler;
-import com.stgsporting.piehmecup.login.UserExistsHandler;
-import com.stgsporting.piehmecup.signup.SignupHandler;
-import com.stgsporting.piehmecup.signup.UserAlreadyExistHandler;
-import com.stgsporting.piehmecup.signup.UsernameTakenHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stgsporting.piehmecup.authentication.LoginHandler;
+import com.stgsporting.piehmecup.authentication.CheckIfUserExistsHandler;
+import com.stgsporting.piehmecup.authentication.RegisterHandler;
+import com.stgsporting.piehmecup.authentication.UsernameTakenHandler;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -18,57 +16,62 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class UserAuthenticationService {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private SchoolYearService schoolYearService;
-    @Autowired
-    private JWTService jwtService;
+    private final UserService userService;
+    private final SchoolYearService schoolYearService;
+    private final JWTService jwtService;
+
+    UserAuthenticationService(UserService userService, SchoolYearService schoolYearService, JWTService jwtService){
+        this.userService = userService;
+        this.schoolYearService = schoolYearService;
+        this.jwtService = jwtService;
+    }
 
     @Transactional
-    public AuthUserInfo register(UserSignupDTO userSignupDTO) {
-        if (userSignupDTO == null || userSignupDTO.getUsername() == null || userSignupDTO.getPassword() == null) {
-            throw new IllegalArgumentException("Username, Password must not be null");
+    public AuthInfo register(UserRegisterDTO userRegisterDTO) {
+        if (userRegisterDTO == null || userRegisterDTO.getUsername() == null || userRegisterDTO.getPassword() == null) {
+            throw new IllegalArgumentException("Username and password must not be null");
         }
 
-        SignupHandler handlerChain = new UserAlreadyExistHandler(userService)
-                .setNextHandler(new UsernameTakenHandler(userService));
+        RegisterHandler handlerChain = new UsernameTakenHandler(userService);
 
-        handlerChain.handleRequest(userSignupDTO);
+        handlerChain.handleRequest(userRegisterDTO);
 
         try {
-            User user = createUserFromDTO(userSignupDTO);
-            userService.saveUser(user);
+            User user = createUserFromDTO(userRegisterDTO);
+            userService.save(user);
 
-            AuthUserInfo authUserInfo = new AuthUserInfo();
-            authUserInfo.setUserId(user.getId());
-            authUserInfo.setUsername(user.getUsername());
-
-            authUserInfo.setJWTToken(jwtService.generateToken(authUserInfo));
-
-            return authUserInfo;
+            return getAuthInfo(user);
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyExistException("Username already in use");
         }
     }
 
-    private User createUserFromDTO(UserSignupDTO userSignupDTO){
+    private AuthInfo getAuthInfo(User user){
+        AuthInfo authUserInfo = new AuthInfo();
+        authUserInfo.setUserId(user.getId());
+        authUserInfo.setUsername(user.getUsername());
+        authUserInfo.setJWTToken(jwtService.generateUserToken(authUserInfo));
+
+        return authUserInfo;
+    }
+
+    private User createUserFromDTO(UserRegisterDTO userRegisterDTO){
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-        user.setUsername(userSignupDTO.getUsername());
-        user.setPassword(encoder.encode(userSignupDTO.getPassword()));
-        user.setSchoolYear(schoolYearService.getShoolYearByName(userSignupDTO.getSchoolYear()));
+        user.setUsername(userRegisterDTO.getUsername());
+        user.setPassword(encoder.encode(userRegisterDTO.getPassword()));
+        user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
         user.setCardRating(0);
         user.setLineupRating(0.0);
-        user.setImgLink(userSignupDTO.getImgLink());
+        user.setImgLink(userRegisterDTO.getImgLink());
         return user;
     }
 
-    public AuthUserInfo login(UserLoginDTO userLoginDTO) {
-        LoginHandler loginHandler = new UserExistsHandler(userService);
-        AuthUserInfo authUserInfo = loginHandler.handle(userLoginDTO);
-        authUserInfo.setJWTToken(jwtService.generateToken(authUserInfo));
-        return authUserInfo;
+    public AuthInfo login(UserLoginDTO userLoginDTO) {
+        LoginHandler loginHandler = new CheckIfUserExistsHandler(userService);
+        AuthInfo authInfo = loginHandler.handle(userLoginDTO);
+        authInfo.setJWTToken(jwtService.generateUserToken(authInfo));
+        return authInfo;
     }
 }

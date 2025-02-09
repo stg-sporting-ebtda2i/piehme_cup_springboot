@@ -1,7 +1,7 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.UserLoginDTO;
-import com.stgsporting.piehmecup.dtos.UserSignupDTO;
+import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.exceptions.UserAlreadyExistException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UsernameTakenException;
@@ -24,7 +24,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody UserLoginDTO userLoginDTO){
+    public ResponseEntity<Object> login(@RequestBody UserLoginDTO userLoginDTO) {
         try {
             return ResponseEntity.ok().body(
                     authService.login(userLoginDTO)
@@ -37,10 +37,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody UserSignupDTO userSignupDTO) {
+    public ResponseEntity<Object> register(@RequestBody UserRegisterDTO userRegisterDTO) {
         try {
             return ResponseEntity.created(URI.create("/register")).body(
-                    authService.register(userSignupDTO)
+                    authService.register(userRegisterDTO)
             );
         } catch (Exception e){
             if(e instanceof UserAlreadyExistException || e instanceof UsernameTakenException)

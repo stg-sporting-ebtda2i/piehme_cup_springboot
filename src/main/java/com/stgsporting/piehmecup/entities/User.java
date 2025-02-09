@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.config.DatabaseEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = DatabaseEnum.usersTable)
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Authenticatable {
 
     @Column(name = DatabaseEnum.username, nullable = false, unique = true)
     private String username;

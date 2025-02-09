@@ -5,17 +5,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserSignupDTO {
-    private String username;
-    private String password;
+public class UserRegisterDTO extends RegisterDTO {
     private String imgLink;
     private String schoolYear;
 
     @Override
     public String toString() {
-        return "UserSignupDTO{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
+        return "UserRegisterDTO{" +
+                "username='" + getUsername() + '\'' +
+                ", password='" + getPassword()  + '\'' +
                 ", imgLink='" + imgLink + '\'' +
                 ", schoolYear='" + schoolYear + '\'' +
                 '}';
