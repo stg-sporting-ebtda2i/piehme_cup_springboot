@@ -10,7 +10,13 @@ import org.hibernate.annotations.ColumnTransformer;
 @Setter
 @Getter
 @Entity(name = DatabaseEnum.adminsTable)
-public class Admin extends Authenticatable {
+public class Admin extends BaseEntity {
+
+    @Column(name = DatabaseEnum.username, nullable = false, unique = true)
+    private String username;
+
+    @Column(name = DatabaseEnum.password, nullable = false)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = DatabaseEnum.role, nullable = false)

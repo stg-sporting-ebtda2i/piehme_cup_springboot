@@ -13,10 +13,10 @@ public class SchoolYearService {
     @Autowired
     private SchoolYearRepository schoolYearRepository;
 
-    public SchoolYear getOsraByName(String name){
-        Optional<SchoolYear> osra = schoolYearRepository.findByName(name);
-        if(osra.isEmpty())
+    public SchoolYear getShoolYearByName(String name){
+        Optional<SchoolYear> schoolYear = schoolYearRepository.findByName(name);
+        if(schoolYear.isEmpty())
             throw new SchoolYearNotFound("School Year not found");
-        return osra.get();
+        return schoolYear.get();
     }
 }

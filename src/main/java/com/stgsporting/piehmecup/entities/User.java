@@ -18,7 +18,13 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = DatabaseEnum.usersTable)
-public class User extends Authenticatable {
+public class User extends BaseEntity {
+
+    @Column(name = DatabaseEnum.username, nullable = false, unique = true)
+    private String username;
+
+    @Column(name = DatabaseEnum.password, nullable = false)
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.schoolYearId, nullable = false)
@@ -38,10 +44,6 @@ public class User extends Authenticatable {
 
     @Column(name = DatabaseEnum.waladImgLink, unique = true)
     private String imgLink;
-
-    @OneToOne
-    @JoinColumn(name = DatabaseEnum.userId)
-    private User user;
 
     @ManyToMany
     @JoinTable(name = DatabaseEnum.ownedPlayersTable, joinColumns = @JoinColumn(name = DatabaseEnum.userId),

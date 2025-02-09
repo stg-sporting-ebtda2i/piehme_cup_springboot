@@ -9,7 +9,7 @@ public class UserSignupDTO {
     private String username;
     private String password;
     private String imgLink;
-    private String osra;
+    private String schoolYear;
 
     @Override
     public String toString() {
@@ -17,7 +17,7 @@ public class UserSignupDTO {
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", imgLink='" + imgLink + '\'' +
-                ", osra='" + osra + '\'' +
+                ", schoolYear='" + schoolYear + '\'' +
                 '}';
     }
 }
