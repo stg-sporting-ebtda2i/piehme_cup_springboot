@@ -27,6 +27,10 @@ public class UserService implements AuthenticatableService {
     }
 
     public long getAuthenticatableId() {
+        return getAuthenticatable().getId();
+    }
+
+    public Authenticatable getAuthenticatable() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         /*
          * If the user is not authenticated or the principal is not an instance of UserDetail, throw an UnauthorizedAccessException
@@ -35,12 +39,15 @@ public class UserService implements AuthenticatableService {
          * but for security reasons, we should check this case
          */
         if (authentication == null
-                || !(authentication.getPrincipal() instanceof UserDetail)
-                || !(authentication.getPrincipal() instanceof AdminDetail)
+                ||
+                (
+                        !(authentication.getPrincipal() instanceof UserDetail)
+                                && !(authentication.getPrincipal() instanceof AdminDetail)
+                )
         )
             throw new UnauthorizedAccessException("User is not authenticated");
 
-        return  ((Details) authentication.getPrincipal()).getId();
+        return  ((Details) authentication.getPrincipal()).getAuthenticatable();
     }
 
     public User getAuthenticatableByUsername(String username){

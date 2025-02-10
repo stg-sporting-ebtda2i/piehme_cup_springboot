@@ -23,4 +23,8 @@ public class SchoolYear extends BaseEntity {
     @OneToMany(mappedBy = "schoolYear", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<User> users;
+
+    public String getSlug() {
+        return name.toLowerCase().replace(" ", "-");
+    }
 }
