@@ -38,7 +38,7 @@ public class IconService {
         return newIcon;
     }
 
-    public PlayerDTO getIconByName(String name) {
+    public IconDTO getIconByName(String name) {
         Optional<Icon> icon = iconRepository.findIconByName(name);
         if(icon.isPresent())
             return iconToDTO(icon.get());
@@ -47,8 +47,8 @@ public class IconService {
         throw new IconNotFoundException("Player with name " + name + " not found");
     }
 
-    private static PlayerDTO iconToDTO(Icon icon) {
-        PlayerDTO iconDTO = new PlayerDTO();
+    static IconDTO iconToDTO(Icon icon) {
+        IconDTO iconDTO = new IconDTO();
         iconDTO.setName(icon.getName());
         iconDTO.setAvailable(icon.getAvailable());
         iconDTO.setPrice(icon.getPrice());
