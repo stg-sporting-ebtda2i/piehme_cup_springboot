@@ -30,5 +30,5 @@ public class Position extends BaseEntity {
     @ManyToMany(mappedBy = "positions")
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Walad> welad;
+    private List<User> user;
 }

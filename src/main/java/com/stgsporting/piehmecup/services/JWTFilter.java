@@ -1,7 +1,7 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.entities.User;
-import com.stgsporting.piehmecup.entities.UserDetail;
+import com.stgsporting.piehmecup.authentication.Authenticatable;
+import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,18 +35,29 @@ public class JWTFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         Long userId = null;
+        boolean isAdmin = false;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             userId = jwtService.extractUserId(token);
+            isAdmin = jwtService.isAdmin(token);
         }
 
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = context.getBean(UserService.class).getUserById(userId);
-            UserDetail userDetail = new UserDetail(user, context.getBean(UserService.class));
+            AuthenticatableService authService = isAdmin
+                    ? context.getBean(AdminService.class)
+                    : context.getBean(UserService.class);
+
+            Authenticatable auth = authService.getAuthenticatableById(userId);
+
+            Details userDetail = isAdmin
+                    ? new AdminDetail((Admin) auth)
+                    : new UserDetail((User) auth);
+
             if (jwtService.isTokenValid(token, userDetail)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else{
                 throw new UnauthorizedAccessException("Token is invalid, unauthorized access");

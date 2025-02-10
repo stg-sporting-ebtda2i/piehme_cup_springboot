@@ -1,7 +1,8 @@
 package com.stgsporting.piehmecup.services;
 
 
-import com.stgsporting.piehmecup.dtos.AuthUserInfo;
+import com.stgsporting.piehmecup.dtos.AuthInfo;
+import com.stgsporting.piehmecup.entities.Details;
 import com.stgsporting.piehmecup.entities.UserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -25,12 +26,21 @@ public class JWTService {
     @Value("${jwt.expiration.days}")
     private Long EXPIRATION_DAYS;
 
-    public String generateToken(AuthUserInfo user) {
+    public String generateUserToken(AuthInfo info) {
+        return generateToken(info, false);
+    }
+
+    public String generateAdminToken(AuthInfo info) {
+        return generateToken(info, true);
+    }
+
+    public String generateToken(AuthInfo info, boolean isAdmin) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(String.valueOf(user.getUserId()))
+                .subject(String.valueOf(info.getUserId()))
+                .add("is_admin", isAdmin)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 24 * 60 * 60 * EXPIRATION_DAYS))
                 .and()
@@ -43,8 +53,8 @@ public class JWTService {
         return Keys.hmacShaKeyFor(secretBytes);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetail) {
-        Long userId = ((UserDetail) userDetail).getUserId();
+    public boolean isTokenValid(String token, Details userDetail) {
+        Long userId = userDetail.getId();
         return userId.equals(extractUserId(token)) && !isTokenExpired(token);
     }
 
@@ -54,6 +64,10 @@ public class JWTService {
 
     public Long extractUserId(String token) {
         return Long.parseLong(extractClaim(token, Claims::getSubject));
+    }
+
+    public boolean isAdmin(String token) {
+        return extractClaim(token, claims -> claims.get("is_admin", Boolean.class));
     }
 
     private Date extractExpiration(String token) {

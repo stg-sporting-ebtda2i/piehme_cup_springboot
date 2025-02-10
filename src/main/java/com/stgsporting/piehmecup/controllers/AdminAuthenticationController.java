@@ -1,10 +1,8 @@
 package com.stgsporting.piehmecup.controllers;
 
-import com.stgsporting.piehmecup.dtos.AuthUserInfo;
-import com.stgsporting.piehmecup.dtos.UserLoginDTO;
+import com.stgsporting.piehmecup.dtos.LoginDTO;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
-import com.stgsporting.piehmecup.services.LoginService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stgsporting.piehmecup.services.AdminAuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,16 +11,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/login")
-public class LoginController {
-    @Autowired
-    private LoginService loginService;
+@RequestMapping("/admin")
+public class AdminAuthenticationController {
 
-    @PostMapping("")
-    public ResponseEntity<Object> login(@RequestBody UserLoginDTO userLoginDTO){
+    private final AdminAuthenticationService authService;
+
+    AdminAuthenticationController(AdminAuthenticationService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody LoginDTO userLoginDTO){
         try {
-            AuthUserInfo authUserInfo = loginService.verify(userLoginDTO);
-            return ResponseEntity.ok().body(authUserInfo);
+            return ResponseEntity.ok().body(
+                    authService.login(userLoginDTO)
+            );
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {

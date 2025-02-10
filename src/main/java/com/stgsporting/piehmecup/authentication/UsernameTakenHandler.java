@@ -1,11 +1,11 @@
-package com.stgsporting.piehmecup.signup;
+package com.stgsporting.piehmecup.authentication;
 
-import com.stgsporting.piehmecup.dtos.UserSignupDTO;
+import com.stgsporting.piehmecup.dtos.RegisterDTO;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UsernameTakenException;
 import com.stgsporting.piehmecup.services.UserService;
 
-public class UsernameTakenHandler extends SignupHandler {
+public class UsernameTakenHandler extends RegisterHandler {
     private final UserService userService;
 
     public UsernameTakenHandler(UserService userService) {
@@ -13,13 +13,13 @@ public class UsernameTakenHandler extends SignupHandler {
     }
 
     @Override
-    public void handleRequest(UserSignupDTO userSignupDTO) {
+    public void handleRequest(RegisterDTO userRegisterDTO) {
         try {
-            userService.getUserByUsername(userSignupDTO.getUsername());
+            userService.getAuthenticatableByUsername(userRegisterDTO.getUsername());
             throw new UsernameTakenException("Username already taken");
         }
         catch (UserNotFoundException e) {
-            super.handleRequest(userSignupDTO);
+            super.handleRequest(userRegisterDTO);
         }
     }
 }

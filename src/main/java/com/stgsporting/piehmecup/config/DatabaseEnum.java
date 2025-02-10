@@ -4,38 +4,28 @@ public class DatabaseEnum {
     // Base ID for all tables
     public static final String baseId = "id";
 
-    // OSRA TABLE
-    public static final String osraTable = "OSRA";
-    public static final String osraName = "name";
+    // School Year TABLE
+    public static final String schoolYearTable = "SCHOOL_YEARS";
+    public static final String schoolYearName = "name";
 
     // USERS TABLE
     public static final String usersTable = "USERS";
     public static final String username = "username";
     public static final String password = "password";
-    public static final String osraId = "osraId";
+    public static final String schoolYearId = "schoolYearId";
+    public static final String lineupRating = "lineupRating";
+    public static final String cardRating = "cardRating";
+    public static final String waladImgLink = "imgLink";
+
+    // ADMINS TABLE
+    public static final String adminsTable = "ADMINS";
+    public static final String role = "role";
 
     // BUTTONS VISIBILITY TABLE
     public static final String buttonsTable = "BUTTONS_VISIBILITY";
     public static final String buttonName = "name";
     public static final String visible = "visible";
     public static final String userRole = "userRole";
-
-    // WELAD TABLE
-    public static final String weladTable = "WELAD";
-    public static final String lineupRating = "lineupRating";
-    public static final String cardRating = "cardRating";
-    public static final String waladImgLink = "imgLink";
-
-    // OSTAZ TABLE
-    public static final String ostazTable = "OSTAZ";
-    public static final String ostazId = "ostazId";
-
-    // ADMINS TABLE
-    public static final String adminsTable = "ADMINS";
-    public static final String adminId = "adminId";
-
-    // waladId for OWNED TABLES, ATTENDANCE TABLE
-    public static final String waladId = "waladId";
 
     // OWNED PLAYERS TABLE
     public static final String ownedPlayersTable = "OWNED_PLAYERS";
@@ -74,7 +64,7 @@ public class DatabaseEnum {
 
     // ATTENDANCE TABLE
     public static final String attendanceTable = "ATTENDANCE";
-    public static final String timestamp = "timestamp";
-    public static final String attendedLiturgy = "attendedLiturgy";
+    public static final String userId = "userId";
+    public static final String createdAt = "createdAt";
     public static final String approved = "approved";
 }

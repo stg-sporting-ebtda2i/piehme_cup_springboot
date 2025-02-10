@@ -3,21 +3,22 @@ package com.stgsporting.piehmecup.entities;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
 @Setter
-public class UserDetail implements Details {
-    private User user;
+public class AdminDetail implements Details {
+    private Admin admin;
 
-    public UserDetail(User user) {
-        this.user = user;
+    public AdminDetail(Admin admin) {
+        this.admin = admin;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("WALAD"));
+        return Collections.singletonList(new SimpleGrantedAuthority(admin.getRole().name()));
     }
 
     @Override
@@ -27,10 +28,10 @@ public class UserDetail implements Details {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return admin.getUsername();
     }
 
     public Long getId() {
-        return user.getId();
+        return admin.getId();
     }
 }
