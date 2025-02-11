@@ -1,13 +1,10 @@
 package com.stgsporting.piehmecup.helpers;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Base64;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
+import net.minidev.json.JSONObject;
+import okhttp3.*;
 import org.springframework.http.HttpStatus;
 
 
@@ -39,9 +36,14 @@ public class Http {
         addHeader("Authorization", token);
     }
 
-    public Response call(String method, RequestBody body) {
+    public Response call(String method, JSONObject body) {
+        RequestBody requestBody = body != null ? RequestBody.create(
+                body.toJSONString(),
+                MediaType.parse("application/json")
+        ) : null;
+
         Request request = this.builder
-                .method(method, body)
+                .method(method, requestBody)
                 .build();
 
         OkHttpClient client = new OkHttpClient();
@@ -68,11 +70,11 @@ public class Http {
         return call("GET", null);
     }
 
-    public Response post(RequestBody body) {
+    public Response post(JSONObject body) {
         return call("POST", body);
     }
 
-    public Response patch(RequestBody body) {
+    public Response patch(JSONObject body) {
         return call("PATCH", body);
     }
 }
