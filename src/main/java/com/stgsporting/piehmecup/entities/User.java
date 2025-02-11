@@ -28,6 +28,9 @@ public class User extends BaseEntity implements Authenticatable {
     @Column(name = DatabaseEnum.password, nullable = false)
     private String password;
 
+    @Column(name = DatabaseEnum.quizId, nullable = true, unique = true)
+    private Long quizId;
+
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.schoolYearId, nullable = false)
     private SchoolYear schoolYear;

@@ -37,8 +37,7 @@ public class UserAuthenticationService {
         handlerChain.handleRequest(userRegisterDTO);
 
         try {
-            User user = createUserFromDTO(userRegisterDTO);
-            userService.save(user);
+            User user = userService.createUser(userRegisterDTO);
 
             return getAuthInfo(user);
         } catch (DataIntegrityViolationException e) {
@@ -53,18 +52,6 @@ public class UserAuthenticationService {
         authUserInfo.setJWTToken(jwtService.generateUserToken(authUserInfo));
 
         return authUserInfo;
-    }
-
-    private User createUserFromDTO(UserRegisterDTO userRegisterDTO){
-        User user = new User();
-        user.setUsername(userRegisterDTO.getUsername());
-        user.setPassword(userRegisterDTO.getPassword());
-        user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
-        user.setCoins(0);
-        user.setCardRating(0);
-        user.setLineupRating(0.0);
-        user.setImgLink(userRegisterDTO.getImgLink());
-        return user;
     }
 
     public AuthInfo login(UserLoginDTO userLoginDTO) {

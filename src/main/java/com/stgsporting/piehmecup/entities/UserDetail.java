@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.entities;
 
+import com.stgsporting.piehmecup.authentication.Authenticatable;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,5 +33,10 @@ public class UserDetail implements Details {
 
     public Long getId() {
         return user.getId();
+    }
+
+    @Override
+    public Authenticatable getAuthenticatable() {
+        return user;
     }
 }

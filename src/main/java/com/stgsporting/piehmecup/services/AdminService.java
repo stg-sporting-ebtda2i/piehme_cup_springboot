@@ -62,12 +62,17 @@ public class AdminService implements AuthenticatableService {
 
     @Override
     public long getAuthenticatableId() {
+        return getAuthenticatable().getId();
+    }
+
+    @Override
+    public Authenticatable getAuthenticatable() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof AdminDetail))
             throw new UnauthorizedAccessException("Admin is not authenticated");
 
-        return  ((Details) authentication.getPrincipal()).getId();
+        return ((Details) authentication.getPrincipal()).getAuthenticatable();
     }
 
     public Optional<Admin> getAdminByUsername(String username) {

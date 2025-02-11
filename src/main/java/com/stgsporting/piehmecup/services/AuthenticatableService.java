@@ -9,6 +9,8 @@ public interface AuthenticatableService {
 
     long getAuthenticatableId();
 
+    Authenticatable getAuthenticatable();
+
     Authenticatable getAuthenticatableByUsername(String username);
 
     void save(Authenticatable authenticatable);
