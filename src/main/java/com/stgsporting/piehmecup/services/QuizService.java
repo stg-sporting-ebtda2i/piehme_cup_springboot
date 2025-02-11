@@ -5,6 +5,7 @@ import com.stgsporting.piehmecup.dtos.quizzes.QuizInListDTO;
 import com.stgsporting.piehmecup.entities.Quiz;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.exceptions.NotFoundException;
 import com.stgsporting.piehmecup.helpers.Http;
 import com.stgsporting.piehmecup.helpers.Response;
 import net.minidev.json.JSONArray;
@@ -36,9 +37,9 @@ public class QuizService {
     public List<Quiz> getQuizzesForUser() {
         Authenticatable user = userService.getAuthenticatable();
         SchoolYear schoolYear = user.getSchoolYear();
-        String url = "/groups/" + schoolYear.getSlug();
+        String url = BASE_URL + "/groups/" + schoolYear.getSlug();
 
-        Response response = new Http(BASE_URL + url, API_KEY, API_SECRET).get();
+        Response response = new Http(url, API_KEY, API_SECRET).get();
 
         List<Quiz> quizzes = new ArrayList<>();
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -51,16 +52,33 @@ public class QuizService {
 
                 for (Object quizObject : quizzesArray) {
                     JSONObject quizJson = (JSONObject) quizObject;
-                    Quiz quiz = new Quiz();
-                    quiz.setId((Long) quizJson.get("id"));
-                    quiz.setName((String) quizJson.get("name"));
-                    quiz.setSlug((String) quizJson.get("slug"));
-                    quiz.setSchoolYear(schoolYear);
-                    quizzes.add(quiz);
+
+                    quizzes.add(Quiz.fromJson(quizJson, schoolYear));
                 }
             } catch (ParseException ignored) {}
         }
 
         return quizzes;
+    }
+
+    public Quiz getQuizBySlug(String slug) {
+        Authenticatable user = userService.getAuthenticatable();
+        SchoolYear schoolYear = user.getSchoolYear();
+        String url = BASE_URL + "/quizzes/" + schoolYear.getSlug() + "/" + slug;
+
+        Response response = new Http(url, API_KEY, API_SECRET).get();
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            JSONParser parser = new JSONParser(1);
+
+            try {
+                JSONObject jsonObject = (JSONObject) parser.parse(response.getBody());
+                JSONObject data = (JSONObject) jsonObject.get("quiz");
+
+                return Quiz.fromJson(data, schoolYear);
+            } catch (ParseException ignored) {}
+        }
+
+        throw new NotFoundException("Quiz not found");
     }
 }
