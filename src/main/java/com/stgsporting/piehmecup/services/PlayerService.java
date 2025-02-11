@@ -49,7 +49,7 @@ public class PlayerService {
         throw new PlayerNotFoundException("Player with name " + name + " not found");
     }
 
-    private static PlayerDTO playerToDTO(Player player) {
+    static PlayerDTO playerToDTO(Player player) {
         PlayerDTO playerDTO = new PlayerDTO();
         playerDTO.setName(player.getName());
         playerDTO.setPosition(player.getPosition().toString());

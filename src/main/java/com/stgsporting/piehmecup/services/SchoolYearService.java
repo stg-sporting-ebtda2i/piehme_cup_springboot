@@ -14,16 +14,28 @@ public class SchoolYearService {
     private SchoolYearRepository schoolYearRepository;
 
     public SchoolYear getShoolYearByName(String name){
-        Optional<SchoolYear> schoolYear = schoolYearRepository.findByName(name);
-        if(schoolYear.isEmpty())
-            throw new SchoolYearNotFound("School Year not found");
-        return schoolYear.get();
+        return schoolYearRepository
+                .findByName(name)
+                .orElseThrow(
+                        () -> new SchoolYearNotFound("School Year not found")
+                );
     }
 
     public SchoolYear getShoolYearById(Long id){
-        Optional<SchoolYear> schoolYear = schoolYearRepository.findById(id);
-        if(schoolYear.isEmpty())
-            throw new SchoolYearNotFound("School Year not found");
-        return schoolYear.get();
+        return schoolYearRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new SchoolYearNotFound("School Year not found")
+                );
+    }
+
+    public SchoolYear createSchoolYear(String name){
+        SchoolYear schoolYear = new SchoolYear();
+        schoolYear.setName(name);
+        return schoolYearRepository.save(schoolYear);
+    }
+
+    public boolean existsSchoolYearById(Long id) {
+        return schoolYearRepository.existsById(id);
     }
 }

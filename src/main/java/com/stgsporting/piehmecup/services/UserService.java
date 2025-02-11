@@ -35,8 +35,11 @@ public class UserService implements AuthenticatableService {
          * but for security reasons, we should check this case
          */
         if (authentication == null
-                || !(authentication.getPrincipal() instanceof UserDetail)
-                || !(authentication.getPrincipal() instanceof AdminDetail)
+                ||
+                (
+                        !(authentication.getPrincipal() instanceof UserDetail)
+                                && !(authentication.getPrincipal() instanceof AdminDetail)
+                )
         )
             throw new UnauthorizedAccessException("User is not authenticated");
 
