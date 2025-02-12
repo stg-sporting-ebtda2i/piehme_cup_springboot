@@ -2,6 +2,7 @@ package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.enums.TransactionType;
+import com.stgsporting.piehmecup.exceptions.InsufficientCoinsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class WalletService {
     @Transactional
     public void debit(User user, Integer amount, String description) {
         if (user.getCoins() < amount) {
-            throw new IllegalArgumentException("Not enough coins");
+            throw new InsufficientCoinsException("Not enough coins");
         }
 
         user.setCoins(user.getCoins() - amount);
