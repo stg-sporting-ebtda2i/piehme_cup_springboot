@@ -9,44 +9,33 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CardRatingService {
-    @Autowired
-    private PriceService priceService;
+    private final PriceService priceService;
+    private final UserService userService;
+    private final WalletService walletService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
+    public CardRatingService(PriceService priceService, UserService userService, WalletService walletService) {
+        this.priceService = priceService;
+        this.userService = userService;
+        this.walletService = walletService;
+    }
 
     public Integer getCardRating(){
-        try {
-            Long id = userService.getAuthenticatableId();
-            User user = userRepository.getUserById(id);
-            return user.getCardRating();
-        } catch (Exception e) {
-            throw new UserNotFoundException("User not found");
-        }
+        long id = userService.getAuthenticatableId();
+        User user = userService.getAuthenticatableById(id);
+
+        return user.getCardRating();
     }
 
     public void updateRating(Integer delta){
-        try {
-            Long id = userService.getAuthenticatableId();
-            User user = userRepository.getUserById(id);
-            Integer deltaPrice = priceService.getPrice("Rating Price").getCoins();
+        long id = userService.getAuthenticatableId();
+        User user = userService.getAuthenticatableById(id);
 
-            if(user.getCoins() < deltaPrice*delta)
-                throw new InsufficientCoinsException("Not enough coins to purchase rating");
+        Integer deltaPrice = priceService.getPrice("Rating Price").getCoins();
 
-            user.setCoins(user.getCoins() - deltaPrice*delta);
+        walletService.debit(user, deltaPrice*delta);
 
-            user.setCardRating(user.getCardRating() + delta);
+        user.setCardRating(user.getCardRating() + delta);
 
-            userRepository.save(user);
-
-        } catch (InsufficientCoinsException e){
-            throw e;
-        } catch (Exception e) {
-            throw new UserNotFoundException("User not found");
-        }
+        userService.save(user);
     }
 }
