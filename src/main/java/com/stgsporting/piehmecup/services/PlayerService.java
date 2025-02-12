@@ -9,6 +9,7 @@ import com.stgsporting.piehmecup.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,11 +82,15 @@ public class PlayerService {
             throw new PlayerNotFoundException("Player with name " + name + " not found");
     }
 
-    public List<Player> getPlayersByPosition(Enum<Positions> position){
+    public List<PlayerDTO> getPlayersByPosition(Enum<Positions> position){
         List<Player> players = playerRepository.findPlayersByPosition(position);
         if(players.isEmpty())
             throw new PlayerNotFoundException("No players found with position " + position);
 
-        return players;
+        List<PlayerDTO> playerDTOs = new ArrayList<>();
+        for(Player player : players)
+            playerDTOs.add(playerToDTO(player));
+
+        return playerDTOs;
     }
 }
