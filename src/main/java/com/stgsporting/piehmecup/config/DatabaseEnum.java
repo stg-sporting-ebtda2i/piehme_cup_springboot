@@ -68,4 +68,12 @@ public class DatabaseEnum {
     public static final String createdAt = "createdAt";
     public static final String approved = "approved";
     public static final String quizId = "quizId";
+
+    // TRANSACTIONS TABLE
+    public static final String transactionsTable = "TRANSACTIONS";
+    public static final String amount = "amount";
+    public static final String transactionType = "type";
+    public static final String transactionDate = "createdAt";
+    public static final String transactionDescription = "description";
+    public static final String transactionUserId = "userId";
 }

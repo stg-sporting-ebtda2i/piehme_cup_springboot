@@ -56,7 +56,7 @@ public class OwnedIconsService {
                     .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
             if (!user.getIcons().contains(icon)) {
-                walletService.debit(user, icon.getPrice());
+                walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
 
                 user.setCoins(user.getCoins() - icon.getPrice());
                 user.getIcons().add(icon);
@@ -83,7 +83,7 @@ public class OwnedIconsService {
                     .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
             if (user.getIcons().contains(icon)) {
-                walletService.credit(user, icon.getPrice());
+                walletService.credit(user, icon.getPrice(), "Icon sale: " + icon.getId());
 
                 user.getIcons().remove(icon);
                 userRepository.save(user);

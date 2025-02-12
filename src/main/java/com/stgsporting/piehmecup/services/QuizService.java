@@ -92,7 +92,7 @@ public class QuizService {
 
             Long points = (Long) jsonObject.get("points");
 
-            walletService.credit(user, points.intValue());
+            walletService.credit(user, points.intValue(), "Quiz: " + quiz.getId());
 
             return points;
         }

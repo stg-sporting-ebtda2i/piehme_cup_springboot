@@ -8,35 +8,28 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/ownedPositions")
 public class OwnedPositionsController {
-    @Autowired
-    private OwnedPositionsService ownedPositionsService;
+    private final OwnedPositionsService ownedPositionsService;
+
+    public OwnedPositionsController(OwnedPositionsService ownedPositionsService) {
+        this.ownedPositionsService = ownedPositionsService;
+    }
 
     @GetMapping("/getOwnedPositions")
-    public ResponseEntity<Object> getOwnedPositions(){
-        try{
-            return ResponseEntity.ok().body(ownedPositionsService.getOwnedPositions());
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> getOwnedPositions() {
+        return ResponseEntity.ok().body(ownedPositionsService.getOwnedPositions());
     }
 
     @PatchMapping("/buy/{positionId}")
-    public ResponseEntity<Object> addPositionToUser(@PathVariable Long positionId){
-        try{
-            ownedPositionsService.addPositionToUser(positionId);
-            return ResponseEntity.ok().body("Position purchased successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> addPositionToUser(@PathVariable Long positionId) {
+        ownedPositionsService.addPositionToUser(positionId);
+
+        return ResponseEntity.ok().body("Position purchased successfully");
     }
 
     @PatchMapping("/sell/{positionId}")
-    public ResponseEntity<Object> removePositionFromUser(@PathVariable Long positionId){
-        try{
-            ownedPositionsService.removePositionFromUser(positionId);
-            return ResponseEntity.ok().body("Position sold successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> removePositionFromUser(@PathVariable Long positionId) {
+        ownedPositionsService.removePositionFromUser(positionId);
+
+        return ResponseEntity.ok().body("Position sold successfully");
     }
 }

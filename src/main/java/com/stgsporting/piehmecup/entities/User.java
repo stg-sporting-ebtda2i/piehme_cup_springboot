@@ -69,6 +69,9 @@ public class User extends BaseEntity implements Authenticatable {
     @JsonManagedReference
     private List<Attendance> attendances;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions;
+
     public void setPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
