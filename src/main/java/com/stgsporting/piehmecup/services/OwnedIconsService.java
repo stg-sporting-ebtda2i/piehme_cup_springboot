@@ -18,14 +18,18 @@ import java.util.List;
 
 @Service
 public class OwnedIconsService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final IconRepository iconRepository;
+    private final WalletService walletService;
 
-    @Autowired
-    private IconRepository iconRepository;
+    public OwnedIconsService(UserRepository userRepository, UserService userService, IconRepository iconRepository, WalletService walletService) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.iconRepository = iconRepository;
+        this.walletService = walletService;
+    }
 
     public List<IconDTO> getOwnedIcons(){
         try {
@@ -52,8 +56,7 @@ public class OwnedIconsService {
                     .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
             if (!user.getIcons().contains(icon)) {
-                if(user.getCoins() < icon.getPrice())
-                    throw new InsufficientCoinsException("Not enough coins to purchase icon");
+                walletService.debit(user, icon.getPrice());
 
                 user.setCoins(user.getCoins() - icon.getPrice());
                 user.getIcons().add(icon);
@@ -80,7 +83,8 @@ public class OwnedIconsService {
                     .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
             if (user.getIcons().contains(icon)) {
-                user.setCoins(user.getCoins() + icon.getPrice());
+                walletService.credit(user, icon.getPrice());
+
                 user.getIcons().remove(icon);
                 userRepository.save(user);
             }
