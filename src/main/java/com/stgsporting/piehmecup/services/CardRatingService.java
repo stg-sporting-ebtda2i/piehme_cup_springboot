@@ -32,7 +32,7 @@ public class CardRatingService {
 
         Integer deltaPrice = priceService.getPrice("Rating Price").getCoins();
 
-        walletService.debit(user, deltaPrice*delta);
+        walletService.debit(user, deltaPrice*delta, "Rating increase by " + delta);
 
         user.setCardRating(user.getCardRating() + delta);
 

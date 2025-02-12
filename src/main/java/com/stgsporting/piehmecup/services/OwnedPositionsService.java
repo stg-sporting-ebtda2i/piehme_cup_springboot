@@ -25,6 +25,8 @@ public class OwnedPositionsService {
 
     @Autowired
     private PositionRepository positionRepository;
+    @Autowired
+    private WalletService walletService;
 
     public List<PositionDTO> getOwnedPositions(){
         try {
@@ -51,10 +53,8 @@ public class OwnedPositionsService {
                     .orElseThrow(() -> new PositionNotFoundException("Position not found"));
 
             if (!user.getPositions().contains(position)) {
-                if(user.getCoins() < position.getPrice())
-                    throw new InsufficientCoinsException("Not enough coins to purchase position");
+                walletService.debit(user, position.getPrice(), "Position purchase: " + position.getName());
 
-                user.setCoins(user.getCoins() - position.getPrice());
                 user.getPositions().add(position);
                 userRepository.save(user);
             }
@@ -76,7 +76,8 @@ public class OwnedPositionsService {
                     .orElseThrow(() -> new PositionNotFoundException("Position not found"));
 
             if (user.getPositions().contains(position)) {
-                user.setCoins(user.getCoins() + position.getPrice());
+                walletService.credit(user, position.getPrice(), "Position sale: " + position.getName());
+
                 user.getPositions().remove(position);
                 userRepository.save(user);
             }

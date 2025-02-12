@@ -26,6 +26,8 @@ public class OwnedPlayersService {
 
     @Autowired
     private PlayerRepository playerRepository;
+    @Autowired
+    private WalletService walletService;
 
     public List<PlayerDTO> getLineup(){
         try {
@@ -52,16 +54,14 @@ public class OwnedPlayersService {
                     .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
             if (!user.getPlayers().contains(player)) {
-                if(user.getCoins() < player.getPrice())
-                    throw new InsufficientCoinsException("Not enough coins to purchase player");
+                walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
 
-                user.setCoins(user.getCoins() - player.getPrice());
                 user.getPlayers().add(player);
                 user.setLineupRating(user.getLineupRating() + player.getRating());
                 userRepository.save(user);
             }
             else
-                throw new PlayerAlreadyPurchasedException("Player already purchased to this user");
+                throw new PlayerAlreadyPurchasedException("Player already purchased");
 
         } catch (UserNotFoundException | PlayerNotFoundException | InsufficientCoinsException | PlayerAlreadyPurchasedException e) {
             throw new RuntimeException(e.getMessage());
@@ -81,13 +81,14 @@ public class OwnedPlayersService {
                     .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
             if (user.getPlayers().contains(player)) {
-                user.setCoins(user.getCoins() + player.getPrice());
+                walletService.credit(user, player.getPrice(), "Player sale: " + player.getId());
+
                 user.getPlayers().remove(player);
                 user.setLineupRating(user.getLineupRating() - player.getRating());
                 userRepository.save(user);
             }
             else
-                throw new PlayerNotFoundException("Player not purchased to this user");
+                throw new PlayerNotFoundException("User does not own player");
         } catch (UserNotFoundException | PlayerNotFoundException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
