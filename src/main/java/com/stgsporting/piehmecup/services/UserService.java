@@ -25,7 +25,7 @@ public class UserService implements AuthenticatableService {
         this.entityService = entityService;
     }
 
-    public User getAuthenticatableById(long id){
+    public User getAuthenticatableById(long id) {
         return userRepository.findUserById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
     }
