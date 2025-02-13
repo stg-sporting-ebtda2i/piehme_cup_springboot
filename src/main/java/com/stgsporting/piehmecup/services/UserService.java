@@ -127,4 +127,17 @@ public class UserService implements AuthenticatableService {
         }
         return leaderboard;
     }
+
+    public Integer getCoins() {
+        try {
+            User user = userRepository.findById(getAuthenticatableId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            return user.getCoins();
+        } catch (UserNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while fetching coins");
+        }
+    }
 }
