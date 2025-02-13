@@ -1,9 +1,6 @@
 package com.stgsporting.piehmecup.repositories;
 
-import com.stgsporting.piehmecup.entities.Icon;
-import com.stgsporting.piehmecup.entities.Player;
-import com.stgsporting.piehmecup.entities.Position;
-import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Position> findPositionsByUserId(@Param("userId") Long userId);
 
     User getUserById(Long id);
+
+    @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear ORDER BY u.lineupRating desc")
+    List<User> findUsersBySchoolYear(SchoolYear schoolYear);
 }

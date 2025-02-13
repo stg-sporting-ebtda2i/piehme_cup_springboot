@@ -2,15 +2,22 @@ package com.stgsporting.piehmecup.services;
 
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
+import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.entities.*;
+import com.stgsporting.piehmecup.exceptions.SchoolYearNotFound;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
+import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService implements AuthenticatableService {
@@ -18,11 +25,13 @@ public class UserService implements AuthenticatableService {
     private final UserRepository userRepository;
     private final SchoolYearService schoolYearService;
     private final EntityService entityService;
+    private final SchoolYearRepository schoolYearRepository;
 
-    public UserService(UserRepository userRepository, SchoolYearService schoolYearService, EntityService entityService) {
+    public UserService(UserRepository userRepository, SchoolYearService schoolYearService, EntityService entityService, SchoolYearRepository schoolYearRepository) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
+        this.schoolYearRepository = schoolYearRepository;
     }
 
     public User getAuthenticatableById(long id) {
@@ -77,5 +86,45 @@ public class UserService implements AuthenticatableService {
         save(user);
 
         return user;
+    }
+
+    public List<LeaderboardDTO> getLeaderboard() {
+
+        try {
+            Long userId = getAuthenticatableId();
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            Long schoolYearId = user.getSchoolYear().getId();
+
+            SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId)
+                    .orElseThrow(() -> new SchoolYearNotFound("School year not found"));
+
+            List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
+
+            return getLeaderboardDTOS(users);
+        } catch (UserNotFoundException | SchoolYearNotFound e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while fetching leaderboard");
+        }
+    }
+
+    @NotNull
+    private static List<LeaderboardDTO> getLeaderboardDTOS(List<User> users) {
+        List<LeaderboardDTO> leaderboard = new ArrayList<>();
+
+        for (User u : users){
+            LeaderboardDTO dto = new LeaderboardDTO();
+            dto.setName(u.getUsername());
+            String position = u.getSelectedPosition().getName();
+            dto.setPosition(position);
+            dto.setLineupRating(u.getLineupRating());
+            dto.setUserImgLink(u.getImgLink());
+            dto.setIconImgLink(u.getSelectedIcon().getImgLink());
+            dto.setCardRating(u.getCardRating());
+            leaderboard.add(dto);
+        }
+        return leaderboard;
     }
 }
