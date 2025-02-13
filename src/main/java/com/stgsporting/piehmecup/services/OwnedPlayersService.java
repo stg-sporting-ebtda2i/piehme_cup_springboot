@@ -43,6 +43,19 @@ public class OwnedPlayersService {
         }
     }
 
+    public List<PlayerDTO> getLineup(Long userId){
+        try {
+            List<Player> players = userRepository.findPlayersByUserId(userId);
+            List<PlayerDTO> playerDTOS = new ArrayList<>();
+            for(Player player : players)
+                playerDTOS.add(PlayerService.playerToDTO(player));
+
+            return playerDTOS;
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("User not found");
+        }
+    }
+
     @Transactional
     public void addPlayerToUser(Long playerId) {
         try{
