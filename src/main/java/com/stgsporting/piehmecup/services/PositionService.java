@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PositionService {
     @Autowired
@@ -14,6 +16,15 @@ public class PositionService {
 
     static PositionDTO positionToDTO(Position position) {
         return new PositionDTO(position.getName(), position.getPrice().toString());
+    }
+
+    public List<PositionDTO> getAllPositions() {
+        try {
+            List<Position> positions = positionRepository.findAll();
+            return positions.stream().map(PositionService::positionToDTO).toList();
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while fetching positions");
+        }
     }
 
     @Transactional
