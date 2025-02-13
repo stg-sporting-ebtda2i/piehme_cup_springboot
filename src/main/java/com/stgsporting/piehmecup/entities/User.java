@@ -72,6 +72,14 @@ public class User extends BaseEntity implements Authenticatable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.selectedIconId)
+    private Icon selectedIcon;
+
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.selectedPositionId)
+    private Position selectedPosition;
+
     public void setPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
