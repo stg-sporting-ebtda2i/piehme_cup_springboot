@@ -74,7 +74,8 @@ public class IconService {
             throw new IconNotFoundException("Player with name " + name + " not found");
     }
 
-    public List<Icon> getAllIcons() {
-        return iconRepository.findAll();
+    public List<IconDTO> getAllIcons() {
+        List<Icon> icons = iconRepository.findAll();
+        return icons.stream().map(IconService::iconToDTO).toList();
     }
 }

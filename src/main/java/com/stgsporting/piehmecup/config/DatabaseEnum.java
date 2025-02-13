@@ -76,4 +76,10 @@ public class DatabaseEnum {
     public static final String transactionDate = "createdAt";
     public static final String transactionDescription = "description";
     public static final String transactionUserId = "userId";
+
+    // SELECTED ICON TABLE
+    public static final String selectedIconId = "iconId";
+
+    // SELECTED POSITION TABLE
+    public static final String selectedPositionId = "positionId";
 }

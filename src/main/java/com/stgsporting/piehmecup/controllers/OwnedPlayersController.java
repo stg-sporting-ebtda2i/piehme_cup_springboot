@@ -21,6 +21,15 @@ public class OwnedPlayersController {
         }
     }
 
+    @GetMapping("/getLineup/{userId}")
+    public ResponseEntity<Object> getLineup(@PathVariable Long userId){
+        try {
+            return ResponseEntity.ok().body(ownedPlayersService.getLineup(userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PatchMapping("/buy/{playerId}")
     public ResponseEntity<Object> addPlayerToUser(@PathVariable Long playerId){
         try{
