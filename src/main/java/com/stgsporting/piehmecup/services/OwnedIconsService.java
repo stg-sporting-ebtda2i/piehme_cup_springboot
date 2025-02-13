@@ -58,7 +58,6 @@ public class OwnedIconsService {
             if (!user.getIcons().contains(icon)) {
                 walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
 
-                user.setCoins(user.getCoins() - icon.getPrice());
                 user.getIcons().add(icon);
                 userRepository.save(user);
             }
