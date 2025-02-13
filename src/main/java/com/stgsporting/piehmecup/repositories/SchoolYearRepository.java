@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface SchoolYearRepository extends JpaRepository<SchoolYear, Long> {
     Optional<SchoolYear> findByName(String name);
+    Optional<SchoolYear> findSchoolYearById(Long id);
 }
