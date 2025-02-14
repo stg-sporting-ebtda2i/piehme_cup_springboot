@@ -38,14 +38,8 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody UserRegisterDTO userRegisterDTO) {
-        try {
-            return ResponseEntity.created(URI.create("/register")).body(
-                    authService.register(userRegisterDTO)
-            );
-        } catch (Exception e){
-            if(e instanceof UserAlreadyExistException || e instanceof UsernameTakenException)
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.created(URI.create("/register")).body(
+                authService.register(userRegisterDTO)
+        );
     }
 }
