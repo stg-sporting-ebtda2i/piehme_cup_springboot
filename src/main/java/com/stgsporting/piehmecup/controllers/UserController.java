@@ -29,13 +29,13 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Object> index(@RequestParam Integer page) {
+    public ResponseEntity<Object> index(@RequestParam @Nullable Integer page, @RequestParam @Nullable String search) {
         Admin admin = (Admin) adminService.getAuthenticatable();
 
         Pageable pageable = PageRequest.of(page == null ? 0 : page, 10);
 
         return ResponseEntity.ok(
-                userService.getUsersBySchoolYear(admin.getSchoolYear(), pageable).stream().map(UserInListDTO::new)
+                userService.getUsersBySchoolYear(admin.getSchoolYear(), search, pageable).stream().map(UserInListDTO::new)
         );
     }
 

@@ -23,11 +23,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.positions FROM User u WHERE u.id = :userId")
     List<Position> findPositionsByUserId(@Param("userId") Long userId);
 
-    User getUserById(Long id);
-
     @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear ORDER BY u.lineupRating desc")
     List<User> findUsersBySchoolYear(SchoolYear schoolYear);
 
-    @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear ORDER BY u.lineupRating desc")
-    Page<User> findUsersBySchoolYearPaginated(SchoolYear schoolYear, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear and u.username LIKE :search ORDER BY u.lineupRating desc")
+    Page<User> findUsersBySchoolYearPaginated(SchoolYear schoolYear, String search, Pageable pageable);
 }

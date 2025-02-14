@@ -100,8 +100,12 @@ public class UserService implements AuthenticatableService {
         return user;
     }
 
-    public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, Pageable page) {
-        return userRepository.findUsersBySchoolYearPaginated(schoolYear, page);
+    public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, String search, Pageable page) {
+        if(search == null) {
+            search = "";
+        }
+
+        return userRepository.findUsersBySchoolYearPaginated(schoolYear,search + "%", page);
     }
 
     public List<LeaderboardDTO> getLeaderboard() {
