@@ -49,6 +49,7 @@ public class IconService {
 
     static IconDTO iconToDTO(Icon icon) {
         IconDTO iconDTO = new IconDTO();
+        iconDTO.setId(icon.getId());
         iconDTO.setName(icon.getName());
         iconDTO.setAvailable(icon.getAvailable());
         iconDTO.setPrice(icon.getPrice());

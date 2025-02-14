@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.dtos.PositionDTO;
 import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.PositionNotFoundException;
@@ -44,7 +45,7 @@ public class SelectPositionService {
         }
     }
 
-    public Position getSelectedPosition() {
+    public PositionDTO getSelectedPosition() {
         try {
             Long userId = userService.getAuthenticatableId();
             User user = userRepository.findById(userId)
@@ -54,7 +55,7 @@ public class SelectPositionService {
             if (position == null)
                 throw new PositionNotFoundException("No selected position found");
 
-            return position;
+            return new PositionDTO(position.getId(), position.getName(), position.getPrice().toString());
         } catch (UserNotFoundException | PositionNotFoundException e) {
             throw e;
         } catch (Exception e) {

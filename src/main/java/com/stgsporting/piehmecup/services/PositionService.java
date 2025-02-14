@@ -15,7 +15,7 @@ public class PositionService {
     private PositionRepository positionRepository;
 
     static PositionDTO positionToDTO(Position position) {
-        return new PositionDTO(position.getName(), position.getPrice().toString());
+        return new PositionDTO(position.getId(), position.getName(), position.getPrice().toString());
     }
 
     public List<PositionDTO> getAllPositions() {
