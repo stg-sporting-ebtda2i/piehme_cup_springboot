@@ -117,6 +117,7 @@ public class UserService implements AuthenticatableService {
         for (User u : users){
             LeaderboardDTO dto = new LeaderboardDTO();
             dto.setName(u.getUsername());
+            dto.setId(u.getId());
             String position = u.getSelectedPosition().getName();
             dto.setPosition(position);
             dto.setLineupRating(u.getLineupRating());
