@@ -20,18 +20,18 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
     }
 
     @ExceptionHandler(value = { UsernameTakenException.class, IconAlreadyPurchasedException.class, PlayerAlreadyPurchasedException.class, InsufficientCoinsException.class })
-    protected ResponseEntity<Object> handleNotFound(UsernameTakenException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleUsernameTaken(UsernameTakenException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = { InvalidCredentialsException.class })
-    protected ResponseEntity<Object> handleNotFound(InvalidCredentialsException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleInvalidCred(InvalidCredentialsException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = { UnauthorizedAccessException.class })
-    protected ResponseEntity<Object> handleNotFound(UnauthorizedAccessException ex, WebRequest request) {
-        return handleExceptionDefault(ex, HttpStatus.FORBIDDEN, request);
+    protected ResponseEntity<Object> handleUnauthorized(UnauthorizedAccessException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.UNAUTHORIZED, request);
     }
 
     private ResponseEntity<Object> handleExceptionDefault(Exception ex, HttpStatus status, WebRequest request) {
