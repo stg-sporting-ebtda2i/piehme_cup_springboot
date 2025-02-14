@@ -57,7 +57,7 @@ public class AdminService implements AuthenticatableService {
 
     @Override
     public Authenticatable getAuthenticatableById(long id) {
-        return getAdminById(id).orElseThrow(() -> new InvalidCredentialsException("Incorrect"));
+        return getAdminById(id).orElseThrow(() -> new InvalidCredentialsException("Incorrect email or password"));
     }
 
     @Override
