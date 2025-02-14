@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LeaderboardDTO {
+    private Long id;
     private String name;
     private Integer cardRating;
     private String userImgLink;

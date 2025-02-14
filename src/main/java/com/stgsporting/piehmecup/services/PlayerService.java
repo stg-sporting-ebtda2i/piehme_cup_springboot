@@ -52,6 +52,7 @@ public class PlayerService {
 
     static PlayerDTO playerToDTO(Player player) {
         PlayerDTO playerDTO = new PlayerDTO();
+        playerDTO.setId(player.getId());
         playerDTO.setName(player.getName());
         playerDTO.setPosition(player.getPosition().toString());
         playerDTO.setAvailable(player.getAvailable());
