@@ -78,7 +78,7 @@ public class AttendanceService {
 
             Price price = priceRepository.findPricesByName(attendance.getLiturgyName())
                     .orElseThrow(() -> new LiturgyNotFound("Liturgy not found"));
-            walletService.debit(attendance.getUser(), price.getCoins(), attendance.getLiturgyName());
+            walletService.credit(attendance.getUser(), price.getCoins(), attendance.getLiturgyName());
 
             attendanceRepository.save(attendance);
         } catch (AttendanceNotFoundException | LiturgyNotFound | AttendanceAlreadyApproved e) {
