@@ -14,4 +14,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     void updatePrice(@Param("name") String name, @Param("price") Integer price);
 
     Optional<Position> findPositionById(Long id);
+
+    Optional<Position> findPositionByName(String name);
 }

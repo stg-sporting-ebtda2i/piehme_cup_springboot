@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OwnedPositionsService {
@@ -39,35 +40,55 @@ public class OwnedPositionsService {
 
     @Transactional
     public void addPositionToUser(Long positionId) {
-        Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        try {
+            Long userId = userService.getAuthenticatableId();
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new PositionNotFoundException("Position not found"));
+            Position position = positionRepository.findById(positionId)
+                    .orElseThrow(() -> new PositionNotFoundException("Position not found"));
 
-        if (!user.getPositions().contains(position)) {
-            walletService.debit(user, position.getPrice(), "Position purchase: " + position.getName());
+            if (!user.getPositions().contains(position)) {
+                walletService.debit(user, position.getPrice(), "Position purchase: " + position.getName());
 
-            user.getPositions().add(position);
-            userRepository.save(user);
+                user.getPositions().add(position);
+                user.setSelectedPosition(position);
+                userRepository.save(user);
+            }
+        } catch (UserNotFoundException | PositionNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while adding position to user");
         }
     }
 
     @Transactional
     public void removePositionFromUser(Long positionId) {
-        Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        try {
+            Long userId = userService.getAuthenticatableId();
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new PositionNotFoundException("Position not found"));
+            Position position = positionRepository.findById(positionId)
+                    .orElseThrow(() -> new PositionNotFoundException("Position not found"));
 
-        if (user.getPositions().contains(position)) {
-            walletService.credit(user, position.getPrice(), "Position sale: " + position.getName());
+            if (user.getPositions().contains(position)) {
+                walletService.credit(user, position.getPrice(), "Position sale: " + position.getName());
 
-            user.getPositions().remove(position);
-            userRepository.save(user);
+                user.getPositions().remove(position);
+
+                Optional<Position> defaultPosition = positionRepository.findPositionByName("GK");
+
+                if (defaultPosition.isEmpty())
+                    throw new PositionNotFoundException("Default position not found");
+
+                user.setSelectedPosition(defaultPosition.get());
+                userRepository.save(user);
+            }
+        } catch (UserNotFoundException | PositionNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while removing position from user");
         }
     }
 }

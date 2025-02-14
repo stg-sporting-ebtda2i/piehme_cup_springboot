@@ -74,12 +74,10 @@ public class User extends BaseEntity implements Authenticatable {
 
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.selectedIconId)
-    @ColumnDefault("1")
     private Icon selectedIcon;
 
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.selectedPositionId)
-    @ColumnDefault("1")
     private Position selectedPosition;
 
     public void setPassword(String password) {

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OwnedIconsService {
@@ -59,6 +60,7 @@ public class OwnedIconsService {
                 walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
 
                 user.getIcons().add(icon);
+                user.setSelectedIcon(icon);
                 userRepository.save(user);
             }
             else
@@ -85,6 +87,12 @@ public class OwnedIconsService {
                 walletService.credit(user, icon.getPrice(), "Icon sale: " + icon.getId());
 
                 user.getIcons().remove(icon);
+
+                Optional<Icon> defaultIcon = iconRepository.findIconByName("Default");
+                if(defaultIcon.isEmpty())
+                    throw new IconNotFoundException("Default icon not found");
+
+                user.setSelectedIcon(defaultIcon.get());
                 userRepository.save(user);
             }
             else
