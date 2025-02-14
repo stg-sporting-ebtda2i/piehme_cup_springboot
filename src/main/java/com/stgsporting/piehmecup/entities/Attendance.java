@@ -28,6 +28,9 @@ public class Attendance extends BaseEntity {
     @ColumnDefault("false")
     private Boolean approved;
 
+    @Column(name = DatabaseEnum.liturgyName, nullable = false)
+    private String liturgyName;
+
     @Column(name = DatabaseEnum.createdAt, nullable = false)
     private Timestamp createdAt;
 }
