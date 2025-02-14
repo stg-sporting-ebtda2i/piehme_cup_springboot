@@ -8,6 +8,8 @@ import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.SchoolYearNotFound;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
+import com.stgsporting.piehmecup.repositories.IconRepository;
+import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
@@ -26,12 +28,18 @@ public class UserService implements AuthenticatableService {
     private final SchoolYearService schoolYearService;
     private final EntityService entityService;
     private final SchoolYearRepository schoolYearRepository;
+    private final PositionRepository positionRepository;
+    private final IconRepository iconRepository;
 
-    public UserService(UserRepository userRepository, SchoolYearService schoolYearService, EntityService entityService, SchoolYearRepository schoolYearRepository) {
+    public UserService(UserRepository userRepository, SchoolYearService schoolYearService
+            , EntityService entityService, SchoolYearRepository schoolYearRepository
+            , PositionRepository positionRepository, IconRepository iconRepository) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
         this.schoolYearRepository = schoolYearRepository;
+        this.positionRepository = positionRepository;
+        this.iconRepository = iconRepository;
     }
 
     public User getAuthenticatableById(long id) {
@@ -78,6 +86,8 @@ public class UserService implements AuthenticatableService {
         user.setCardRating(0);
         user.setLineupRating(0.0);
         user.setImgLink(userRegisterDTO.getImgLink());
+        user.setSelectedPosition(positionRepository.findPositionByName("GK").orElseThrow());
+        user.setSelectedIcon(iconRepository.findIconByName("Default").orElseThrow());
 
         user.setQuizId(
                 entityService.createEntity(user.getUsername(), user.getSchoolYear())
