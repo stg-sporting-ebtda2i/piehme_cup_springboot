@@ -1,6 +1,8 @@
 package com.stgsporting.piehmecup.repositories;
 
 import com.stgsporting.piehmecup.entities.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear ORDER BY u.lineupRating desc")
     List<User> findUsersBySchoolYear(SchoolYear schoolYear);
+
+    @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear ORDER BY u.lineupRating desc")
+    Page<User> findUsersBySchoolYearPaginated(SchoolYear schoolYear, Pageable pageable);
 }

@@ -14,6 +14,8 @@ import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -96,6 +98,10 @@ public class UserService implements AuthenticatableService {
         save(user);
 
         return user;
+    }
+
+    public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, Pageable page) {
+        return userRepository.findUsersBySchoolYearPaginated(schoolYear, page);
     }
 
     public List<LeaderboardDTO> getLeaderboard() {
