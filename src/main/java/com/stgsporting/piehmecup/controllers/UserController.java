@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
+import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.dtos.users.UserDetailsDTO;
 import com.stgsporting.piehmecup.dtos.users.UserInListDTO;
 import com.stgsporting.piehmecup.entities.Admin;
@@ -103,5 +104,20 @@ public class UserController {
         userService.changePassword(user, password);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("")
+    public ResponseEntity<Object> create(@RequestBody JSONObject body) {
+        Admin admin = (Admin) adminService.getAuthenticatable();
+
+        UserRegisterDTO userDTO = new UserRegisterDTO();
+
+        userDTO.setUsername((String) body.get("username"));
+        userDTO.setPassword((String) body.get("password"));
+        userDTO.setSchoolYear(admin.getSchoolYear().getSlug());
+
+        User user = userService.createUser(userDTO);
+
+        return ResponseEntity.ok(new UserDetailsDTO(user));
     }
 }
