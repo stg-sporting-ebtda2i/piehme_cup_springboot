@@ -39,6 +39,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.FORBIDDEN, request);
     }
 
+    @ExceptionHandler(value = { ChangePasswordException.class })
+    protected ResponseEntity<Object> handleChangePassword(ChangePasswordException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     private ResponseEntity<Object> handleExceptionDefault(Exception ex, HttpStatus status, WebRequest request) {
         JSONObject response = new JSONObject();
         response.put("message", ex.getMessage());

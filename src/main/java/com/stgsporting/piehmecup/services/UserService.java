@@ -5,6 +5,7 @@ import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.entities.*;
+import com.stgsporting.piehmecup.exceptions.ChangePasswordException;
 import com.stgsporting.piehmecup.exceptions.SchoolYearNotFound;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
@@ -180,5 +181,16 @@ public class UserService implements AuthenticatableService {
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while fetching coins");
         }
+    }
+
+    public void changePassword(User user, String password) {
+        if (password == null || password.isEmpty())
+            throw new ChangePasswordException("Password cannot be empty");
+
+        if (password.length() < 4 || password.length() > 64)
+            throw new ChangePasswordException("Password must be between 6 and 64 characters");
+
+        user.setPassword(password);
+        save(user);
     }
 }

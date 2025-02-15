@@ -93,4 +93,15 @@ public class UserController {
 
         return ResponseEntity.ok(user.getCoins());
     }
+
+    @PostMapping("{userId}/change-password")
+    public ResponseEntity<Object> changePassword(@PathVariable String userId, @RequestBody JSONObject body) {
+        User user = getUser(userId);
+
+        String password = (String) body.get("password");
+
+        userService.changePassword(user, password);
+
+        return ResponseEntity.ok().build();
+    }
 }
