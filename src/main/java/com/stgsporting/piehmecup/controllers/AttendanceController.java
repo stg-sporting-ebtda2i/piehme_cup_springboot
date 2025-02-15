@@ -1,5 +1,8 @@
 package com.stgsporting.piehmecup.controllers;
 
+import com.stgsporting.piehmecup.entities.Admin;
+import com.stgsporting.piehmecup.entities.SchoolYear;
+import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,43 +13,31 @@ import org.springframework.web.bind.annotation.*;
 public class AttendanceController {
     @Autowired
     private AttendanceService attendanceService;
+    @Autowired
+    private AdminService adminService;
 
-    @GetMapping("/ostaz/attendances/{schoolYear}")
-    public ResponseEntity<Object> getUnapprovedAttendances(@PathVariable Long schoolYear) {
-        try {
-            return ResponseEntity.ok(attendanceService.getUnapprovedAttendances(schoolYear));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/ostaz/attendances")
+    public ResponseEntity<Object> getUnapprovedAttendances() {
+        SchoolYear schoolYear = adminService.getAuthenticatable().getSchoolYear();
+
+        return ResponseEntity.ok(attendanceService.getUnapprovedAttendances(schoolYear));
     }
 
     @PatchMapping("ostaz/attendances/{attendanceId}")
     public ResponseEntity<Object> approveAttendance(@PathVariable Long attendanceId) {
-        try {
-            attendanceService.approveAttendance(attendanceId);
-            return ResponseEntity.ok().body("Attendance approved");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        attendanceService.approveAttendance(attendanceId);
+        return ResponseEntity.ok().body("Attendance approved");
     }
 
     @DeleteMapping("ostaz/attendances/{attendanceId}")
     public ResponseEntity<Object> deleteAttendance(@PathVariable Long attendanceId) {
-        try {
-            attendanceService.deleteAttendance(attendanceId);
-            return ResponseEntity.ok().body("Attendance deleted");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        attendanceService.deleteAttendance(attendanceId);
+        return ResponseEntity.ok().body("Attendance deleted");
     }
 
     @PatchMapping("attendance/{liturgyName}")
     public ResponseEntity<Object> requestAttendance(@PathVariable String liturgyName) {
-        try {
-            attendanceService.requestAttendance(liturgyName);
-            return ResponseEntity.ok().body("Attendance requested");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        attendanceService.requestAttendance(liturgyName);
+        return ResponseEntity.ok().body("Attendance requested");
     }
 }

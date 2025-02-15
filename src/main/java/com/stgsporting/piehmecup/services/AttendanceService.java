@@ -1,10 +1,8 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.AttendanceDTO;
-import com.stgsporting.piehmecup.entities.Attendance;
-import com.stgsporting.piehmecup.entities.Price;
-import com.stgsporting.piehmecup.entities.SchoolYear;
-import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.AttendanceAlreadyApproved;
 import com.stgsporting.piehmecup.exceptions.AttendanceNotFoundException;
 import com.stgsporting.piehmecup.exceptions.LiturgyNotFound;
@@ -42,6 +40,8 @@ public class AttendanceService {
     private WalletService walletService;
     @Autowired
     private PriceService priceService;
+    @Autowired
+    private AdminService adminService;
 
     public void requestAttendance(String liturgyName) {
         try {
@@ -71,8 +71,14 @@ public class AttendanceService {
 
     @Transactional
     public void approveAttendance(Long attendanceId) {
+        Authenticatable admin = adminService.getAuthenticatable();
+
         Attendance attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
+
+        if (!attendance.getUser().getSchoolYear().getId().equals(admin.getSchoolYear().getId()))
+            throw new AttendanceNotFoundException("Attendance not found");
+
         if (attendance.getApproved())
             throw new AttendanceAlreadyApproved("Attendance already approved");
 
@@ -93,10 +99,9 @@ public class AttendanceService {
         attendanceRepository.delete(attendance);
     }
 
-    public List<AttendanceDTO> getUnapprovedAttendances(Long schoolYear) {
-        SchoolYear schoolYearEntity = schoolYearRepository.findSchoolYearById(schoolYear)
-                .orElseThrow(() -> new RuntimeException("School year not found"));
-        List<Attendance> unapprovedAttendances = attendanceRepository.findByApprovedAndUserContainingSchoolYear(false, schoolYearEntity);
+    public List<AttendanceDTO> getUnapprovedAttendances(SchoolYear schoolYear) {
+        List<Attendance> unapprovedAttendances = attendanceRepository
+                .findByApprovedAndUserContainingSchoolYear(false, schoolYear);
 
         return getAttendanceDTOS(unapprovedAttendances);
     }
@@ -111,7 +116,7 @@ public class AttendanceService {
             dto.setUsername(attendance.getUser().getUsername());
             dto.setApproved(attendance.getApproved());
             dto.setLiturgyName(attendance.getPrice().getName());
-            dto.setCreatedAt(getTimeStampFormat(attendance));
+            dto.setCreatedAt(attendance.getCreatedAt().toString());
             dtos.add(dto);
         }
         return dtos;
