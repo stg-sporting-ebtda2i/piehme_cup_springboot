@@ -1,13 +1,17 @@
 package com.stgsporting.piehmecup.controllers;
 
+import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.users.UserDetailsDTO;
 import com.stgsporting.piehmecup.dtos.users.UserInListDTO;
 import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.AttendanceService;
 import com.stgsporting.piehmecup.services.UserService;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ostaz/users")
@@ -34,15 +39,18 @@ public class UserController {
 
         Pageable pageable = PageRequest.of(page == null ? 0 : page, 10);
 
-        return ResponseEntity.ok(
-                userService.getUsersBySchoolYear(admin.getSchoolYear(), search, pageable).stream().map(UserInListDTO::new)
-        );
+        Page<UserInListDTO> users = userService.getUsersBySchoolYear(admin.getSchoolYear(), search, pageable).map(UserInListDTO::new);
+
+        return ResponseEntity.ok(new PaginationDTO<>(users));
     }
 
     @GetMapping("{userId}")
-    public ResponseEntity<Object> show(@PathVariable Long userId) {
-        User user = userService.getAuthenticatableById(userId);
+    public ResponseEntity<Object> show(@PathVariable String userId) {
+        User user = userService.getUserByIdOrUsername(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
         Admin admin = (Admin) adminService.getAuthenticatable();
+
         if (!Objects.equals(user.getSchoolYear().getId(), admin.getSchoolYear().getId())) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)

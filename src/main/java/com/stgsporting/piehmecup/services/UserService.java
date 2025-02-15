@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements AuthenticatableService {
@@ -45,7 +46,7 @@ public class UserService implements AuthenticatableService {
     }
 
     public User getAuthenticatableById(long id) {
-        return userRepository.findUserById(id)
+        return getUserById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
     }
 
@@ -71,8 +72,27 @@ public class UserService implements AuthenticatableService {
         if (username == null || username.isEmpty())
             throw new NullPointerException("Username cannot be empty");
 
-        return userRepository.findUsersByUsername(username)
+        return getUserByUsername(username)
                 .orElseThrow(()-> new UserNotFoundException("Incorrect email or password"));
+    }
+
+    public Optional<User> getUserByIdOrUsername(String idOrUsername) {
+        if (idOrUsername.matches("\\d+")) {
+            Optional<User> user = getUserById(Long.parseLong(idOrUsername));
+
+            if (user.isPresent())
+                return user;
+        }
+
+        return getUserByUsername(idOrUsername);
+    }
+
+    public Optional<User> getUserById(long id) {
+        return userRepository.findById(id);
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findUsersByUsername(username);
     }
 
     public void save(Authenticatable user) {
