@@ -40,6 +40,8 @@ public class AttendanceService {
     private PriceRepository priceRepository;
     @Autowired
     private WalletService walletService;
+    @Autowired
+    private PriceService priceService;
 
     public void requestAttendance(String liturgyName) {
         try {
@@ -60,7 +62,7 @@ public class AttendanceService {
 
     private void saveAttendance(String liturgyName, User user) {
         Attendance attendance = new Attendance();
-        attendance.setLiturgyName(liturgyName);
+        attendance.setPrice(priceService.getPrice(liturgyName));
         attendance.setUser(user);
         attendance.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         attendance.setApproved(false);
@@ -69,49 +71,34 @@ public class AttendanceService {
 
     @Transactional
     public void approveAttendance(Long attendanceId) {
-        try {
-            Attendance attendance = attendanceRepository.findById(attendanceId)
-                    .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
-            if (attendance.getApproved())
-                throw new AttendanceAlreadyApproved("Attendance already approved");
-            attendance.setApproved(true);
+        Attendance attendance = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
+        if (attendance.getApproved())
+            throw new AttendanceAlreadyApproved("Attendance already approved");
 
-            Price price = priceRepository.findPricesByName(attendance.getLiturgyName())
-                    .orElseThrow(() -> new LiturgyNotFound("Liturgy not found"));
-            walletService.debit(attendance.getUser(), price.getCoins(), attendance.getLiturgyName());
+        attendance.setApproved(true);
 
-            attendanceRepository.save(attendance);
-        } catch (AttendanceNotFoundException | LiturgyNotFound | AttendanceAlreadyApproved e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to approve attendance");
-        }
+        Price price = attendance.getPrice();
+
+        walletService.debit(attendance.getUser(), price.getCoins(), price.getName());
+
+        attendanceRepository.save(attendance);
     }
 
     @Transactional
     public void deleteAttendance(Long attendanceId) {
-        try {
-            Attendance attendance = attendanceRepository.findById(attendanceId)
-                    .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
+        Attendance attendance = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
 
-            attendanceRepository.delete(attendance);
-        } catch (AttendanceNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to delete attendance");
-        }
+        attendanceRepository.delete(attendance);
     }
 
     public List<AttendanceDTO> getUnapprovedAttendances(Long schoolYear) {
-        try {
-            SchoolYear schoolYearEntity = schoolYearRepository.findSchoolYearById(schoolYear)
-                    .orElseThrow(() -> new RuntimeException("School year not found"));
-            List<Attendance> unapprovedAttendances = attendanceRepository.findByApprovedAndUserContainingSchoolYear(false, schoolYearEntity);
+        SchoolYear schoolYearEntity = schoolYearRepository.findSchoolYearById(schoolYear)
+                .orElseThrow(() -> new RuntimeException("School year not found"));
+        List<Attendance> unapprovedAttendances = attendanceRepository.findByApprovedAndUserContainingSchoolYear(false, schoolYearEntity);
 
-            return getAttendanceDTOS(unapprovedAttendances);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get unapproved attendances");
-        }
+        return getAttendanceDTOS(unapprovedAttendances);
     }
 
     @NotNull
@@ -123,7 +110,7 @@ public class AttendanceService {
             dto.setUserId(attendance.getUser().getId());
             dto.setUsername(attendance.getUser().getUsername());
             dto.setApproved(attendance.getApproved());
-            dto.setLiturgyName(attendance.getLiturgyName());
+            dto.setLiturgyName(attendance.getPrice().getName());
             dto.setCreatedAt(getTimeStampFormat(attendance));
             dtos.add(dto);
         }

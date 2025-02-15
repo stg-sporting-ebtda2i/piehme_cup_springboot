@@ -1,10 +1,7 @@
 package com.stgsporting.piehmecup.entities;
 
 import com.stgsporting.piehmecup.config.DatabaseEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +25,9 @@ public class Attendance extends BaseEntity {
     @ColumnDefault("false")
     private Boolean approved;
 
-    @Column(name = DatabaseEnum.liturgyName, nullable = false)
-    private String liturgyName;
+    @JoinColumn(name = DatabaseEnum.priceId, nullable = false)
+    @ManyToOne
+    private Price price;
 
     @Column(name = DatabaseEnum.createdAt, nullable = false)
     private Timestamp createdAt;

@@ -5,6 +5,8 @@ import com.stgsporting.piehmecup.entities.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UserDetailsDTO {
@@ -16,6 +18,7 @@ public class UserDetailsDTO {
     private Double lineupRating;
     private String imgLink;
     private String selectedIcon;
+    private List<AttendanceUserDTO> attendances;
 
 
     public UserDetailsDTO(User user) {
@@ -26,6 +29,8 @@ public class UserDetailsDTO {
         this.imgLink = user.getImgLink();
         this.lineupRating = user.getLineupRating();
         Icon selectedIcon = user.getSelectedIcon();
+
+        this.attendances = user.getAttendances().stream().map(AttendanceUserDTO::new).toList();
 
         this.selectedIcon = selectedIcon != null ? selectedIcon.getImgLink() : null;
     }

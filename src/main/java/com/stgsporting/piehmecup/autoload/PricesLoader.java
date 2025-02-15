@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class PricesLoader implements CommandLineRunner {
     @Autowired
@@ -13,8 +16,19 @@ public class PricesLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if(priceRepository.findPricesByName("Rating Price").isEmpty()){
-            priceRepository.save(new Price("Rating Price", 74));
-        }
+        Map<String, Integer> prices = new HashMap<>(Map.of(
+                "Rating Price", 74,
+                "Madares el Ahad", 200,
+                "Odas Atfal", 150,
+                "Pisagi", 150,
+                "Tasbeha", 125,
+                "Al7an", 125
+        ));
+
+        prices.forEach((name, price) -> {
+            if(priceRepository.findPricesByName(name).isEmpty()) {
+                priceRepository.save(new Price(name, price));
+            }
+        });
     }
 }
