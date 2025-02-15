@@ -114,7 +114,7 @@ public class UserController {
 
         userDTO.setUsername((String) body.get("username"));
         userDTO.setPassword((String) body.get("password"));
-        userDTO.setSchoolYear(admin.getSchoolYear().getSlug());
+        userDTO.setSchoolYear(admin.getSchoolYear().getName());
 
         User user = userService.createUser(userDTO);
 

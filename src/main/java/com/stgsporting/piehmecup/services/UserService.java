@@ -5,10 +5,7 @@ import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.entities.*;
-import com.stgsporting.piehmecup.exceptions.ChangePasswordException;
-import com.stgsporting.piehmecup.exceptions.SchoolYearNotFound;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
-import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
+import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
@@ -102,8 +99,13 @@ public class UserService implements AuthenticatableService {
 
     public User createUser(UserRegisterDTO userRegisterDTO) {
         User user = new User();
+
+        validateUsername(userRegisterDTO.getUsername());
         user.setUsername(userRegisterDTO.getUsername());
+
+        validatePassword(userRegisterDTO.getPassword());
         user.setPassword(userRegisterDTO.getPassword());
+
         user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
         user.setCardRating(0);
@@ -171,26 +173,33 @@ public class UserService implements AuthenticatableService {
     }
 
     public Integer getCoins() {
-        try {
-            User user = userRepository.findById(getAuthenticatableId())
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(getAuthenticatableId())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-            return user.getCoins();
-        } catch (UserNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching coins");
-        }
+        return user.getCoins();
     }
 
     public void changePassword(User user, String password) {
+        validatePassword(password);
+
+        user.setPassword(password);
+        save(user);
+    }
+
+    private void validatePassword(String password) {
         if (password == null || password.isEmpty())
             throw new ChangePasswordException("Password cannot be empty");
 
         if (password.length() < 4 || password.length() > 64)
             throw new ChangePasswordException("Password must be between 6 and 64 characters");
+    }
 
-        user.setPassword(password);
-        save(user);
+    private void validateUsername(String username) {
+        if (username == null || username.isEmpty())
+            throw new UsernameTakenException("Username cannot be empty");
+
+        if(userRepository.existsByUsername(username)) {
+            throw new UsernameTakenException("Username already exists");
+        }
     }
 }

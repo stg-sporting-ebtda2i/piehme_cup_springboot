@@ -39,6 +39,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.FORBIDDEN, request);
     }
 
+    @ExceptionHandler(value = { UserAlreadyExistException.class })
+    protected ResponseEntity<Object> handleAlreadyExists(UserAlreadyExistException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { ChangePasswordException.class })
     protected ResponseEntity<Object> handleChangePassword(ChangePasswordException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
