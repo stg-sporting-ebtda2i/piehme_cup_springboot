@@ -24,6 +24,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = { AttendanceAlreadyApproved.class })
+    protected ResponseEntity<Object> handleAttendanceAlreadyApproved(AttendanceAlreadyApproved ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { InsufficientCoinsException.class })
     protected ResponseEntity<Object> handleInsufficientFunds(InsufficientCoinsException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
