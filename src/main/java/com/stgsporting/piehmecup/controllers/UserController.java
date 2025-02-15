@@ -71,9 +71,11 @@ public class UserController {
     }
 
     @PostMapping("{userId}/coins/add")
-    public ResponseEntity<Object> addCoins(@PathVariable String userId, @RequestBody Integer coins) {
+    public ResponseEntity<Object> addCoins(@PathVariable String userId, @RequestBody JSONObject body) {
         User user = getUser(userId);
         Admin admin = (Admin) adminService.getAuthenticatable();
+
+        Integer coins = (Integer) body.get("coins");
 
         walletService.credit(user, coins, "By Admin: " + admin.getUsername());
 
@@ -81,9 +83,11 @@ public class UserController {
     }
 
     @PostMapping("{userId}/coins/remove")
-    public ResponseEntity<Object> removeCoins(@PathVariable String userId, @RequestBody Integer coins) {
+    public ResponseEntity<Object> removeCoins(@PathVariable String userId, @RequestBody JSONObject body) {
         User user = getUser(userId);
         Admin admin = (Admin) adminService.getAuthenticatable();
+
+        Integer coins = (Integer) body.get("coins");
 
         walletService.debit(user, coins, "By Admin: " + admin.getUsername());
 
