@@ -34,6 +34,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.UNAUTHORIZED, request);
     }
 
+    @ExceptionHandler(value = { UserNotInSameSchoolYearException.class })
+    protected ResponseEntity<Object> handleNotSameSchoolYear(UserNotInSameSchoolYearException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.FORBIDDEN, request);
+    }
+
     private ResponseEntity<Object> handleExceptionDefault(Exception ex, HttpStatus status, WebRequest request) {
         JSONObject response = new JSONObject();
         response.put("message", ex.getMessage());
