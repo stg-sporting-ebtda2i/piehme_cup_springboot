@@ -77,7 +77,7 @@ public class UserController {
 
         walletService.credit(user, coins, "By Admin: " + admin.getUsername());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(user.getCoins());
     }
 
     @PostMapping("{userId}/coins/remove")
@@ -87,6 +87,6 @@ public class UserController {
 
         walletService.debit(user, coins, "By Admin: " + admin.getUsername());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(user.getCoins());
     }
 }
