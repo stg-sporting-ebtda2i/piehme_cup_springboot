@@ -94,6 +94,11 @@ public class AttendanceService {
         Attendance attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
 
+        if (attendance.getApproved()) {
+            Price price = attendance.getPrice();
+            walletService.debit(attendance.getUser(), price.getCoins(), price.getName() + " deleted");
+        }
+
         attendanceRepository.delete(attendance);
     }
 

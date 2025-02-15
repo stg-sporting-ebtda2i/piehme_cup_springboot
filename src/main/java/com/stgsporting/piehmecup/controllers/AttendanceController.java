@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping
 public class AttendanceController {
@@ -26,13 +29,13 @@ public class AttendanceController {
     @PatchMapping("ostaz/attendances/{attendanceId}")
     public ResponseEntity<Object> approveAttendance(@PathVariable Long attendanceId) {
         attendanceService.approveAttendance(attendanceId);
-        return ResponseEntity.ok().body("Attendance approved");
+        return ResponseEntity.ok().body(new HashMap<>(Map.of("message", "Attendance approved")));
     }
 
     @DeleteMapping("ostaz/attendances/{attendanceId}")
     public ResponseEntity<Object> deleteAttendance(@PathVariable Long attendanceId) {
         attendanceService.deleteAttendance(attendanceId);
-        return ResponseEntity.ok().body("Attendance deleted");
+        return ResponseEntity.ok().body(new HashMap<>(Map.of("message", "Attendance deleted")));
     }
 
     @PatchMapping("attendance/{liturgyName}")
