@@ -33,8 +33,6 @@ public class AttendanceService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private SchoolYearRepository schoolYearRepository;
-    @Autowired
     private PriceRepository priceRepository;
     @Autowired
     private WalletService walletService;
