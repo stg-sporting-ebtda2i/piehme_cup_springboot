@@ -85,4 +85,8 @@ public class User extends BaseEntity implements Authenticatable {
 
         this.password = encoder.encode(password);
     }
+
+    public String getRoleString() {
+        return "USER";
+    }
 }
