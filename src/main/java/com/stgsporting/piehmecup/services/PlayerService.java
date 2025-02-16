@@ -96,10 +96,8 @@ public class PlayerService {
          playerRepository.delete(player);
     }
 
-    public List<PlayerDTO> getPlayersByPosition(Enum<Positions> position){
+    public List<PlayerDTO> getPlayersByPosition(Positions position){
         List<Player> players = playerRepository.findPlayersByPosition(position);
-        if(players.isEmpty())
-            throw new PlayerNotFoundException("No players found with position " + position);
 
         List<PlayerDTO> playerDTOs = new ArrayList<>();
         for(Player player : players)
