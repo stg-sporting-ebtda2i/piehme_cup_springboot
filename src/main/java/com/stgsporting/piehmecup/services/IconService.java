@@ -6,24 +6,34 @@ import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.exceptions.IconNotFoundException;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class IconService {
-    @Autowired
-    private IconRepository iconRepository;
+    private final IconRepository iconRepository;
+    private final FileService fileService;
 
-    @Autowired
-    private FileService fileService;
+    public IconService(IconRepository iconRepository, FileService fileService) {
+        this.iconRepository = iconRepository;
+        this.fileService = fileService;
+    }
 
     public void createIcon(IconUploadDTO icon) {
         Icon newIcon = dtoToIcon(icon);
 
+        validateImage(icon.getImage());
+
         iconRepository.save(newIcon);
+    }
+
+    private boolean isImage(String contentType) {
+        return contentType.equals("image/png")
+                || contentType.equals("image/jpg")
+                || contentType.equals("image/jpeg");
     }
 
     private Icon dtoToIcon(IconUploadDTO icon) {
@@ -32,11 +42,22 @@ public class IconService {
         newIcon.setAvailable(icon.getAvailable());
         newIcon.setPrice(icon.getPrice());
 
+        validateImage(icon.getImage());
+
         String key = fileService.uploadFile(icon.getImage(), "/icons");
 
         newIcon.setImgLink(key);
 
         return newIcon;
+    }
+
+    private void validateImage(MultipartFile image) {
+        if(image != null) {
+            String contentType = image.getContentType();
+            if (!isImage(contentType)) {
+                throw new IllegalArgumentException("Unsupported content type: " + contentType);
+            }
+        }
     }
 
     public IconDTO getIconByName(String name) {
