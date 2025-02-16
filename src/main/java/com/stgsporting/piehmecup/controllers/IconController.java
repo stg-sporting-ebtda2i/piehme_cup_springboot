@@ -14,53 +14,30 @@ public class IconController {
     private IconService iconService;
 
     @PostMapping("/admin/icons/create")
-    public ResponseEntity<Object> createIcon(@RequestBody IconDTO icon){
-        try{
-            iconService.createIcon(icon);
-            return ResponseEntity.ok().body("Icon created successfully");
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.unprocessableEntity().body("Icon cannot be null");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("An error occurred while saving icon");
-        }
+    public ResponseEntity<Object> createIcon(@RequestBody IconDTO icon) {
+        iconService.createIcon(icon);
+        return ResponseEntity.ok().body("Icon created successfully");
     }
 
     @PostMapping("/admin/icons/update/{iconName}")
-    public ResponseEntity<Object> updateIcon(@RequestBody IconDTO icon, @PathVariable String iconName){
-        try{
-            iconService.updateIcon(iconName, icon);
-            return ResponseEntity.ok().body("Icon updated successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> updateIcon(@RequestBody IconDTO icon, @PathVariable String iconName) {
+        iconService.updateIcon(iconName, icon);
+        return ResponseEntity.ok().body("Icon updated successfully");
     }
 
     @GetMapping("/icons/{iconName}")
-    public ResponseEntity<Object> getIcon(@PathVariable String iconName){
-        try{
-            return ResponseEntity.ok().body(iconService.getIconByName(iconName));
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> getIcon(@PathVariable String iconName) {
+        return ResponseEntity.ok().body(iconService.getIconByName(iconName));
     }
 
     @DeleteMapping("/admin/icons/delete/{iconName}")
-    public ResponseEntity<Object> deleteIcon(@PathVariable String iconName){
-        try{
-            iconService.deleteIcon(iconName);
-            return ResponseEntity.ok().body("Icon deleted successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> deleteIcon(@PathVariable String iconName) {
+        iconService.deleteIcon(iconName);
+        return ResponseEntity.ok().body("Icon deleted successfully");
     }
 
     @GetMapping("/icons")
-    public ResponseEntity<Object> getIcons(){
-        try{
-            return ResponseEntity.ok().body(iconService.getAllIcons());
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> getIcons() {
+        return ResponseEntity.ok().body(iconService.getAllIcons());
     }
 }
