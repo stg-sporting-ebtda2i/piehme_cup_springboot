@@ -1,10 +1,13 @@
 package com.stgsporting.piehmecup.controllers;
 
+import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +23,14 @@ public class AttendanceController {
     private AdminService adminService;
 
     @GetMapping("/ostaz/attendances")
-    public ResponseEntity<Object> getUnapprovedAttendances() {
+    public ResponseEntity<Object> getUnapprovedAttendances(@RequestParam(required = false) Integer page) {
         SchoolYear schoolYear = adminService.getAuthenticatable().getSchoolYear();
 
-        return ResponseEntity.ok(attendanceService.getUnapprovedAttendances(schoolYear));
+        Pageable pageable = PageRequest.of(page == null ? 0 : page, 20);
+
+        return ResponseEntity.ok(
+                new PaginationDTO<>(attendanceService.getUnapprovedAttendances(pageable, schoolYear))
+        );
     }
 
     @PatchMapping("ostaz/attendances/{attendanceId}")

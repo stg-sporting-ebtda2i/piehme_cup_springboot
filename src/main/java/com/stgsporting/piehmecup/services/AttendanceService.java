@@ -13,6 +13,8 @@ import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,40 +104,10 @@ public class AttendanceService {
         attendanceRepository.delete(attendance);
     }
 
-    public List<AttendanceDTO> getUnapprovedAttendances(SchoolYear schoolYear) {
-        List<Attendance> unapprovedAttendances = attendanceRepository
-                .findByApprovedAndUserContainingSchoolYear(false, schoolYear);
+    public Page<AttendanceDTO> getUnapprovedAttendances(Pageable pageable, SchoolYear schoolYear) {
+        Page<Attendance> unapprovedAttendances = attendanceRepository
+                .findByApprovedAndUserContainingSchoolYear(pageable, false, schoolYear);
 
-        return getAttendanceDTOS(unapprovedAttendances);
-    }
-
-    @NotNull
-    private static List<AttendanceDTO> getAttendanceDTOS(List<Attendance> unapprovedAttendances) {
-        List<AttendanceDTO> dtos = new ArrayList<>();
-        for (Attendance attendance : unapprovedAttendances) {
-            AttendanceDTO dto = new AttendanceDTO();
-            dto.setAttendanceId(attendance.getId());
-            dto.setUserId(attendance.getUser().getId());
-            dto.setUsername(attendance.getUser().getUsername());
-            dto.setApproved(attendance.getApproved());
-            dto.setLiturgyName(attendance.getPrice().getName());
-            dto.setCreatedAt(attendance.getCreatedAt().toString());
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
-    private static String getTimeStampFormat(Attendance attendance) {
-        Timestamp timestamp = attendance.getCreatedAt();
-        LocalDateTime dateTime = timestamp.toLocalDateTime();
-        LocalDateTime now = LocalDateTime.now();
-
-        if (dateTime.toLocalDate().isEqual(now.toLocalDate()))
-            return "today at " + dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-        else if (dateTime.isAfter(now.minusWeeks(1)))
-            return dateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-                    + " at " + dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-        else
-            return dateTime.format(DateTimeFormatter.ofPattern("dd/MM 'at' HH:mm"));
+        return unapprovedAttendances.map(AttendanceDTO::new);
     }
 }
