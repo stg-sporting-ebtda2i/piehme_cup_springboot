@@ -32,7 +32,7 @@ public class IconService {
         newIcon.setAvailable(icon.getAvailable());
         newIcon.setPrice(icon.getPrice());
 
-        String key = fileService.uploadFile(icon.getImage());
+        String key = fileService.uploadFile(icon.getImage(), "/icons");
 
         newIcon.setImgLink(key);
 
@@ -54,7 +54,7 @@ public class IconService {
         iconDTO.setName(icon.getName());
         iconDTO.setAvailable(icon.getAvailable());
         iconDTO.setPrice(icon.getPrice());
-        iconDTO.setImgLink(icon.getImgLink());
+        iconDTO.setImageKey(icon.getImgLink());
 
         iconDTO.setImageUrl(fileService.generateSignedUrl(icon.getImgLink()));
         return iconDTO;
@@ -73,8 +73,13 @@ public class IconService {
         Icon icon = iconRepository.findIconByName(name)
                 .orElseThrow(() -> new IconNotFoundException("Player with name " + name + " not found"));
 
-        fileService.deleteFile(icon.getImgLink());
         Icon updatedIcon = dtoToIcon(iconDTO);
+
+        if(iconDTO.getImage() != null && !icon.getImgLink().equals(updatedIcon.getImgLink()))
+            fileService.deleteFile(icon.getImgLink());
+        else
+            updatedIcon.setImgLink(icon.getImgLink());
+
         updatedIcon.setId(icon.getId());
         iconRepository.save(updatedIcon);
     }

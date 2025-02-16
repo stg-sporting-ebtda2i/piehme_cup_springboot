@@ -8,7 +8,7 @@ import lombok.Setter;
 public class IconDTO {
     private Long id;
     private String name;
-    private String imgLink;
+    private String imageKey;
     private String imageUrl;
     private Integer price;
     private Boolean available;

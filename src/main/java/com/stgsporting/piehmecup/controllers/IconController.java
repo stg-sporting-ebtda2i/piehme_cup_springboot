@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("")
@@ -17,13 +19,13 @@ public class IconController {
     @PostMapping("/admin/icons/create")
     public ResponseEntity<Object> createIcon(@ModelAttribute IconUploadDTO icon) {
         iconService.createIcon(icon);
-        return ResponseEntity.ok().body("Icon created successfully");
+        return ResponseEntity.ok().body(Map.of("message", "Icon created successfully"));
     }
 
     @PostMapping("/admin/icons/update/{iconName}")
     public ResponseEntity<Object> updateIcon(@ModelAttribute IconUploadDTO icon, @PathVariable String iconName) {
         iconService.updateIcon(iconName, icon);
-        return ResponseEntity.ok().body("Icon updated successfully");
+        return ResponseEntity.ok().body(Map.of("message", "Icon updated successfully"));
     }
 
     @GetMapping("/icons/{iconName}")

@@ -33,7 +33,6 @@ public class Icon extends BaseEntity {
     private Boolean available;
 
     @Column(name = DatabaseEnum.iconImgLink, nullable = false, unique = true)
-    @NotNull
     private String imgLink;
 
     @ManyToMany(mappedBy = "icons")

@@ -1,6 +1,5 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 @Service
 public class FileService {
@@ -57,11 +57,14 @@ public class FileService {
     }
 
     public String generateSignedUrl(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
+
         CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
         Instant expirationTime = Instant.now().plus(5, ChronoUnit.HOURS);
 
-        System.out.println(Paths.get(keyPath));
-        CannedSignerRequest request = null;
+        CannedSignerRequest request;
         try {
             request = CannedSignerRequest.builder()
                     .resourceUrl("https://" + domain + "/" + key)
@@ -70,7 +73,7 @@ public class FileService {
                     .expirationDate(expirationTime)
                     .build();
         } catch (Exception e) {
-            return "";
+            return null;
         }
 
         SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(request);
@@ -94,8 +97,12 @@ public class FileService {
                 .build();
     }
 
-    public String uploadFile(MultipartFile file) {
-        String key = getKey(file.getOriginalFilename());
+    public String uploadFile(MultipartFile file, String saveTo) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        String key = getKey(saveTo, file.getOriginalFilename());
 
         try(InputStream inputStream = file.getInputStream()) {
             RequestBody requestBody = RequestBody.fromInputStream(inputStream, file.getSize());
@@ -116,13 +123,13 @@ public class FileService {
                 .deleteObject(request -> request.bucket(bucketName).key(key));
     }
 
-    private String getKey(String filename) {
-        return directory + "/" + generateUniqueString() + "." + FilenameUtils.getExtension(filename);
+    private String getKey(String parentDirectory, String filename) {
+        return directory + parentDirectory + "/" + generateUniqueString() + "." + FilenameUtils.getExtension(filename);
     }
 
     private String generateUniqueString() {
         long millis = System.currentTimeMillis();
-        String rndchars = RandomStringUtils.random(16, 32, 126, true, true, null, null);
+        String rndchars = RandomStringUtils.random(16, 32, 126, true, true, null, new Random());
 
         return rndchars + "_" + millis;
     }

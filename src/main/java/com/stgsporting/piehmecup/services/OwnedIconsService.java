@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OwnedIconsService {
@@ -34,17 +33,13 @@ public class OwnedIconsService {
     }
 
     public List<IconDTO> getOwnedIcons(){
-        try {
-            Long userId = userService.getAuthenticatableId();
-            List<Icon> icons = userRepository.findIconsByUserId(userId);
-            List<IconDTO> iconDTOS = new ArrayList<>();
-            for(Icon icon : icons)
-                iconDTOS.add(iconService.iconToDTO(icon));
+        Long userId = userService.getAuthenticatableId();
+        List<Icon> icons = userRepository.findIconsByUserId(userId);
+        List<IconDTO> iconDTOS = new ArrayList<>();
+        for(Icon icon : icons)
+            iconDTOS.add(iconService.iconToDTO(icon));
 
-            return iconDTOS;
-        } catch (UserNotFoundException e) {
-            throw new UserNotFoundException("User not found");
-        }
+        return iconDTOS;
     }
 
     @Transactional
@@ -76,33 +71,25 @@ public class OwnedIconsService {
 
     @Transactional
     public void removeIconFromUser(Long iconId) {
-        try{
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-            Icon icon = iconRepository.findById(iconId)
-                    .orElseThrow(() -> new IconNotFoundException("Icon not found"));
+        Icon icon = iconRepository.findById(iconId)
+                .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
-            if (user.getIcons().contains(icon)) {
-                walletService.credit(user, icon.getPrice(), "Icon sale: " + icon.getId());
-
-                user.getIcons().remove(icon);
-
-                Optional<Icon> defaultIcon = iconRepository.findIconByName("Default");
-                if(defaultIcon.isEmpty())
-                    throw new IconNotFoundException("Default icon not found");
-
-                user.setSelectedIcon(defaultIcon.get());
-                userRepository.save(user);
-            }
-            else
-                throw new IconNotFoundException("Icon not found");
-
-        } catch (UserNotFoundException | IconNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while deleting icon from user");
+        if (!user.getIcons().contains(icon)) {
+            throw new IconNotFoundException("Icon not found");
         }
+
+        walletService.credit(user, icon.getPrice(), "Icon sale: " + icon.getId());
+
+        user.getIcons().remove(icon);
+
+        Icon defaultIcon = iconRepository.findIconByName("Default")
+                .orElseThrow(() -> new IconNotFoundException("Default icon not found"));
+
+        user.setSelectedIcon(defaultIcon);
+        userRepository.save(user);
     }
 }
