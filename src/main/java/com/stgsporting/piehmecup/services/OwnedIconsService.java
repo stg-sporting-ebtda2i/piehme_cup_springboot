@@ -23,12 +23,14 @@ public class OwnedIconsService {
     private final UserService userService;
     private final IconRepository iconRepository;
     private final WalletService walletService;
+    private final IconService iconService;
 
-    public OwnedIconsService(UserRepository userRepository, UserService userService, IconRepository iconRepository, WalletService walletService) {
+    public OwnedIconsService(UserRepository userRepository, UserService userService, IconRepository iconRepository, WalletService walletService, IconService iconService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.iconRepository = iconRepository;
         this.walletService = walletService;
+        this.iconService = iconService;
     }
 
     public List<IconDTO> getOwnedIcons(){
@@ -37,7 +39,7 @@ public class OwnedIconsService {
             List<Icon> icons = userRepository.findIconsByUserId(userId);
             List<IconDTO> iconDTOS = new ArrayList<>();
             for(Icon icon : icons)
-                iconDTOS.add(IconService.iconToDTO(icon));
+                iconDTOS.add(iconService.iconToDTO(icon));
 
             return iconDTOS;
         } catch (UserNotFoundException e) {

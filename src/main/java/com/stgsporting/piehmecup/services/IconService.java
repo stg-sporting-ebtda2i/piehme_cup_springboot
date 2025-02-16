@@ -18,7 +18,7 @@ public class IconService {
     private IconRepository iconRepository;
 
     @Autowired
-    private S3Service s3Service;
+    private FileService fileService;
 
     public void createIcon(IconUploadDTO icon) {
         Icon newIcon = dtoToIcon(icon);
@@ -32,7 +32,7 @@ public class IconService {
         newIcon.setAvailable(icon.getAvailable());
         newIcon.setPrice(icon.getPrice());
 
-        String key = s3Service.uploadFile(icon.getImage());
+        String key = fileService.uploadFile(icon.getImage());
 
         newIcon.setImgLink(key);
 
@@ -48,36 +48,41 @@ public class IconService {
         throw new IconNotFoundException("Player with name " + name + " not found");
     }
 
-    static IconDTO iconToDTO(Icon icon) {
+    public IconDTO iconToDTO(Icon icon) {
         IconDTO iconDTO = new IconDTO();
         iconDTO.setId(icon.getId());
         iconDTO.setName(icon.getName());
         iconDTO.setAvailable(icon.getAvailable());
         iconDTO.setPrice(icon.getPrice());
         iconDTO.setImgLink(icon.getImgLink());
+
+        iconDTO.setImageUrl(fileService.generateSignedUrl(icon.getImgLink()));
         return iconDTO;
     }
 
     public void deleteIcon(String name) {
-        Optional<Icon> icon = iconRepository.findIconByName(name);
-        if(icon.isPresent())
-            iconRepository.delete(icon.get());
-        else
-            throw new IconNotFoundException("Player with name " + name + " not found");
+        Icon icon = iconRepository.findIconByName(name)
+                .orElseThrow(() -> new IconNotFoundException("Player with name " + name + " not found"));
+
+        fileService.deleteFile(icon.getImgLink());
+
+        iconRepository.delete(icon);
     }
 
-    public void updateIcon(String name, IconUploadDTO icon) {
-        Optional<Icon> iconOptional = iconRepository.findIconByName(name);
-        if(iconOptional.isPresent()){
-            Icon updatedIcon = dtoToIcon(icon);
-            updatedIcon.setId(iconOptional.get().getId());
-            iconRepository.save(updatedIcon);
-        } else
-            throw new IconNotFoundException("Player with name " + name + " not found");
+    public void updateIcon(String name, IconUploadDTO iconDTO) {
+        Icon icon = iconRepository.findIconByName(name)
+                .orElseThrow(() -> new IconNotFoundException("Player with name " + name + " not found"));
+
+        fileService.deleteFile(icon.getImgLink());
+        Icon updatedIcon = dtoToIcon(iconDTO);
+        updatedIcon.setId(icon.getId());
+        iconRepository.save(updatedIcon);
     }
 
     public List<IconDTO> getAllIcons() {
         List<Icon> icons = iconRepository.findAll();
-        return icons.stream().map(IconService::iconToDTO).toList();
+        return icons.stream().map(
+                this::iconToDTO
+        ).toList();
     }
 }

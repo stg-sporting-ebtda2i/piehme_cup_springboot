@@ -21,6 +21,8 @@ public class SelectIconService {
 
     @Autowired
     private IconRepository iconRepository;
+    @Autowired
+    private IconService iconService;
 
     public void selectIcon(Long iconId) {
         try {
@@ -55,7 +57,7 @@ public class SelectIconService {
             if (icon == null)
                 throw new IconNotFoundException("No selected icon found");
 
-            return IconService.iconToDTO(icon);
+            return iconService.iconToDTO(icon);
         } catch (UserNotFoundException | IconNotFoundException e) {
             throw e;
         } catch (Exception e) {
