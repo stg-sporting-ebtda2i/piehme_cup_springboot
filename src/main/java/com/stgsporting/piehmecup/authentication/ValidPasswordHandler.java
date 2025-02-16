@@ -27,7 +27,7 @@ public class ValidPasswordHandler extends LoginHandler{
 
             return authUserInfo;
         } else {
-            throw new InvalidCredentialsException("Incorrect email or password");
+            throw new InvalidCredentialsException();
         }
     }
 

@@ -4,6 +4,7 @@ import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.entities.Quiz;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.exceptions.ChangePasswordException;
 import com.stgsporting.piehmecup.exceptions.InvalidCredentialsException;
 import com.stgsporting.piehmecup.exceptions.NotFoundException;
 import com.stgsporting.piehmecup.helpers.Response;
@@ -103,7 +104,7 @@ public class QuizService {
         }
 
         if (statusCode == 400) {
-            throw new InvalidCredentialsException(
+            throw new ChangePasswordException(
                     response.getJsonBody().getAsString("message")
             );
         }
