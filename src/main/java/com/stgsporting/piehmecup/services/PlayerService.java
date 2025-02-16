@@ -70,16 +70,20 @@ public class PlayerService {
         return playerDTO;
     }
 
-    public void updatePlayer(String playerName, PlayerUploadDTO player) {
-        Optional<Player> playerToUpdate = playerRepository.findPlayerByName(playerName);
-        if(playerToUpdate.isPresent()){
-            Player updatedPlayer = dtoToPlayer(player);
-            updatedPlayer.setId(playerToUpdate.get().getId());
-            playerRepository.save(updatedPlayer);
-        }
+    public void updatePlayer(String playerName, PlayerUploadDTO playerDTO) {
+        Player player = playerRepository.findPlayerByName(playerName)
+                .orElseThrow(() -> new PlayerNotFoundException("Player with name " + playerName + " not found"));
 
+        Player updatedPlayer = dtoToPlayer(playerDTO);
+
+        if(playerDTO.getImage() != null && !player.getImgLink().equals(updatedPlayer.getImgLink()))
+            fileService.deleteFile(player.getImgLink());
         else
-            throw new PlayerNotFoundException("Player with name " + playerName + " not found");
+            updatedPlayer.setImgLink(player.getImgLink());
+
+        updatedPlayer.setId(player.getId());
+
+        playerRepository.save(updatedPlayer);
     }
 
     public void deletePlayer(String name) {
