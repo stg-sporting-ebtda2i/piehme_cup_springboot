@@ -1,4 +1,4 @@
-package com.stgsporting.piehmecup.dtos;
+package com.stgsporting.piehmecup.dtos.players;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,8 @@ public class PlayerDTO {
     private String position;
     private Integer rating;
     private Boolean available;
-    private String imgLink;
+    private String imageUrl;
+    private String imageKey;
     private Integer price;
 
     @Override
@@ -21,7 +22,7 @@ public class PlayerDTO {
                 ", position=" + position +
                 ", rating=" + rating +
                 ", available=" + available +
-                ", imgLink='" + imgLink + '\'' +
+                ", imgLink='" + imageUrl + '\'' +
                 ", price=" + price +
                 '}';
     }

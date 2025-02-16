@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.players.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
 import com.stgsporting.piehmecup.entities.Player;
 import com.stgsporting.piehmecup.enums.Positions;
 import com.stgsporting.piehmecup.exceptions.PlayerNotFoundException;
@@ -15,28 +16,30 @@ import java.util.Optional;
 
 @Service
 public class PlayerService {
-    @Autowired
-    private PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
+    private final FileService fileService;
 
-    public void createPlayer(PlayerDTO player) {
-        try{
-            Player newPlayer = dtoToPlayer(player);
-
-            playerRepository.save(newPlayer);
-        } catch(IllegalArgumentException e) {
-            throw new IllegalArgumentException("Player cannot be null");
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while saving player");
-        }
+    public PlayerService(PlayerRepository playerRepository, FileService fileService) {
+        this.playerRepository = playerRepository;
+        this.fileService = fileService;
     }
 
-    private static Player dtoToPlayer(PlayerDTO player) {
+    public void createPlayer(PlayerUploadDTO player) {
+        Player newPlayer = dtoToPlayer(player);
+
+        playerRepository.save(newPlayer);
+    }
+
+    private Player dtoToPlayer(PlayerUploadDTO player) {
         Player newPlayer = new Player();
         newPlayer.setName(player.getName());
         newPlayer.setPosition(Positions.valueOf(player.getPosition().toUpperCase()));
         newPlayer.setAvailable(player.getAvailable());
         newPlayer.setPrice(player.getPrice());
-        newPlayer.setImgLink(player.getImgLink());
+
+        String key = fileService.uploadFile(player.getImage(), "/players");
+
+        newPlayer.setImgLink(key);
         newPlayer.setRating(player.getRating());
         return newPlayer;
     }
@@ -50,19 +53,24 @@ public class PlayerService {
         throw new PlayerNotFoundException("Player with name " + name + " not found");
     }
 
-    static PlayerDTO playerToDTO(Player player) {
+    public PlayerDTO playerToDTO(Player player) {
         PlayerDTO playerDTO = new PlayerDTO();
         playerDTO.setId(player.getId());
         playerDTO.setName(player.getName());
         playerDTO.setPosition(player.getPosition().toString());
         playerDTO.setAvailable(player.getAvailable());
         playerDTO.setPrice(player.getPrice());
-        playerDTO.setImgLink(player.getImgLink());
+
+        String url = fileService.generateSignedUrl(player.getImgLink());
+
+        playerDTO.setImageUrl(url);
+        playerDTO.setImageKey(player.getImgLink());
+
         playerDTO.setRating(player.getRating());
         return playerDTO;
     }
 
-    public void updatePlayer(String playerName,PlayerDTO player) {
+    public void updatePlayer(String playerName, PlayerUploadDTO player) {
         Optional<Player> playerToUpdate = playerRepository.findPlayerByName(playerName);
         if(playerToUpdate.isPresent()){
             Player updatedPlayer = dtoToPlayer(player);
@@ -75,12 +83,13 @@ public class PlayerService {
     }
 
     public void deletePlayer(String name) {
-        Optional<Player> player = playerRepository.findPlayerByName(name);
-        if(player.isPresent())
-            playerRepository.delete(player.get());
+        Player player = playerRepository.findPlayerByName(name).orElseThrow(
+                () -> new PlayerNotFoundException("Player with name " + name + " not found")
+        );
 
-        else
-            throw new PlayerNotFoundException("Player with name " + name + " not found");
+        fileService.deleteFile(player.getImgLink());
+
+         playerRepository.delete(player);
     }
 
     public List<PlayerDTO> getPlayersByPosition(Enum<Positions> position){

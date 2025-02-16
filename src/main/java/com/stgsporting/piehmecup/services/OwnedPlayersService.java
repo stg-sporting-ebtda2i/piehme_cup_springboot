@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.players.PlayerDTO;
 import com.stgsporting.piehmecup.entities.Player;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.InsufficientCoinsException;
@@ -28,6 +28,8 @@ public class OwnedPlayersService {
     private PlayerRepository playerRepository;
     @Autowired
     private WalletService walletService;
+    @Autowired
+    private PlayerService playerService;
 
     public List<PlayerDTO> getLineup(){
         try {
@@ -35,7 +37,7 @@ public class OwnedPlayersService {
             List<Player> players = userRepository.findPlayersByUserId(userId);
             List<PlayerDTO> playerDTOS = new ArrayList<>();
             for(Player player : players)
-                playerDTOS.add(PlayerService.playerToDTO(player));
+                playerDTOS.add(playerService.playerToDTO(player));
 
             return playerDTOS;
         } catch (UserNotFoundException e) {
@@ -48,7 +50,7 @@ public class OwnedPlayersService {
             List<Player> players = userRepository.findPlayersByUserId(userId);
             List<PlayerDTO> playerDTOS = new ArrayList<>();
             for(Player player : players)
-                playerDTOS.add(PlayerService.playerToDTO(player));
+                playerDTOS.add(playerService.playerToDTO(player));
 
             return playerDTOS;
         } catch (UserNotFoundException e) {
