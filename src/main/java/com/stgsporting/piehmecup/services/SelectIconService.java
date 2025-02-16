@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.IconDTO;
+import com.stgsporting.piehmecup.dtos.icons.IconDTO;
 import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.IconNotFoundException;

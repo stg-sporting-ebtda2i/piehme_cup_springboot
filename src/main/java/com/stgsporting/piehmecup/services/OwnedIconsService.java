@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.IconDTO;
+import com.stgsporting.piehmecup.dtos.icons.IconDTO;
 import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.IconAlreadyPurchasedException;
@@ -9,7 +9,6 @@ import com.stgsporting.piehmecup.exceptions.InsufficientCoinsException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,7 +1,7 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.IconDTO;
-import com.stgsporting.piehmecup.dtos.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.icons.IconDTO;
+import com.stgsporting.piehmecup.dtos.icons.IconUploadDTO;
 import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.exceptions.IconNotFoundException;
 import com.stgsporting.piehmecup.repositories.IconRepository;
@@ -17,24 +17,25 @@ public class IconService {
     @Autowired
     private IconRepository iconRepository;
 
-    public void createIcon(IconDTO icon) {
-        try{
-            Icon newIcon = dtoToIcon(icon);
+    @Autowired
+    private S3Service s3Service;
 
-            iconRepository.save(newIcon);
-        } catch(IllegalArgumentException e) {
-            throw new IllegalArgumentException("Icon cannot be null");
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while saving icon");
-        }
+    public void createIcon(IconUploadDTO icon) {
+        Icon newIcon = dtoToIcon(icon);
+
+        iconRepository.save(newIcon);
     }
 
-    private static Icon dtoToIcon(IconDTO icon) {
+    private Icon dtoToIcon(IconUploadDTO icon) {
         Icon newIcon = new Icon();
         newIcon.setName(icon.getName());
         newIcon.setAvailable(icon.getAvailable());
         newIcon.setPrice(icon.getPrice());
-        newIcon.setImgLink(icon.getImgLink());
+
+        String key = s3Service.uploadFile(icon.getImage());
+
+        newIcon.setImgLink(key);
+
         return newIcon;
     }
 
@@ -65,7 +66,7 @@ public class IconService {
             throw new IconNotFoundException("Player with name " + name + " not found");
     }
 
-    public void updateIcon(String name, IconDTO icon) {
+    public void updateIcon(String name, IconUploadDTO icon) {
         Optional<Icon> iconOptional = iconRepository.findIconByName(name);
         if(iconOptional.isPresent()){
             Icon updatedIcon = dtoToIcon(icon);

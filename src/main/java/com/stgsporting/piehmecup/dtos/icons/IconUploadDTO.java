@@ -1,14 +1,15 @@
-package com.stgsporting.piehmecup.dtos;
+package com.stgsporting.piehmecup.dtos.icons;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class IconDTO {
+public class IconUploadDTO {
     private Long id;
     private String name;
-    private String imgLink;
+    private MultipartFile image;
     private Integer price;
     private Boolean available;
 }

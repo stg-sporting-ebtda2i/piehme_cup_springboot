@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.controllers;
 
-import com.stgsporting.piehmecup.dtos.IconDTO;
+import com.stgsporting.piehmecup.dtos.icons.IconDTO;
+import com.stgsporting.piehmecup.dtos.icons.IconUploadDTO;
 import com.stgsporting.piehmecup.services.IconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,13 @@ public class IconController {
     private IconService iconService;
 
     @PostMapping("/admin/icons/create")
-    public ResponseEntity<Object> createIcon(@RequestBody IconDTO icon) {
+    public ResponseEntity<Object> createIcon(@ModelAttribute IconUploadDTO icon) {
         iconService.createIcon(icon);
         return ResponseEntity.ok().body("Icon created successfully");
     }
 
     @PostMapping("/admin/icons/update/{iconName}")
-    public ResponseEntity<Object> updateIcon(@RequestBody IconDTO icon, @PathVariable String iconName) {
+    public ResponseEntity<Object> updateIcon(@ModelAttribute IconUploadDTO icon, @PathVariable String iconName) {
         iconService.updateIcon(iconName, icon);
         return ResponseEntity.ok().body("Icon updated successfully");
     }
