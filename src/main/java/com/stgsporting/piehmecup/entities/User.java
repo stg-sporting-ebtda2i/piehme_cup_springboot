@@ -19,7 +19,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = DatabaseEnum.usersTable)
+@Table(
+        name = DatabaseEnum.usersTable,
+        indexes = {
+                @Index(name = "idx_schoolyear_username", columnList = DatabaseEnum.schoolYearId + ", " + DatabaseEnum.username),
+                @Index(name = "idx_schoolyear_lineuprating", columnList = DatabaseEnum.schoolYearId + ", " + DatabaseEnum.lineupRating)
+        }
+)
 public class User extends BaseEntity implements Authenticatable {
 
     @Column(name = DatabaseEnum.username, nullable = false, unique = true)

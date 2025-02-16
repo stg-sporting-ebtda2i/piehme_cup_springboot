@@ -9,39 +9,33 @@ import com.stgsporting.piehmecup.exceptions.LiturgyNotFound;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.repositories.AttendanceRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
-import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class AttendanceService {
-    @Autowired
-    private AttendanceRepository attendanceRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PriceRepository priceRepository;
-    @Autowired
-    private WalletService walletService;
-    @Autowired
-    private PriceService priceService;
-    @Autowired
-    private AdminService adminService;
+    private final AttendanceRepository attendanceRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
+    private final PriceRepository priceRepository;
+    private final WalletService walletService;
+    private final PriceService priceService;
+    private final AdminService adminService;
+
+    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, UserRepository userRepository, PriceRepository priceRepository, WalletService walletService, PriceService priceService, AdminService adminService) {
+        this.attendanceRepository = attendanceRepository;
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.priceRepository = priceRepository;
+        this.walletService = walletService;
+        this.priceService = priceService;
+        this.adminService = adminService;
+    }
 
     public void requestAttendance(String liturgyName) {
         try {
