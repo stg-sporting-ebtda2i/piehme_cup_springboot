@@ -1,45 +1,41 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.AttendanceDTO;
-import com.stgsporting.piehmecup.entities.Attendance;
-import com.stgsporting.piehmecup.entities.Price;
-import com.stgsporting.piehmecup.entities.SchoolYear;
-import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.AttendanceAlreadyApproved;
 import com.stgsporting.piehmecup.exceptions.AttendanceNotFoundException;
 import com.stgsporting.piehmecup.exceptions.LiturgyNotFound;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.repositories.AttendanceRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
-import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class AttendanceService {
-    @Autowired
-    private AttendanceRepository attendanceRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SchoolYearRepository schoolYearRepository;
-    @Autowired
-    private PriceRepository priceRepository;
-    @Autowired
-    private WalletService walletService;
+    private final AttendanceRepository attendanceRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
+    private final PriceRepository priceRepository;
+    private final WalletService walletService;
+    private final PriceService priceService;
+    private final AdminService adminService;
+
+    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, UserRepository userRepository, PriceRepository priceRepository, WalletService walletService, PriceService priceService, AdminService adminService) {
+        this.attendanceRepository = attendanceRepository;
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.priceRepository = priceRepository;
+        this.walletService = walletService;
+        this.priceService = priceService;
+        this.adminService = adminService;
+    }
 
     public void requestAttendance(String liturgyName) {
         try {
@@ -60,7 +56,7 @@ public class AttendanceService {
 
     private void saveAttendance(String liturgyName, User user) {
         Attendance attendance = new Attendance();
-        attendance.setLiturgyName(liturgyName);
+        attendance.setPrice(priceService.getPrice(liturgyName));
         attendance.setUser(user);
         attendance.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         attendance.setApproved(false);
@@ -69,78 +65,43 @@ public class AttendanceService {
 
     @Transactional
     public void approveAttendance(Long attendanceId) {
-        try {
-            Attendance attendance = attendanceRepository.findById(attendanceId)
-                    .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
-            if (attendance.getApproved())
-                throw new AttendanceAlreadyApproved("Attendance already approved");
-            attendance.setApproved(true);
+        Authenticatable admin = adminService.getAuthenticatable();
 
-            Price price = priceRepository.findPricesByName(attendance.getLiturgyName())
-                    .orElseThrow(() -> new LiturgyNotFound("Liturgy not found"));
-            walletService.credit(attendance.getUser(), price.getCoins(), attendance.getLiturgyName());
+        Attendance attendance = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
 
-            attendanceRepository.save(attendance);
-        } catch (AttendanceNotFoundException | LiturgyNotFound | AttendanceAlreadyApproved e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to approve attendance");
-        }
+        if (!attendance.getUser().getSchoolYear().getId().equals(admin.getSchoolYear().getId()))
+            throw new AttendanceNotFoundException("Attendance not found");
+
+        if (attendance.getApproved())
+            throw new AttendanceAlreadyApproved("Attendance already approved");
+
+        attendance.setApproved(true);
+
+        Price price = attendance.getPrice();
+
+        walletService.credit(attendance.getUser(), price.getCoins(), price.getName());
+
+        attendanceRepository.save(attendance);
     }
 
     @Transactional
     public void deleteAttendance(Long attendanceId) {
-        try {
-            Attendance attendance = attendanceRepository.findById(attendanceId)
-                    .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
+        Attendance attendance = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
 
-            attendanceRepository.delete(attendance);
-        } catch (AttendanceNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to delete attendance");
+        if (attendance.getApproved()) {
+            Price price = attendance.getPrice();
+            walletService.debit(attendance.getUser(), price.getCoins(), price.getName() + " deleted");
         }
+
+        attendanceRepository.delete(attendance);
     }
 
-    public List<AttendanceDTO> getUnapprovedAttendances(Long schoolYear) {
-        try {
-            SchoolYear schoolYearEntity = schoolYearRepository.findSchoolYearById(schoolYear)
-                    .orElseThrow(() -> new RuntimeException("School year not found"));
-            List<Attendance> unapprovedAttendances = attendanceRepository.findByApprovedAndUserContainingSchoolYear(false, schoolYearEntity);
+    public Page<AttendanceDTO> getUnapprovedAttendances(Pageable pageable, SchoolYear schoolYear) {
+        Page<Attendance> unapprovedAttendances = attendanceRepository
+                .findByApprovedAndUserContainingSchoolYear(pageable, false, schoolYear);
 
-            return getAttendanceDTOS(unapprovedAttendances);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get unapproved attendances");
-        }
-    }
-
-    @NotNull
-    private static List<AttendanceDTO> getAttendanceDTOS(List<Attendance> unapprovedAttendances) {
-        List<AttendanceDTO> dtos = new ArrayList<>();
-        for (Attendance attendance : unapprovedAttendances) {
-            AttendanceDTO dto = new AttendanceDTO();
-            dto.setAttendanceId(attendance.getId());
-            dto.setUserId(attendance.getUser().getId());
-            dto.setUsername(attendance.getUser().getUsername());
-            dto.setApproved(attendance.getApproved());
-            dto.setLiturgyName(attendance.getLiturgyName());
-            dto.setCreatedAt(getTimeStampFormat(attendance));
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
-    private static String getTimeStampFormat(Attendance attendance) {
-        Timestamp timestamp = attendance.getCreatedAt();
-        LocalDateTime dateTime = timestamp.toLocalDateTime();
-        LocalDateTime now = LocalDateTime.now();
-
-        if (dateTime.toLocalDate().isEqual(now.toLocalDate()))
-            return "today at " + dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-        else if (dateTime.isAfter(now.minusWeeks(1)))
-            return dateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-                    + " at " + dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-        else
-            return dateTime.format(DateTimeFormatter.ofPattern("dd/MM 'at' HH:mm"));
+        return unapprovedAttendances.map(AttendanceDTO::new);
     }
 }

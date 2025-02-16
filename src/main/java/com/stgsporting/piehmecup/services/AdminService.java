@@ -8,6 +8,7 @@ import com.stgsporting.piehmecup.entities.Details;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.enums.Role;
 import com.stgsporting.piehmecup.exceptions.InvalidCredentialsException;
+import com.stgsporting.piehmecup.exceptions.NotFoundException;
 import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
 import com.stgsporting.piehmecup.exceptions.UsernameTakenException;
 import com.stgsporting.piehmecup.repositories.AdminRepository;
@@ -57,7 +58,7 @@ public class AdminService implements AuthenticatableService {
 
     @Override
     public Authenticatable getAuthenticatableById(long id) {
-        return getAdminById(id).orElseThrow(() -> new InvalidCredentialsException("Incorrect email or password"));
+        return getAdminById(id).orElseThrow(InvalidCredentialsException::new);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class AdminService implements AuthenticatableService {
     @Override
     public Authenticatable getAuthenticatableByUsername(String username) {
         return getAdminByUsername(username)
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid"));
+                .orElseThrow(InvalidCredentialsException::new);
     }
 
     @Override
@@ -99,7 +100,7 @@ public class AdminService implements AuthenticatableService {
 
         admin.setUsername(adminDTO.getUsername());
         admin.setPassword(adminDTO.getPassword());
-        Role role = Role.lookup(adminDTO.getRole()).orElseThrow(() -> new InvalidCredentialsException("Invalid role"));
+        Role role = Role.lookup(adminDTO.getRole()).orElseThrow(() -> new NotFoundException("Invalid role"));
         admin.setRole(role);
 
         SchoolYear schoolYear = schoolYearService.getShoolYearById(adminDTO.getSchoolYear());
@@ -122,7 +123,7 @@ public class AdminService implements AuthenticatableService {
         }
 
         if (adminDTO.getRole() != null && !adminDTO.getRole().isEmpty() && !adminDTO.getRole().isBlank()) {
-            Role role = Role.lookup(adminDTO.getRole()).orElseThrow(() -> new InvalidCredentialsException("Invalid role"));
+            Role role = Role.lookup(adminDTO.getRole()).orElseThrow(() -> new NotFoundException("Invalid role"));
             admin.setRole(role);
         }
 

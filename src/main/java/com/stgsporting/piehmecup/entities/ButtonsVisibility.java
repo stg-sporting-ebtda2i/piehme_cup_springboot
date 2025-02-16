@@ -4,6 +4,8 @@ import com.stgsporting.piehmecup.config.DatabaseEnum;
 import com.stgsporting.piehmecup.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,7 @@ public class ButtonsVisibility extends BaseEntity {
     @Column(name = DatabaseEnum.visible, nullable = false)
     private Boolean visible;
 
-    @Column(name = DatabaseEnum.userRole, nullable = false)
-    private Enum<Role> userRole;
+    @Column(name = DatabaseEnum.role, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

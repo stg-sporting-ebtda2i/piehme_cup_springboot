@@ -9,6 +9,7 @@ public class AuthInfo {
     private String JWTToken;
     private Long userId;
     private String username;
+    private String role;
 
     @Override
     public String toString() {
@@ -16,6 +17,7 @@ public class AuthInfo {
                 "JWTToken='" + JWTToken + '\'' +
                 ", userId=" + userId +
                 ", username='" + username + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 }

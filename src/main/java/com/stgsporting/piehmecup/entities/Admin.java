@@ -26,12 +26,15 @@ public class Admin extends BaseEntity implements Authenticatable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = DatabaseEnum.role, nullable = false)
-
     private Role role;
 
     public void setPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
         this.password = encoder.encode(password);
+    }
+
+    public String getRoleString() {
+        return getRole().name();
     }
 }

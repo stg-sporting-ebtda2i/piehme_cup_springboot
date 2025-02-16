@@ -2,6 +2,8 @@ package com.stgsporting.piehmecup.authentication;
 
 import com.stgsporting.piehmecup.dtos.LoginDTO;
 import com.stgsporting.piehmecup.dtos.AuthInfo;
+import com.stgsporting.piehmecup.exceptions.InvalidCredentialsException;
+import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.services.AuthenticatableService;
 
 public class CheckIfUserExistsHandler extends LoginHandler {
@@ -18,15 +20,9 @@ public class CheckIfUserExistsHandler extends LoginHandler {
         }
 
         if (authService.getAuthenticatableByUsername(loginDTO.getUsername()) == null){
-            throw new NullPointerException("User does not exist");
+            throw new InvalidCredentialsException();
         }
-        Authenticatable auth;
-
-        try {
-            auth = authService.getAuthenticatableByUsername(loginDTO.getUsername());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Authenticatable auth = authService.getAuthenticatableByUsername(loginDTO.getUsername());
 
         return this.setNextHandler(new ValidPasswordHandler(auth)).handle(loginDTO);
     }

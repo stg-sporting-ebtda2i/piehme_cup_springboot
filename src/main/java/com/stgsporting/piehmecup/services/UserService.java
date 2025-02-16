@@ -5,21 +5,22 @@ import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.entities.*;
-import com.stgsporting.piehmecup.exceptions.SchoolYearNotFound;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
-import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
+import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements AuthenticatableService {
@@ -43,7 +44,7 @@ public class UserService implements AuthenticatableService {
     }
 
     public User getAuthenticatableById(long id) {
-        return userRepository.findUserById(id)
+        return getUserById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
     }
 
@@ -69,8 +70,27 @@ public class UserService implements AuthenticatableService {
         if (username == null || username.isEmpty())
             throw new NullPointerException("Username cannot be empty");
 
-        return userRepository.findUsersByUsername(username)
+        return getUserByUsername(username)
                 .orElseThrow(()-> new UserNotFoundException("Incorrect email or password"));
+    }
+
+    public Optional<User> getUserByIdOrUsername(String idOrUsername) {
+        if (idOrUsername.matches("\\d+")) {
+            Optional<User> user = getUserById(Long.parseLong(idOrUsername));
+
+            if (user.isPresent())
+                return user;
+        }
+
+        return getUserByUsername(idOrUsername);
+    }
+
+    public Optional<User> getUserById(long id) {
+        return userRepository.findById(id);
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findUsersByUsername(username);
     }
 
     public void save(Authenticatable user) {
@@ -79,8 +99,13 @@ public class UserService implements AuthenticatableService {
 
     public User createUser(UserRegisterDTO userRegisterDTO) {
         User user = new User();
+
+        validateUsername(userRegisterDTO.getUsername());
         user.setUsername(userRegisterDTO.getUsername());
+
+        validatePassword(userRegisterDTO.getPassword());
         user.setPassword(userRegisterDTO.getPassword());
+
         user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
         user.setCardRating(0);
@@ -96,6 +121,14 @@ public class UserService implements AuthenticatableService {
         save(user);
 
         return user;
+    }
+
+    public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, String search, Pageable page) {
+        if(search == null) {
+            search = "";
+        }
+
+        return userRepository.findUsersBySchoolYearPaginated(schoolYear,search + "%", page);
     }
 
     public List<LeaderboardDTO> getLeaderboard() {
@@ -140,15 +173,33 @@ public class UserService implements AuthenticatableService {
     }
 
     public Integer getCoins() {
-        try {
-            User user = userRepository.findById(getAuthenticatableId())
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(getAuthenticatableId())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-            return user.getCoins();
-        } catch (UserNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching coins");
+        return user.getCoins();
+    }
+
+    public void changePassword(User user, String password) {
+        validatePassword(password);
+
+        user.setPassword(password);
+        save(user);
+    }
+
+    private void validatePassword(String password) {
+        if (password == null || password.isEmpty())
+            throw new ChangePasswordException("Password cannot be empty");
+
+        if (password.length() < 4 || password.length() > 64)
+            throw new ChangePasswordException("Password must be between 6 and 64 characters");
+    }
+
+    private void validateUsername(String username) {
+        if (username == null || username.isEmpty())
+            throw new UsernameTakenException("Username cannot be empty");
+
+        if(userRepository.existsByUsername(username)) {
+            throw new UsernameTakenException("Username already exists");
         }
     }
 }

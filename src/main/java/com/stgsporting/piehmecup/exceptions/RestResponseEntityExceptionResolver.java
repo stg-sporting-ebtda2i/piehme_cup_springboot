@@ -19,8 +19,18 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(value = { UsernameTakenException.class, IconAlreadyPurchasedException.class, PlayerAlreadyPurchasedException.class, InsufficientCoinsException.class })
+    @ExceptionHandler(value = { UsernameTakenException.class, IconAlreadyPurchasedException.class, PlayerAlreadyPurchasedException.class })
     protected ResponseEntity<Object> handleUsernameTaken(UsernameTakenException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = { AttendanceAlreadyApproved.class })
+    protected ResponseEntity<Object> handleAttendanceAlreadyApproved(AttendanceAlreadyApproved ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = { InsufficientCoinsException.class })
+    protected ResponseEntity<Object> handleInsufficientFunds(InsufficientCoinsException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
@@ -32,6 +42,21 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
     @ExceptionHandler(value = { UnauthorizedAccessException.class })
     protected ResponseEntity<Object> handleUnauthorized(UnauthorizedAccessException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.UNAUTHORIZED, request);
+    }
+
+    @ExceptionHandler(value = { UserNotInSameSchoolYearException.class })
+    protected ResponseEntity<Object> handleNotSameSchoolYear(UserNotInSameSchoolYearException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(value = { UserAlreadyExistException.class })
+    protected ResponseEntity<Object> handleAlreadyExists(UserAlreadyExistException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = { ChangePasswordException.class })
+    protected ResponseEntity<Object> handleChangePassword(ChangePasswordException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
     private ResponseEntity<Object> handleExceptionDefault(Exception ex, HttpStatus status, WebRequest request) {

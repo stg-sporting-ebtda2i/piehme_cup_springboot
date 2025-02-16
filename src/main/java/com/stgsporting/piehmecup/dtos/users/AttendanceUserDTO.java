@@ -1,4 +1,4 @@
-package com.stgsporting.piehmecup.dtos;
+package com.stgsporting.piehmecup.dtos.users;
 
 import com.stgsporting.piehmecup.entities.Attendance;
 import lombok.AllArgsConstructor;
@@ -10,19 +10,15 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttendanceDTO {
+public class AttendanceUserDTO {
     private Long id;
-    private Long userId;
-    private String username;
     private Boolean approved;
     private String description;
     private Integer coins;
     private String createdAt;
 
-    public AttendanceDTO(Attendance attendance) {
+    public AttendanceUserDTO(Attendance attendance) {
         this.id = attendance.getId();
-        this.userId = attendance.getUser().getId();
-        this.username = attendance.getUser().getUsername();
         this.approved = attendance.getApproved();
         this.description = attendance.getPrice().getName();
         this.coins = attendance.getPrice().getCoins();
