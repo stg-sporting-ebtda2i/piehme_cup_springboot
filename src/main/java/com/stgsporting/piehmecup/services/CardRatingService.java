@@ -44,13 +44,13 @@ public class CardRatingService {
         long id = userService.getAuthenticatableId();
         User user = userService.getAuthenticatableById(id);
 
-        return new UserCardDTO(user.getUsername(), user.getCardRating(), user.getImgLink(), user.getImgLink(), user.getSelectedPosition().getName());
+        return new UserCardDTO(user.getUsername(), user.getCardRating(), user.getSelectedIcon().getImgLink(), user.getImgLink(), user.getSelectedPosition().getName());
     }
 
     public UserCardDTO getUserCardDTO(Long userId){
         User user = userService.getAuthenticatableById(userId);
 
-        return new UserCardDTO(user.getUsername(), user.getCardRating(), user.getImgLink(), user.getImgLink(), user.getSelectedPosition().getName());
+        return new UserCardDTO(user.getUsername(), user.getCardRating(), user.getSelectedIcon().getImgLink(), user.getImgLink(), user.getSelectedPosition().getName());
     }
 
 }
