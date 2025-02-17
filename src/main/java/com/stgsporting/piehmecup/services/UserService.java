@@ -101,6 +101,9 @@ public class UserService implements AuthenticatableService {
     }
 
     public void changeImage(User user, MultipartFile image) {
+        if (user.getImgLink() != null && user.getImgLink().isEmpty()) {
+            fileService.deleteFile(user.getImgLink());
+        }
 
         String key = fileService.uploadFile(image, "/users");
 
