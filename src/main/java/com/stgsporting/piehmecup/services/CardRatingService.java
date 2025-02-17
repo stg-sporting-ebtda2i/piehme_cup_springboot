@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.dtos.UserCardDTO;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.InsufficientCoinsException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
@@ -38,4 +39,18 @@ public class CardRatingService {
 
         userService.save(user);
     }
+
+    public UserCardDTO getUserCardDTO(){
+        long id = userService.getAuthenticatableId();
+        User user = userService.getAuthenticatableById(id);
+
+        return new UserCardDTO(user.getUsername(), user.getCardRating(), user.getImgLink(), user.getImgLink(), user.getSelectedPosition().getName());
+    }
+
+    public UserCardDTO getUserCardDTO(Long userId){
+        User user = userService.getAuthenticatableById(userId);
+
+        return new UserCardDTO(user.getUsername(), user.getCardRating(), user.getImgLink(), user.getImgLink(), user.getSelectedPosition().getName());
+    }
+
 }
