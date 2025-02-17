@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +32,18 @@ public class UserService implements AuthenticatableService {
     private final SchoolYearRepository schoolYearRepository;
     private final PositionRepository positionRepository;
     private final IconRepository iconRepository;
+    private final FileService fileService;
 
     public UserService(UserRepository userRepository, SchoolYearService schoolYearService
             , EntityService entityService, SchoolYearRepository schoolYearRepository
-            , PositionRepository positionRepository, IconRepository iconRepository) {
+            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
         this.schoolYearRepository = schoolYearRepository;
         this.positionRepository = positionRepository;
         this.iconRepository = iconRepository;
+        this.fileService = fileService;
     }
 
     public User getAuthenticatableById(long id) {
@@ -95,6 +98,15 @@ public class UserService implements AuthenticatableService {
 
     public void save(Authenticatable user) {
         userRepository.save((User) user);
+    }
+
+    public void changeImage(User user, MultipartFile image) {
+
+        String key = fileService.uploadFile(image, "/users");
+
+        user.setImgLink(key);
+
+        save(user);
     }
 
     public User createUser(UserRegisterDTO userRegisterDTO) {
