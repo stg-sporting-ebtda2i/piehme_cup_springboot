@@ -29,6 +29,10 @@ public class ButtonsVisibilityService {
         throw new NotFoundException("Role not found");
     }
 
+    public List<ButtonsVisibility> getAllButtonsVisibility() {
+        return buttonsVisibilityRepository.findAllVisible();
+    }
+
     @Transactional
     public void changeVisibilityByName(String name, Boolean visible) {
         Admin admin = (Admin) adminService.getAuthenticatable();
