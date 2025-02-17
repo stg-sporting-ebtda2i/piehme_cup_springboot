@@ -6,6 +6,8 @@ import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.exceptions.IconNotFoundException;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,18 +57,23 @@ public class IconService {
         if(image != null) {
             String contentType = image.getContentType();
             if (!isImage(contentType)) {
-                throw new IllegalArgumentException("Unsupported content type: " + contentType);
+                throw new IllegalArgumentException("File " + contentType + " is not an image");
             }
         }
     }
 
     public IconDTO getIconByName(String name) {
-        Optional<Icon> icon = iconRepository.findIconByName(name);
-        if(icon.isPresent())
-            return iconToDTO(icon.get());
+        Icon icon = iconRepository.findIconByName(name)
+                .orElseThrow(() -> new IconNotFoundException("Icon with name " + name + " not found"));
 
+        return iconToDTO(icon);
+    }
 
-        throw new IconNotFoundException("Player with name " + name + " not found");
+    public IconDTO getIconById(Long id) {
+        Icon icon = iconRepository.findIconById(id)
+                .orElseThrow(() -> new IconNotFoundException("Icon not found"));
+
+        return iconToDTO(icon);
     }
 
     public IconDTO iconToDTO(Icon icon) {
@@ -90,9 +97,9 @@ public class IconService {
         iconRepository.delete(icon);
     }
 
-    public void updateIcon(String name, IconUploadDTO iconDTO) {
-        Icon icon = iconRepository.findIconByName(name)
-                .orElseThrow(() -> new IconNotFoundException("Player with name " + name + " not found"));
+    public void updateIcon(Long id, IconUploadDTO iconDTO) {
+        Icon icon = iconRepository.findIconById(id)
+                .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
         Icon updatedIcon = dtoToIcon(iconDTO);
 
@@ -105,10 +112,15 @@ public class IconService {
         iconRepository.save(updatedIcon);
     }
 
+    public Page<IconDTO> getAllIcons(Pageable pageable) {
+        Page<Icon> icons = iconRepository.findAllPaginated(pageable);
+
+        return icons.map(this::iconToDTO);
+    }
+
     public List<IconDTO> getAllIcons() {
         List<Icon> icons = iconRepository.findAll();
-        return icons.stream().map(
-                this::iconToDTO
-        ).toList();
+
+        return icons.stream().map(this::iconToDTO).toList();
     }
 }

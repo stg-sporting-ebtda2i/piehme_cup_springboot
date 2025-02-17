@@ -13,4 +13,15 @@ public class IconUploadDTO {
     private MultipartFile image;
     private Integer price;
     private Boolean available;
+
+    @Override
+    public String toString() {
+        return "IconUploadDTO{" +
+                "id=" + id +
+                ", name=" + name +
+                ", image=" + image +
+                ", price=" + price +
+                ", available=" + available +
+                '}';
+    }
 }
