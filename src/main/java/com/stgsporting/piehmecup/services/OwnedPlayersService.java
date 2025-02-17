@@ -77,6 +77,8 @@ public class OwnedPlayersService {
             else
                 throw new PlayerAlreadyPurchasedException("Player already purchased");
 
+        } catch (OptimisticLockingFailureException e) {
+            throw new RuntimeException("Concurrent modification detected. Try again.");
         } catch (UserNotFoundException | PlayerNotFoundException | InsufficientCoinsException | PlayerAlreadyPurchasedException e) {
             throw e;
         } catch (Exception e) {
