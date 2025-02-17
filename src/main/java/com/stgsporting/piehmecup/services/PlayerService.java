@@ -8,6 +8,8 @@ import com.stgsporting.piehmecup.exceptions.PlayerNotFoundException;
 import com.stgsporting.piehmecup.repositories.PlayerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -45,12 +47,23 @@ public class PlayerService {
     }
 
     public PlayerDTO getPlayerByName(String name) {
-        Optional<Player> player = playerRepository.findPlayerByName(name);
-        if(player.isPresent())
-            return playerToDTO(player.get());
+        Player player = playerRepository.findPlayerByName(name).orElseThrow(
+                () -> new PlayerNotFoundException("Player with name " + name + " not found")
+        );
 
+        return playerToDTO(player);
+    }
 
-        throw new PlayerNotFoundException("Player with name " + name + " not found");
+    public PlayerDTO getPlayerById(Long id) {
+        Player player = playerRepository.findById(id).orElseThrow(
+                () -> new PlayerNotFoundException("Player not found")
+        );
+
+        return playerToDTO(player);
+    }
+
+    public Page<PlayerDTO> getPlayers(Pageable pageable) {
+        return playerRepository.findAll(pageable).map(this::playerToDTO);
     }
 
     public PlayerDTO playerToDTO(Player player) {
@@ -70,9 +83,9 @@ public class PlayerService {
         return playerDTO;
     }
 
-    public void updatePlayer(String playerName, PlayerUploadDTO playerDTO) {
-        Player player = playerRepository.findPlayerByName(playerName)
-                .orElseThrow(() -> new PlayerNotFoundException("Player with name " + playerName + " not found"));
+    public void updatePlayer(Long playerId, PlayerUploadDTO playerDTO) {
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
         Player updatedPlayer = dtoToPlayer(playerDTO);
 
