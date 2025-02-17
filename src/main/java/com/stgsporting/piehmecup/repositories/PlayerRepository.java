@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface PlayerRepository extends JpaRepository<Player,Long> {
     Optional<Player> findPlayerByName(String name);
-    List<Player> findPlayersByPosition(Enum<Positions> position);
+    List<Player> findPlayersByPosition(Positions position);
 }

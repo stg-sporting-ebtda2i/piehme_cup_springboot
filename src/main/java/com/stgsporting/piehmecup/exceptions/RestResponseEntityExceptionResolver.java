@@ -4,6 +4,8 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -26,6 +28,12 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
 
     @ExceptionHandler(value = { AttendanceAlreadyApproved.class })
     protected ResponseEntity<Object> handleAttendanceAlreadyApproved(AttendanceAlreadyApproved ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
+
+    @ExceptionHandler(value = { IllegalArgumentException.class })
+    protected ResponseEntity<Object> handleIllegal(IllegalArgumentException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 

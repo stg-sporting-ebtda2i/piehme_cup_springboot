@@ -1,66 +1,62 @@
 package com.stgsporting.piehmecup.controllers;
 
-import com.stgsporting.piehmecup.dtos.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.PaginationDTO;
+import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
 import com.stgsporting.piehmecup.enums.Positions;
 import com.stgsporting.piehmecup.services.PlayerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("")
 public class PlayerController {
-    @Autowired
-    private PlayerService playerService;
+    private final PlayerService playerService;
 
-    @PostMapping("/admin/players/create")
-    public ResponseEntity<Object> createPlayer(@RequestBody PlayerDTO player){
-        try{
-            playerService.createPlayer(player);
-            return ResponseEntity.ok().body("Player created successfully");
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.unprocessableEntity().body("Player cannot be null");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("An error occurred while saving player");
-        }
+    public PlayerController(PlayerService playerService) {
+        this.playerService = playerService;
+    }
+
+    @GetMapping("/admin/players")
+    public ResponseEntity<Object> index(@RequestParam @Nullable Integer page) {
+        return ResponseEntity.ok().body(
+                new PaginationDTO<>(playerService.getPlayers(PageRequest.of(page == null ? 0 : page, 10)))
+        );
+    }
+
+    @PostMapping("/admin/players")
+    public ResponseEntity<Object> createPlayer(@ModelAttribute PlayerUploadDTO player){
+        playerService.createPlayer(player);
+        return ResponseEntity.ok().body(Map.of("message", "Player created successfully"));
+    }
+
+    @PutMapping("/admin/players/{playerId}")
+    public ResponseEntity<Object> updatePlayer(@PathVariable Long playerId, @ModelAttribute PlayerUploadDTO player) {
+        playerService.updatePlayer(playerId, player);
+        return ResponseEntity.ok().body(Map.of("message", "Player updated successfully"));
+    }
+
+    @GetMapping("admin/players/{playerId}")
+    public ResponseEntity<Object> getPlayerId(@PathVariable Long playerId){
+        return ResponseEntity.ok().body(playerService.getPlayerById(playerId));
     }
 
     @GetMapping("/player/{playerName}")
     public ResponseEntity<Object> getPlayer(@PathVariable String playerName){
-        try{
-            return ResponseEntity.ok().body(playerService.getPlayerByName(playerName));
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok().body(playerService.getPlayerByName(playerName));
     }
 
-    @DeleteMapping("/admin/players/delete/{playerName}")
-    public ResponseEntity<Object> deletePlayer(@PathVariable String playerName){
-        try{
-            playerService.deletePlayer(playerName);
-            return ResponseEntity.ok().body("Player deleted successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/admin/players/update/{playerName}")
-    public ResponseEntity<Object> updatePlayer(@PathVariable String playerName, @RequestBody PlayerDTO player){
-        try{
-            playerService.updatePlayer(playerName, player);
-            return ResponseEntity.ok().body("Player updated successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @DeleteMapping("/admin/players/{playerName}/delete")
+    public ResponseEntity<Object> deletePlayer(@PathVariable String playerName) {
+        playerService.deletePlayer(playerName);
+        return ResponseEntity.ok().body(Map.of("message", "Player deleted successfully"));
     }
 
     @GetMapping("/players/{position}")
-    public ResponseEntity<Object> getPlayersByPosition(@PathVariable String position){
-        try{
-            return ResponseEntity.ok().body(playerService.getPlayersByPosition(Positions.valueOf(position.toUpperCase())));
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Object> getPlayersByPosition(@PathVariable String position) {
+        return ResponseEntity.ok().body(playerService.getPlayersByPosition(Positions.valueOf(position.toUpperCase())));
     }
 }

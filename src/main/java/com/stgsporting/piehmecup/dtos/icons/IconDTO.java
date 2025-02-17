@@ -1,4 +1,4 @@
-package com.stgsporting.piehmecup.dtos;
+package com.stgsporting.piehmecup.dtos.icons;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,8 @@ import lombok.Setter;
 public class IconDTO {
     private Long id;
     private String name;
-    private String imgLink;
+    private String imageKey;
+    private String imageUrl;
     private Integer price;
     private Boolean available;
 }

@@ -30,3 +30,4 @@ replay_pid*
 target/
 
 src/main/resources/application.properties
+src/main/resources/private_key.pem

@@ -1,12 +1,15 @@
 package com.stgsporting.piehmecup.services;
 
-import com.stgsporting.piehmecup.dtos.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.players.PlayerDTO;
+import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
 import com.stgsporting.piehmecup.entities.Player;
 import com.stgsporting.piehmecup.enums.Positions;
 import com.stgsporting.piehmecup.exceptions.PlayerNotFoundException;
 import com.stgsporting.piehmecup.repositories.PlayerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,78 +18,99 @@ import java.util.Optional;
 
 @Service
 public class PlayerService {
-    @Autowired
-    private PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
+    private final FileService fileService;
 
-    public void createPlayer(PlayerDTO player) {
-        try{
-            Player newPlayer = dtoToPlayer(player);
-
-            playerRepository.save(newPlayer);
-        } catch(IllegalArgumentException e) {
-            throw new IllegalArgumentException("Player cannot be null");
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while saving player");
-        }
+    public PlayerService(PlayerRepository playerRepository, FileService fileService) {
+        this.playerRepository = playerRepository;
+        this.fileService = fileService;
     }
 
-    private static Player dtoToPlayer(PlayerDTO player) {
+    public void createPlayer(PlayerUploadDTO player) {
+        Player newPlayer = dtoToPlayer(player);
+
+        playerRepository.save(newPlayer);
+    }
+
+    private Player dtoToPlayer(PlayerUploadDTO player) {
         Player newPlayer = new Player();
         newPlayer.setName(player.getName());
         newPlayer.setPosition(Positions.valueOf(player.getPosition().toUpperCase()));
         newPlayer.setAvailable(player.getAvailable());
         newPlayer.setPrice(player.getPrice());
-        newPlayer.setImgLink(player.getImgLink());
+
+        String key = fileService.uploadFile(player.getImage(), "/players");
+
+        newPlayer.setImgLink(key);
         newPlayer.setRating(player.getRating());
         return newPlayer;
     }
 
     public PlayerDTO getPlayerByName(String name) {
-        Optional<Player> player = playerRepository.findPlayerByName(name);
-        if(player.isPresent())
-            return playerToDTO(player.get());
+        Player player = playerRepository.findPlayerByName(name).orElseThrow(
+                () -> new PlayerNotFoundException("Player with name " + name + " not found")
+        );
 
-
-        throw new PlayerNotFoundException("Player with name " + name + " not found");
+        return playerToDTO(player);
     }
 
-    static PlayerDTO playerToDTO(Player player) {
+    public PlayerDTO getPlayerById(Long id) {
+        Player player = playerRepository.findById(id).orElseThrow(
+                () -> new PlayerNotFoundException("Player not found")
+        );
+
+        return playerToDTO(player);
+    }
+
+    public Page<PlayerDTO> getPlayers(Pageable pageable) {
+        return playerRepository.findAll(pageable).map(this::playerToDTO);
+    }
+
+    public PlayerDTO playerToDTO(Player player) {
         PlayerDTO playerDTO = new PlayerDTO();
         playerDTO.setId(player.getId());
         playerDTO.setName(player.getName());
         playerDTO.setPosition(player.getPosition().toString());
         playerDTO.setAvailable(player.getAvailable());
         playerDTO.setPrice(player.getPrice());
-        playerDTO.setImgLink(player.getImgLink());
+
+        String url = fileService.generateSignedUrl(player.getImgLink());
+
+        playerDTO.setImageUrl(url);
+        playerDTO.setImageKey(player.getImgLink());
+
         playerDTO.setRating(player.getRating());
         return playerDTO;
     }
 
-    public void updatePlayer(String playerName,PlayerDTO player) {
-        Optional<Player> playerToUpdate = playerRepository.findPlayerByName(playerName);
-        if(playerToUpdate.isPresent()){
-            Player updatedPlayer = dtoToPlayer(player);
-            updatedPlayer.setId(playerToUpdate.get().getId());
-            playerRepository.save(updatedPlayer);
-        }
+    public void updatePlayer(Long playerId, PlayerUploadDTO playerDTO) {
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
+        Player updatedPlayer = dtoToPlayer(playerDTO);
+
+        if(playerDTO.getImage() != null && !player.getImgLink().equals(updatedPlayer.getImgLink()))
+            fileService.deleteFile(player.getImgLink());
         else
-            throw new PlayerNotFoundException("Player with name " + playerName + " not found");
+            updatedPlayer.setImgLink(player.getImgLink());
+
+        updatedPlayer.setId(player.getId());
+
+        playerRepository.save(updatedPlayer);
     }
 
     public void deletePlayer(String name) {
-        Optional<Player> player = playerRepository.findPlayerByName(name);
-        if(player.isPresent())
-            playerRepository.delete(player.get());
+        Player player = playerRepository.findPlayerByName(name).orElseThrow(
+                () -> new PlayerNotFoundException("Player with name " + name + " not found")
+        );
 
-        else
-            throw new PlayerNotFoundException("Player with name " + name + " not found");
+        fileService.deleteFile(player.getImgLink());
+
+         playerRepository.delete(player);
     }
 
-    public List<PlayerDTO> getPlayersByPosition(Enum<Positions> position){
+    public List<PlayerDTO> getPlayersByPosition(Positions position){
         List<Player> players = playerRepository.findPlayersByPosition(position);
-        if(players.isEmpty())
-            throw new PlayerNotFoundException("No players found with position " + position);
 
         List<PlayerDTO> playerDTOs = new ArrayList<>();
         for(Player player : players)
