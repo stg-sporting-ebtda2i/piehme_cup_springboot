@@ -56,6 +56,9 @@ public class User extends BaseEntity implements Authenticatable {
     @Column(name = DatabaseEnum.waladImgLink, unique = true)
     private String imgLink;
 
+    @Version
+    private int version;
+
     @ManyToMany
     @JoinTable(name = DatabaseEnum.ownedPlayersTable, joinColumns = @JoinColumn(name = DatabaseEnum.userId),
             inverseJoinColumns = @JoinColumn(name = DatabaseEnum.playerId))

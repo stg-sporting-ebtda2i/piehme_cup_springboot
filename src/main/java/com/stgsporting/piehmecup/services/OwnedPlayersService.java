@@ -11,6 +11,7 @@ import com.stgsporting.piehmecup.repositories.PlayerRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class OwnedPlayersService {
                 throw new PlayerAlreadyPurchasedException("Player already purchased");
 
         } catch (UserNotFoundException | PlayerNotFoundException | InsufficientCoinsException | PlayerAlreadyPurchasedException e) {
-            throw new RuntimeException(e.getMessage());
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while adding player to user");
         }
@@ -85,7 +86,7 @@ public class OwnedPlayersService {
 
     @Transactional
     public void removePlayerFromUser(Long playerId) {
-        try{
+        try {
             Long userId = userService.getAuthenticatableId();
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -93,17 +94,19 @@ public class OwnedPlayersService {
             Player player = playerRepository.findById(playerId)
                     .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
-            if (user.getPlayers().contains(player)) {
-                walletService.credit(user, player.getPrice(), "Player sale: " + player.getId());
-
-                user.getPlayers().remove(player);
-                user.setLineupRating(user.getLineupRating() - player.getRating());
-                userRepository.save(user);
-            }
-            else
+            if (!user.getPlayers().contains(player))
                 throw new PlayerNotFoundException("User does not own player");
+
+            walletService.credit(user, player.getPrice(), "Player sale: " + player.getId());
+
+            user.getPlayers().remove(player);
+            user.setLineupRating(user.getLineupRating() - player.getRating());
+            userRepository.save(user);
+
+        } catch (OptimisticLockingFailureException e) {
+            throw new RuntimeException("Concurrent modification detected. Try again.");
         } catch (UserNotFoundException | PlayerNotFoundException e) {
-            throw new RuntimeException(e.getMessage());
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while removing player from user");
         }
