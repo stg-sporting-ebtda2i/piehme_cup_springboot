@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class Response {
     private String body;
+    private String headers;
     private HttpStatus statusCode;
 
     public boolean isSuccessful() {

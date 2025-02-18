@@ -6,19 +6,27 @@ import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.*;
+import com.stgsporting.piehmecup.helpers.Http;
+import com.stgsporting.piehmecup.helpers.Response;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +41,11 @@ public class UserService implements AuthenticatableService {
     private final PositionRepository positionRepository;
     private final IconRepository iconRepository;
     private final FileService fileService;
+    private final RemoveBackgroundService removeBackgroundService;
 
     public UserService(UserRepository userRepository, SchoolYearService schoolYearService
             , EntityService entityService, SchoolYearRepository schoolYearRepository
-            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService) {
+            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService, RemoveBackgroundService removeBackgroundService) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
@@ -44,6 +53,7 @@ public class UserService implements AuthenticatableService {
         this.positionRepository = positionRepository;
         this.iconRepository = iconRepository;
         this.fileService = fileService;
+        this.removeBackgroundService = removeBackgroundService;
     }
 
     public User getAuthenticatableById(long id) {
@@ -101,7 +111,9 @@ public class UserService implements AuthenticatableService {
     }
 
     public void changeImage(User user, MultipartFile image) {
-        if (user.getImgLink() != null && user.getImgLink().isEmpty()) {
+        image = removeBackgroundService.handle(image);
+
+        if (user.getImgLink() != null && !user.getImgLink().isEmpty()) {
             fileService.deleteFile(user.getImgLink());
         }
 

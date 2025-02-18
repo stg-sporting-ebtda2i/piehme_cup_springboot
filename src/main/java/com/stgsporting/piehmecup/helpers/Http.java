@@ -36,38 +36,46 @@ public class Http {
         addHeader("Authorization", token);
     }
 
-    public Response call(String method, JSONObject body) {
-        RequestBody requestBody = body != null ? RequestBody.create(
-                body.toJSONString(),
-                MediaType.parse("application/json")
-        ) : null;
-
+    public Call call(String method, RequestBody requestBody) {
         Request request = this.builder
                 .method(method, requestBody)
                 .build();
 
         OkHttpClient client = new OkHttpClient();
 
+        return client.newCall(request);
+    }
+
+    public Response call(String method, JSONObject body) {
+        RequestBody requestBody = body != null ? RequestBody.create(
+                body.toJSONString(),
+                MediaType.parse("application/json")
+        ) : null;
+
         Response res = new Response();
-        try (okhttp3.Response response = client.newCall(request).execute()) {
+        try (okhttp3.Response response = call(method, requestBody).execute()) {
 
             ResponseBody responseBody = response.body();
-
             if (responseBody != null) {
                 res.setBody(responseBody.string());
             }
 
             res.setStatusCode(HttpStatus.valueOf(response.code()));
-
-        } catch (IOException e) {
+        }catch (IOException e) {
             res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return res;
     }
 
+    public Response call(String method) {
+        JSONObject json = new JSONObject();
+
+        return call(method, json);
+    }
+
     public Response get() {
-        return call("GET", null);
+        return call("GET");
     }
 
     public Response post(JSONObject body) {
