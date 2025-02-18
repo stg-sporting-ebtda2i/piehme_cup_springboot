@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +36,12 @@ public class PlayerService {
     private Player dtoToPlayer(PlayerUploadDTO player) {
         Player newPlayer = new Player();
         newPlayer.setName(player.getName());
-        newPlayer.setPosition(Positions.valueOf(player.getPosition().toUpperCase()));
+        try {
+            newPlayer.setPosition(Positions.valueOf(player.getPosition().toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid position");
+        }
+
         newPlayer.setAvailable(player.getAvailable());
         newPlayer.setPrice(player.getPrice());
 
