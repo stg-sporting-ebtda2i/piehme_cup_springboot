@@ -52,9 +52,14 @@ public class PriceController {
         return ResponseEntity.ok(Map.of("message", "Price deleted successfully"));
     }
 
-    @GetMapping("/prices/{priceId}")
-    public ResponseEntity<Object> getPrice(@PathVariable Long priceId) {
+    @GetMapping("/admin/prices/{priceId}")
+    public ResponseEntity<Object> getPriceAdmin(@PathVariable Long priceId) {
         return ResponseEntity.ok(priceService.getPriceById(priceId));
+    }
+
+    @GetMapping("/prices/{name}")
+    public ResponseEntity<Object> getPrice(@PathVariable String name) {
+        return ResponseEntity.ok(priceService.getPrice(name));
     }
 
     @GetMapping("/admin/prices")

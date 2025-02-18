@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionResolver extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value
-            = { UserNotFoundException.class, SchoolYearNotFound.class, PlayerNotFoundException.class, IconNotFoundException.class, PositionNotFoundException.class, AttendanceNotFoundException.class, LiturgyNotFoundException.class })
+            = { NotFoundException.class, UserNotFoundException.class, SchoolYearNotFound.class, PlayerNotFoundException.class, IconNotFoundException.class, PositionNotFoundException.class, AttendanceNotFoundException.class, LiturgyNotFoundException.class, PriceNotFoundException.class })
     protected ResponseEntity<Object> handleNotFound(
             NotFoundException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.NOT_FOUND, request);
