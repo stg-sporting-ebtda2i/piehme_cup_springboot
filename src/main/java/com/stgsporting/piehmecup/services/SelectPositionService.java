@@ -23,43 +23,26 @@ public class SelectPositionService {
     private PositionRepository positionRepository;
 
     public void selectPosition(Long positionId) {
-        try {
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Position position = positionRepository.findPositionById(positionId).orElseThrow(PositionNotFoundException::new);
 
-            Position position = positionRepository.findPositionById(positionId)
-                    .orElseThrow(() -> new PositionNotFoundException("Position not found"));
-
-            if (user.getPositions().contains(position)) {
-                user.setSelectedPosition(position);
-                userRepository.save(user);
-            }
-            else
-                throw new UnownedPositionException("Position selected is not owned by the user");
-
-        } catch (UserNotFoundException | PositionNotFoundException | UnownedPositionException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while selecting position");
+        if (!user.getPositions().contains(position)) {
+            throw new UnownedPositionException();
         }
+
+        user.setSelectedPosition(position);
+        userRepository.save(user);
     }
 
     public PositionDTO getSelectedPosition() {
-        try {
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-            Position position = user.getSelectedPosition();
-            if (position == null)
-                throw new PositionNotFoundException("No selected position found");
+        Position position = user.getSelectedPosition();
+        if (position == null)
+            throw new PositionNotFoundException("No selected position found");
 
-            return new PositionDTO(position.getId(), position.getName(), position.getPrice().toString());
-        } catch (UserNotFoundException | PositionNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while selecting position");
-        }
+        return new PositionDTO(position.getId(), position.getName(), position.getPrice().toString());
     }
 }
