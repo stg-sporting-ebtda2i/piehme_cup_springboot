@@ -13,8 +13,10 @@ public class LeaderboardDTO {
     private Long id;
     private String name;
     private Integer cardRating;
-    private String userImgLink;
+    private String imageUrl;
+    private String imageKey;
     private String Position;
     private Double lineupRating;
-    private String iconImgLink;
+    private String iconUrl;
+    private String iconKey;
 }

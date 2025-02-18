@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.PrivateKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
@@ -68,7 +70,7 @@ public class FileService {
         try {
             request = CannedSignerRequest.builder()
                     .resourceUrl("https://" + domain + "/" + key)
-                    .privateKey(Paths.get(ResourceUtils.getFile("classpath:" + keyPath).getPath()))
+                    .privateKey(Paths.get(System.getProperty("user.dir") + "/" +  keyPath))
                     .keyPairId(keyId)
                     .expirationDate(expirationTime)
                     .build();
