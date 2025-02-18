@@ -1,7 +1,10 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
+import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.Price;
+import com.stgsporting.piehmecup.enums.Role;
+import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,8 @@ import java.util.Map;
 public class PriceController {
     @Autowired
     private PriceService priceService;
+    @Autowired
+    private AdminService adminService;
 
     @PostMapping("/admin/prices")
     public ResponseEntity<Object> createPrice(@RequestBody Price price) {
@@ -23,6 +28,13 @@ public class PriceController {
 
     @PutMapping("/admin/prices/{priceId}")
     public ResponseEntity<Object> updatePrice(@PathVariable Long priceId, @RequestBody Price price) {
+        if(priceId == 1) {
+            Admin admin = (Admin) adminService.getAuthenticatable();
+            if(admin.getRole() != Role.ADMIN) {
+                throw new IllegalArgumentException("You don't have permission to update rating price");
+            }
+        }
+
         price.setId(priceId);
         priceService.save(price);
 
@@ -31,6 +43,10 @@ public class PriceController {
 
     @DeleteMapping("/admin/prices/{priceId}")
     public ResponseEntity<Object> deletePrice(@PathVariable Long priceId) {
+        if(priceId == 1) {
+            throw new IllegalArgumentException("Cannot delete rating price");
+        }
+
         priceService.deletePrice(priceId);
 
         return ResponseEntity.ok(Map.of("message", "Price deleted successfully"));
