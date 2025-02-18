@@ -19,7 +19,7 @@ public class DefaultIconLoader implements CommandLineRunner {
             icon.setAvailable(true);
             icon.setName("Default");
             icon.setPrice(0);
-            icon.setImgLink("link");
+            icon.setImgLink("placeholder.png");
             iconRepository.save(icon);
         }
     }

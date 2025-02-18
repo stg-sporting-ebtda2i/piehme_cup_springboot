@@ -98,6 +98,10 @@ public class IconService {
     }
 
     public void updateIcon(Long id, IconUploadDTO iconDTO) {
+        if(id == 1) {
+            throw new IllegalArgumentException("Cannot update default icon");
+        }
+
         Icon icon = iconRepository.findIconById(id)
                 .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
