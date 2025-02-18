@@ -57,8 +57,7 @@ public class UserService implements AuthenticatableService {
     }
 
     public User getAuthenticatableById(long id) {
-        return getUserById(id)
-                .orElseThrow(()-> new UserNotFoundException("User not found"));
+        return getUserById(id).orElseThrow(UserNotFoundException::new);
     }
 
     public long getAuthenticatableId() {
@@ -67,14 +66,9 @@ public class UserService implements AuthenticatableService {
 
     public Authenticatable getAuthenticatable() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        /*
-         * If the user is not authenticated or the principal is not an instance of UserDetail, throw an UnauthorizedAccessException
-         * This case should not happen, because it means caller expects authenticated user to be present
-         * We would not have reached this point if the user was not authenticated
-         * but for security reasons, we should check this case
-         */
+
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetail))
-            throw new UnauthorizedAccessException("User is not authenticated");
+            throw new UnauthorizedAccessException();
 
         return  ((Details) authentication.getPrincipal()).getAuthenticatable();
     }
@@ -84,7 +78,7 @@ public class UserService implements AuthenticatableService {
             throw new NullPointerException("Username cannot be empty");
 
         return getUserByUsername(username)
-                .orElseThrow(()-> new UserNotFoundException("Incorrect email or password"));
+                .orElseThrow(InvalidCredentialsException::new);
     }
 
     public Optional<User> getUserByIdOrUsername(String idOrUsername) {
@@ -151,22 +145,16 @@ public class UserService implements AuthenticatableService {
     }
 
     public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, String search, Pageable page) {
-        if(search == null) {
-            search = "";
-        }
+        if(search == null) search = "";
 
         return userRepository.findUsersBySchoolYearPaginated(schoolYear,search + "%", page);
     }
 
     public List<LeaderboardDTO> getLeaderboard() {
         Long userId = getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Long schoolYearId = user.getSchoolYear().getId();
-
-        SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId)
-                .orElseThrow(() -> new SchoolYearNotFound("School year not found"));
+        SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId).orElseThrow(SchoolYearNotFound::new);
 
         List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
 
@@ -198,9 +186,7 @@ public class UserService implements AuthenticatableService {
     }
 
     public Integer getCoins() {
-        User user = userRepository.findById(getAuthenticatableId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
+        User user = userRepository.findById(getAuthenticatableId()).orElseThrow(UserNotFoundException::new);
         return user.getCoins();
     }
 

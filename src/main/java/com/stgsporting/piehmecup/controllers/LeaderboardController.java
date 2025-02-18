@@ -15,10 +15,6 @@ public class LeaderboardController {
 
     @GetMapping
     public ResponseEntity<Object> getLeaderboard() {
-        try {
-            return ResponseEntity.ok().body(userService.getLeaderboard());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok().body(userService.getLeaderboard());
     }
 }

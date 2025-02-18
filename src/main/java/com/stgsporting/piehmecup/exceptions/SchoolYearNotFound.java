@@ -8,4 +8,8 @@ public class SchoolYearNotFound extends NotFoundException {
     public SchoolYearNotFound(String message) {
         super(message);
     }
+
+    public SchoolYearNotFound() {
+        super("Osra not found");
+    }
 }
