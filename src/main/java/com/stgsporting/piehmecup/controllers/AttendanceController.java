@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
+import com.stgsporting.piehmecup.dtos.attendances.RequestAttendanceDTO;
 import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.services.AdminService;
@@ -42,12 +43,12 @@ public class AttendanceController {
     @DeleteMapping("ostaz/attendances/{attendanceId}")
     public ResponseEntity<Object> deleteAttendance(@PathVariable Long attendanceId) {
         attendanceService.deleteAttendance(attendanceId);
-        return ResponseEntity.ok().body(new HashMap<>(Map.of("message", "Attendance deleted")));
+        return ResponseEntity.ok().body(Map.of("message", "Attendance deleted"));
     }
 
     @PatchMapping("attendance/{liturgyName}")
-    public ResponseEntity<Object> requestAttendance(@PathVariable String liturgyName) {
-        attendanceService.requestAttendance(liturgyName);
-        return ResponseEntity.ok().body("Attendance requested");
+    public ResponseEntity<Object> requestAttendance(@PathVariable String liturgyName, @RequestBody RequestAttendanceDTO attendanceDTO) {
+        attendanceService.requestAttendance(liturgyName, attendanceDTO.getDate());
+        return ResponseEntity.ok().body(Map.of("message", "Attendance requested"));
     }
 }

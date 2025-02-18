@@ -14,32 +14,20 @@ public class PriceController {
 
     @PostMapping("/admin/prices/create/{name}/{price}")
     public ResponseEntity<Object> createPrice(@PathVariable String name, @PathVariable Integer price) {
-        try{
-            priceService.createPrice(name, price);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        priceService.createPrice(name, price);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/admin/prices/update/{name}/{price}")
     public ResponseEntity<Object> updatePrice(@PathVariable String name, @PathVariable Integer price) {
-        try{
-            priceService.updatePrice(name, price);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        priceService.updatePrice(name, price);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/admin/prices/delete/{name}")
     public ResponseEntity<Object> deletePrice(@PathVariable String name) {
-        try{
-            priceService.deletePrice(name);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        priceService.deletePrice(name);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/prices/{name}")
@@ -50,19 +38,16 @@ public class PriceController {
             return ResponseEntity.notFound().build();
         }
 
-        try {
-            return ResponseEntity.ok(price);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(price);
     }
 
     @GetMapping("/prices/all")
     public ResponseEntity<Object> getAllPrices() {
-        try{
-            return ResponseEntity.ok(priceService.getAllPrices());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(priceService.getAllPrices());
+    }
+
+    @GetMapping("/prices")
+    public ResponseEntity<Object> getAllPricesForUser() {
+        return ResponseEntity.ok(priceService.getAllPricesForUser());
     }
 }

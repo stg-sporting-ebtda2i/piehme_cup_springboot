@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.dtos.users;
 
+import com.stgsporting.piehmecup.dtos.attendances.AttendanceUserDTO;
 import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.services.FileService;

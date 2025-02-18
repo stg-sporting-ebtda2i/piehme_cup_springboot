@@ -1,10 +1,12 @@
-package com.stgsporting.piehmecup.dtos;
+package com.stgsporting.piehmecup.dtos.attendances;
 
 import com.stgsporting.piehmecup.entities.Attendance;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -16,6 +18,7 @@ public class AttendanceDTO {
     private String username;
     private Boolean approved;
     private String description;
+    private Date date;
     private Integer coins;
     private String createdAt;
 
@@ -27,5 +30,6 @@ public class AttendanceDTO {
         this.description = attendance.getPrice().getName();
         this.coins = attendance.getPrice().getCoins();
         this.createdAt = attendance.getCreatedAt().toString();
+        this.date = attendance.getDate();
     }
 }
