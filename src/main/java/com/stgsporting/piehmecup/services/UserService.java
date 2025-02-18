@@ -159,29 +159,22 @@ public class UserService implements AuthenticatableService {
     }
 
     public List<LeaderboardDTO> getLeaderboard() {
+        Long userId = getAuthenticatableId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        try {
-            Long userId = getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long schoolYearId = user.getSchoolYear().getId();
 
-            Long schoolYearId = user.getSchoolYear().getId();
+        SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId)
+                .orElseThrow(() -> new SchoolYearNotFound("School year not found"));
 
-            SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId)
-                    .orElseThrow(() -> new SchoolYearNotFound("School year not found"));
+        List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
 
-            List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
-
-            return getLeaderboardDTOS(users);
-        } catch (UserNotFoundException | SchoolYearNotFound e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching leaderboard");
-        }
+        return getLeaderboardDTOS(users);
     }
 
     @NotNull
-    private static List<LeaderboardDTO> getLeaderboardDTOS(List<User> users) {
+    private List<LeaderboardDTO> getLeaderboardDTOS(List<User> users) {
         List<LeaderboardDTO> leaderboard = new ArrayList<>();
 
         for (User u : users){
@@ -191,8 +184,13 @@ public class UserService implements AuthenticatableService {
             String position = u.getSelectedPosition().getName();
             dto.setPosition(position);
             dto.setLineupRating(u.getLineupRating());
-            dto.setUserImgLink(u.getImgLink());
-            dto.setIconImgLink(u.getSelectedIcon().getImgLink());
+
+            dto.setImageKey(u.getImgLink());
+            dto.setImageUrl(fileService.generateSignedUrl(u.getImgLink()));
+
+            dto.setIconKey(u.getSelectedIcon().getImgLink());
+            dto.setIconUrl(fileService.generateSignedUrl(u.getSelectedIcon().getImgLink()));
+
             dto.setCardRating(u.getCardRating());
             leaderboard.add(dto);
         }
