@@ -1,7 +1,6 @@
 package com.stgsporting.piehmecup.entities;
 
 import com.stgsporting.piehmecup.config.DatabaseEnum;
-import com.stgsporting.piehmecup.enums.Positions;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,9 +34,9 @@ public class Player extends BaseEntity {
     @Column(name = DatabaseEnum.name, nullable = false)
     private String name;
 
-    @Column(name = DatabaseEnum.position, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Positions position;
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.positionId, nullable = false)
+    private Position position;
 
     @ManyToMany(mappedBy = "players")
     @JsonIgnore

@@ -8,4 +8,8 @@ public class PlayerNotFoundException extends NotFoundException {
     public PlayerNotFoundException(String message) {
         super(message);
     }
+
+    public PlayerNotFoundException() {
+        super("Player not found");
+    }
 }
