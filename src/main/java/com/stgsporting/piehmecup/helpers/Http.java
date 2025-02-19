@@ -69,7 +69,7 @@ public class Http {
     }
 
     public Response call(String method) {
-        JSONObject json = new JSONObject();
+        JSONObject json = null;
 
         return call(method, json);
     }
