@@ -100,23 +100,24 @@ public class RemoveBackgroundService {
                     .callTimeout(Duration.ofSeconds(45))
                     .build();
 
-            try (Response response = client.newCall(request).execute()) {
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
+            Response response = client.newCall(request).execute();
 
-                    if(body == null) {
-                        return image;
-                    }
+            if (response.isSuccessful()) {
+                ResponseBody body = response.body();
 
-                    byte[] imageBytes = body.bytes();
+                if(body == null) {
+                    return image;
+                }
 
-                    return new CustomMultipartFile(imageBytes, "output.png");
-                } else if (response.code() == 502) {
-                    counter += 1;
+                byte[] imageBytes = body.bytes();
 
-                    if (counter <= 3) {
-                        return handle(image);
-                    }
+                return new CustomMultipartFile(imageBytes, "output.png");
+            } else if (response.code() == 502) {
+                counter += 1;
+                System.err.println("Failed, Counter: " + counter.toString());
+
+                if (counter <= 3) {
+                    return handle(image);
                 }
             }
         }catch(IOException e) {
