@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Service
 public class RemoveBackgroundService {
@@ -78,8 +79,6 @@ public class RemoveBackgroundService {
 
     public MultipartFile handle(MultipartFile image) {
         try {
-            Http request = new Http(BASE_URL);
-            request.addHeader("Authorization", "Bearer " + API_KEY);
 
             String extension = FilenameUtils.getExtension(image.getOriginalFilename());
             RequestBody requestBody = new MultipartBody.Builder()
@@ -90,7 +89,18 @@ public class RemoveBackgroundService {
                     )
                     .build();
 
-            try (Response response = request.call("POST", requestBody).execute()) {
+            Request request = new Request.Builder()
+                    .url(BASE_URL)
+                    .addHeader("Authorization", "Bearer " + API_KEY)
+                    .method("POST", requestBody)
+                    .build()
+                    ;
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .callTimeout(Duration.ofSeconds(45))
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
 
