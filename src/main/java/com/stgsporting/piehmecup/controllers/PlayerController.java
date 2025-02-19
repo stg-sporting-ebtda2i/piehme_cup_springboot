@@ -57,6 +57,6 @@ public class PlayerController {
 
     @GetMapping("/players/{position}")
     public ResponseEntity<Object> getPlayersByPosition(@PathVariable String position) {
-        return ResponseEntity.ok().body(playerService.getPlayersByPosition(Positions.valueOf(position.toUpperCase())));
+        return ResponseEntity.ok().body(playerService.getPlayersByPosition(position.toUpperCase()));
     }
 }

@@ -3,6 +3,7 @@ package com.stgsporting.piehmecup.services;
 import com.stgsporting.piehmecup.dtos.players.PlayerDTO;
 import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
 import com.stgsporting.piehmecup.entities.Player;
+import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.enums.Positions;
 import com.stgsporting.piehmecup.exceptions.PlayerNotFoundException;
 import com.stgsporting.piehmecup.repositories.PlayerRepository;
@@ -113,8 +114,10 @@ public class PlayerService {
          playerRepository.delete(player);
     }
 
-    public List<PlayerDTO> getPlayersByPosition(Positions position){
-        List<Player> players = playerRepository.findPlayersByPosition(position);
+    public List<PlayerDTO> getPlayersByPosition(String positionName){
+        Position position = positionService.getPositionByName(positionName);
+
+        List<Player> players = playerRepository.findPlayersByPositionId(position);
 
         List<PlayerDTO> playerDTOs = new ArrayList<>();
         for(Player player : players)

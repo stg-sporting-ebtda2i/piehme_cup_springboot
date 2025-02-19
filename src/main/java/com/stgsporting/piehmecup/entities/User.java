@@ -52,7 +52,6 @@ public class User extends BaseEntity implements Authenticatable {
     private Integer cardRating;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = DatabaseEnum.baseId, referencedColumnName = DatabaseEnum.userId)
     private UserRating lineupRating;
 
