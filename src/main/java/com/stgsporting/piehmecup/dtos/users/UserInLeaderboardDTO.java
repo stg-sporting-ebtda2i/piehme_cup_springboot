@@ -1,4 +1,4 @@
-package com.stgsporting.piehmecup.dtos;
+package com.stgsporting.piehmecup.dtos.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeaderboardDTO {
+public class UserInLeaderboardDTO {
     private Long id;
     private String name;
     private Integer cardRating;

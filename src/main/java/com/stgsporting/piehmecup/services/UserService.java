@@ -2,31 +2,24 @@ package com.stgsporting.piehmecup.services;
 
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
-import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
+import com.stgsporting.piehmecup.dtos.users.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
+import com.stgsporting.piehmecup.dtos.users.UserInLeaderboardDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.*;
-import com.stgsporting.piehmecup.helpers.Http;
-import com.stgsporting.piehmecup.helpers.Response;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -150,28 +143,37 @@ public class UserService implements AuthenticatableService {
         return userRepository.findUsersBySchoolYearPaginated(schoolYear,search + "%", page);
     }
 
-    public List<LeaderboardDTO> getLeaderboard() {
+    public LeaderboardDTO getLeaderboard() {
         Long userId = getAuthenticatableId();
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Long schoolYearId = user.getSchoolYear().getId();
         SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId).orElseThrow(SchoolYearNotFound::new);
 
         List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
+//        List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
 
-        return getLeaderboardDTOS(users);
+        return getLeaderboardDTO(users);
     }
 
     @NotNull
-    private List<LeaderboardDTO> getLeaderboardDTOS(List<User> users) {
-        List<LeaderboardDTO> leaderboard = new ArrayList<>();
+    private LeaderboardDTO getLeaderboardDTO(List<User> users) {
+        List<UserInLeaderboardDTO> usersInLeaderboard = new ArrayList<>();
 
-        for (User u : users){
-            LeaderboardDTO dto = new LeaderboardDTO();
+        Double maxRating = 0.0;
+        Double avgRating = 0.0;
+
+        for (User u : users) {
+            UserInLeaderboardDTO dto = new UserInLeaderboardDTO();
             dto.setName(u.getUsername());
             dto.setId(u.getId());
             String position = u.getSelectedPosition().getName();
             dto.setPosition(position);
             dto.setLineupRating(u.getLineupRating());
+
+            if (u.getLineupRating() > maxRating) {
+                maxRating = u.getLineupRating();
+            }
+            avgRating += u.getLineupRating();
 
             dto.setImageKey(u.getImgLink());
             dto.setImageUrl(fileService.generateSignedUrl(u.getImgLink()));
@@ -180,8 +182,14 @@ public class UserService implements AuthenticatableService {
             dto.setIconUrl(fileService.generateSignedUrl(u.getSelectedIcon().getImgLink()));
 
             dto.setCardRating(u.getCardRating());
-            leaderboard.add(dto);
+            usersInLeaderboard.add(dto);
         }
+
+        LeaderboardDTO leaderboard = new LeaderboardDTO();
+        leaderboard.setUsers(usersInLeaderboard);
+        leaderboard.setMaxRating(maxRating);
+        leaderboard.setAvgRating(avgRating / users.size());
+
         return leaderboard;
     }
 

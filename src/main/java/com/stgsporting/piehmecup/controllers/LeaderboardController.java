@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/leaderboard")
 public class LeaderboardController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
+    @GetMapping("/leaderboard")
     public ResponseEntity<Object> getLeaderboard() {
         return ResponseEntity.ok().body(userService.getLeaderboard());
     }
