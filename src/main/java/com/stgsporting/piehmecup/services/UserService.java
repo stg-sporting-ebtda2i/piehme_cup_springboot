@@ -188,7 +188,7 @@ public class UserService implements AuthenticatableService {
         LeaderboardDTO leaderboard = new LeaderboardDTO();
         leaderboard.setUsers(usersInLeaderboard);
         leaderboard.setMaxRating(maxRating);
-        leaderboard.setAvgRating(avgRating / users.size());
+        leaderboard.setAvgRating(users.isEmpty() ? 0.0 : avgRating / users.size());
 
         return leaderboard;
     }
