@@ -15,6 +15,8 @@ public class Quiz {
     private Long id;
     private String name;
     private String slug;
+    private Integer coins;
+    private Boolean isSolved;
     private SchoolYear schoolYear;
     private List<Question> questions;
 
@@ -23,6 +25,8 @@ public class Quiz {
         quiz.setId((Long) quizJson.get("id"));
         quiz.setName((String) quizJson.get("name"));
         quiz.setSlug((String) quizJson.get("slug"));
+        quiz.setCoins((Integer) quizJson.get("points"));
+        quiz.setIsSolved((Boolean) quizJson.getOrDefault("is_solved", false));
         quiz.setSchoolYear(schoolYear);
 
         JSONArray questionsArray = (JSONArray) quizJson.get("questions");

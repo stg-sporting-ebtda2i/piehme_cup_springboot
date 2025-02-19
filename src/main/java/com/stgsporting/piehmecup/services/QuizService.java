@@ -31,9 +31,11 @@ public class QuizService {
     }
 
     public List<Quiz> getQuizzesForUser() {
-        Authenticatable user = userService.getAuthenticatable();
+        User user = (User) userService.getAuthenticatable();
         SchoolYear schoolYear = user.getSchoolYear();
-        String url = "/groups/" + schoolYear.getSlug();
+        String url = user.getQuizId() == null
+                ? "/groups/" + schoolYear.getSlug()
+                : "/quizzes?entity" + user.getQuizId();
 
         Response response = httpService.get(url);
 
