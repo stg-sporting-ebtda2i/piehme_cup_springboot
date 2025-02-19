@@ -123,7 +123,6 @@ public class UserService implements AuthenticatableService {
         user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
         user.setCardRating(0);
-        user.setLineupRating(0.0);
         user.setImgLink(userRegisterDTO.getImgLink());
         user.setSelectedPosition(positionRepository.findPositionByName("GK").orElseThrow());
         user.setSelectedIcon(iconRepository.findIconByName("Default").orElseThrow());
@@ -168,12 +167,14 @@ public class UserService implements AuthenticatableService {
             dto.setId(u.getId());
             String position = u.getSelectedPosition().getName();
             dto.setPosition(position);
-            dto.setLineupRating(u.getLineupRating());
+            Double rating = u.getLineupRating();
 
-            if (u.getLineupRating() > maxRating) {
-                maxRating = u.getLineupRating();
+            dto.setLineupRating(rating);
+
+            if (rating > maxRating) {
+                maxRating = rating;
             }
-            avgRating += u.getLineupRating();
+            avgRating += rating;
 
             dto.setImageKey(u.getImgLink());
             dto.setImageUrl(fileService.generateSignedUrl(u.getImgLink()));
@@ -187,8 +188,9 @@ public class UserService implements AuthenticatableService {
 
         LeaderboardDTO leaderboard = new LeaderboardDTO();
         leaderboard.setUsers(usersInLeaderboard);
-        leaderboard.setMaxRating(maxRating);
+        leaderboard.setMaxRating(Math.round(maxRating * 100.0) / 100.0);
         leaderboard.setAvgRating(users.isEmpty() ? 0.0 : avgRating / users.size());
+        leaderboard.setAvgRating(Math.round(leaderboard.getAvgRating() * 100.0) / 100.0);
 
         return leaderboard;
     }
