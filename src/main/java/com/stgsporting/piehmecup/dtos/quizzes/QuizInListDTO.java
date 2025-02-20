@@ -11,7 +11,7 @@ public class QuizInListDTO {
     private Long id;
     private String name;
     private String slug;
-    private Integer coins;
+    private Long coins;
     private Boolean isSolved;
 
     public QuizInListDTO(Quiz quiz) {
