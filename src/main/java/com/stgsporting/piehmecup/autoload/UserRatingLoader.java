@@ -25,6 +25,12 @@ public class UserRatingLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Path path = Paths.get(System.getProperty("user.dir") + "/user_rating_view.sql");
 
-        jdbcTemplate.execute(new String(Files.readAllBytes(path)));
+        String queriesStr = Files.readString(path);
+
+        String [] queries = queriesStr.split(";");
+
+        for (String query : queries) {
+            jdbcTemplate.execute(query);
+        }
     }
 }

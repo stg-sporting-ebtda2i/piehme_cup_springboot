@@ -3,8 +3,7 @@ package com.stgsporting.piehmecup.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import net.jcip.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Immutable;
 
 @Setter
 @Getter
