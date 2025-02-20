@@ -1,7 +1,7 @@
 
 DROP TABLE IF EXISTS user_rating;
 
-CREATE VIEW user_rating AS
+CREATE OR REPLACE VIEW user_rating AS
 SELECT
     users.id AS user_id,
     ((IFNULL(SUM(players.rating), 0) + users.card_rating) / 11) AS lineup_rating
