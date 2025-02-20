@@ -22,5 +22,10 @@ public class SchoolYearLoader implements CommandLineRunner {
                 schoolYearService.createSchoolYear("Junior " + i);
             }
         }
+
+        if(! schoolYearService.existsSchoolYearById(7L)) {
+            schoolYearService.createSchoolYear("E3dady");
+        }
+
     }
 }

@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
@@ -23,7 +25,6 @@ import java.util.List;
         name = DatabaseEnum.usersTable,
         indexes = {
                 @Index(name = "idx_schoolyear_username", columnList = DatabaseEnum.schoolYearId + ", " + DatabaseEnum.username),
-                @Index(name = "idx_schoolyear_lineuprating", columnList = DatabaseEnum.schoolYearId + ", " + DatabaseEnum.lineupRating)
         }
 )
 public class User extends BaseEntity implements Authenticatable {
@@ -49,9 +50,9 @@ public class User extends BaseEntity implements Authenticatable {
     @ColumnDefault("0")
     private Integer cardRating;
 
-    @Column(name = DatabaseEnum.lineupRating, nullable = false)
-    @ColumnDefault("0")
-    private Double lineupRating;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = DatabaseEnum.baseId, referencedColumnName = DatabaseEnum.userId)
+    private UserRating lineupRating;
 
     @Column(name = DatabaseEnum.waladImgLink, unique = true)
     private String imgLink;
@@ -94,5 +95,9 @@ public class User extends BaseEntity implements Authenticatable {
 
     public String getRoleString() {
         return "USER";
+    }
+
+    public Double getLineupRating() {
+        return lineupRating.getLineupRating();
     }
 }

@@ -1,11 +1,11 @@
 package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
-import com.stgsporting.piehmecup.dtos.AttendanceDTO;
+import com.stgsporting.piehmecup.dtos.attendances.AttendanceDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.AttendanceAlreadyApproved;
 import com.stgsporting.piehmecup.exceptions.AttendanceNotFoundException;
-import com.stgsporting.piehmecup.exceptions.LiturgyNotFound;
+import com.stgsporting.piehmecup.exceptions.LiturgyNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.repositories.AttendanceRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Service
@@ -37,27 +38,19 @@ public class AttendanceService {
         this.adminService = adminService;
     }
 
-    public void requestAttendance(String liturgyName) {
-        try {
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public void requestAttendance(String liturgyName, Date date) {
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        priceRepository.findPricesByName(liturgyName).orElseThrow(LiturgyNotFoundException::new);
 
-            priceRepository.findPricesByName(liturgyName)
-                    .orElseThrow(() -> new LiturgyNotFound("Liturgy not found"));
-
-            saveAttendance(liturgyName, user);
-        } catch (UserNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to request attendance");
-        }
+        saveAttendance(liturgyName, date, user);
     }
 
-    private void saveAttendance(String liturgyName, User user) {
+    private void saveAttendance(String liturgyName, Date date, User user) {
         Attendance attendance = new Attendance();
         attendance.setPrice(priceService.getPrice(liturgyName));
         attendance.setUser(user);
+        attendance.setDate(date);
         attendance.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         attendance.setApproved(false);
         attendanceRepository.save(attendance);

@@ -83,4 +83,5 @@ public class DatabaseEnum {
 
     // SELECTED POSITION TABLE
     public static final String selectedPositionId = "positionId";
+    public static final String date = "date";
 }

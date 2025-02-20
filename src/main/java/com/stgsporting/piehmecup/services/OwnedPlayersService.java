@@ -41,7 +41,7 @@ public class OwnedPlayersService {
 
             return playerDTOS;
         } catch (UserNotFoundException e) {
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException();
         }
     }
 
@@ -60,54 +60,37 @@ public class OwnedPlayersService {
 
     @Transactional
     public void addPlayerToUser(Long playerId) {
-        try{
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Player player = playerRepository.findById(playerId).orElseThrow(PlayerNotFoundException::new);
 
-            Player player = playerRepository.findById(playerId)
-                    .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
-
-            if (!user.getPlayers().contains(player)) {
-                walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
-
-                user.getPlayers().add(player);
-                user.setLineupRating(user.getLineupRating() + player.getRating());
-                userRepository.save(user);
-            }
-            else
-                throw new PlayerAlreadyPurchasedException("Player already purchased");
-
-        } catch (UserNotFoundException | PlayerNotFoundException | InsufficientCoinsException | PlayerAlreadyPurchasedException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while adding player to user");
+        if (user.getPlayers().contains(player)) {
+            throw new PlayerAlreadyPurchasedException();
         }
+
+        walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
+
+        user.getPlayers().add(player);
+        userRepository.save(user);
+
     }
 
     @Transactional
     public void removePlayerFromUser(Long playerId) {
-        try{
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-            Player player = playerRepository.findById(playerId)
-                    .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
-            if (user.getPlayers().contains(player)) {
-                walletService.credit(user, player.getPrice(), "Player sale: " + player.getId());
-
-                user.getPlayers().remove(player);
-                user.setLineupRating(user.getLineupRating() - player.getRating());
-                userRepository.save(user);
-            }
-            else
-                throw new PlayerNotFoundException("User does not own player");
-        } catch (UserNotFoundException | PlayerNotFoundException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while removing player from user");
+        if (!user.getPlayers().contains(player)) {
+            throw new PlayerNotFoundException("User does not own player");
         }
+
+        walletService.credit(user, player.getPrice(), "Player sale: " + player.getId());
+
+        user.getPlayers().remove(player);
+        userRepository.save(user);
     }
 }

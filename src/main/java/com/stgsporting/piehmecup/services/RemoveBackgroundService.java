@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Service
 public class RemoveBackgroundService {
@@ -78,8 +79,6 @@ public class RemoveBackgroundService {
 
     public MultipartFile handle(MultipartFile image) {
         try {
-            Http request = new Http(BASE_URL);
-            request.addHeader("Authorization", "Bearer " + API_KEY);
 
             String extension = FilenameUtils.getExtension(image.getOriginalFilename());
             RequestBody requestBody = new MultipartBody.Builder()
@@ -90,23 +89,35 @@ public class RemoveBackgroundService {
                     )
                     .build();
 
-            try (Response response = request.call("POST", requestBody).execute()) {
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
+            Request request = new Request.Builder()
+                    .url(BASE_URL)
+                    .addHeader("Authorization", "Bearer " + API_KEY)
+                    .method("POST", requestBody)
+                    .build()
+                    ;
 
-                    if(body == null) {
-                        return image;
-                    }
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .callTimeout(Duration.ofSeconds(45))
+                    .build();
 
-                    byte[] imageBytes = body.bytes();
+            Response response = client.newCall(request).execute();
 
-                    return new CustomMultipartFile(imageBytes, "output.png");
-                } else if (response.code() == 502) {
-                    counter += 1;
+            if (response.isSuccessful()) {
+                ResponseBody body = response.body();
 
-                    if (counter <= 3) {
-                        return handle(image);
-                    }
+                if(body == null) {
+                    return image;
+                }
+
+                byte[] imageBytes = body.bytes();
+
+                return new CustomMultipartFile(imageBytes, "output.png");
+            } else if (response.code() == 502) {
+                counter += 1;
+                System.err.println("Failed, Counter: " + counter.toString());
+
+                if (counter <= 3) {
+                    return handle(image);
                 }
             }
         }catch(IOException e) {

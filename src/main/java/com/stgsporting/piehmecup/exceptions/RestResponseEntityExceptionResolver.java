@@ -4,8 +4,6 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -15,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionResolver extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value
-            = { UserNotFoundException.class, SchoolYearNotFound.class, PlayerNotFoundException.class, IconNotFoundException.class, PositionNotFoundException.class, AttendanceNotFoundException.class, LiturgyNotFound.class })
+            = { NotFoundException.class, UserNotFoundException.class, SchoolYearNotFound.class, PlayerNotFoundException.class, IconNotFoundException.class, PositionNotFoundException.class, AttendanceNotFoundException.class, LiturgyNotFoundException.class, PriceNotFoundException.class })
     protected ResponseEntity<Object> handleNotFound(
             NotFoundException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.NOT_FOUND, request);

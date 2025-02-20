@@ -24,4 +24,7 @@ public interface PriceRepository extends JpaRepository<Price, Long> {
 
     @NonNull
     List<Price> findAll();
+
+    @Query("select p from PRICES p where p.id != :id")
+    List<Price> findAllExcept(Long id);
 }

@@ -2,6 +2,7 @@ package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.dtos.PositionDTO;
 import com.stgsporting.piehmecup.entities.Position;
+import com.stgsporting.piehmecup.exceptions.PositionNotFoundException;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,10 @@ public class PositionService {
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while updating price");
         }
+    }
+
+    public Position getPositionByName(String position) {
+        return positionRepository.findPositionByName(position)
+                .orElseThrow(PositionNotFoundException::new);
     }
 }

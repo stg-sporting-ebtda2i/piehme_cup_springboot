@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Getter
@@ -28,6 +29,9 @@ public class Attendance extends BaseEntity {
     @JoinColumn(name = DatabaseEnum.priceId, nullable = false)
     @ManyToOne
     private Price price;
+
+    @Column(name = DatabaseEnum.date, nullable = false)
+    private Date date;
 
     @Column(name = DatabaseEnum.createdAt, nullable = false)
     private Timestamp createdAt;

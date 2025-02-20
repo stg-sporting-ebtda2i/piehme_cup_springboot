@@ -19,6 +19,10 @@ public class Question {
     private QuestionType type;
     private List<Option> options;
 
+    public Question() {
+        options = new ArrayList<>();
+    }
+
     public static Question fromJson(JSONObject questionJson) {
         Question question = new Question();
         question.setId((Long) questionJson.get("id"));

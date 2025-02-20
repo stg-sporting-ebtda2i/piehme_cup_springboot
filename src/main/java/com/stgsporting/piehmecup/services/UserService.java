@@ -2,31 +2,24 @@ package com.stgsporting.piehmecup.services;
 
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
-import com.stgsporting.piehmecup.dtos.LeaderboardDTO;
+import com.stgsporting.piehmecup.dtos.users.LeaderboardDTO;
 import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
+import com.stgsporting.piehmecup.dtos.users.UserInLeaderboardDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.*;
-import com.stgsporting.piehmecup.helpers.Http;
-import com.stgsporting.piehmecup.helpers.Response;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +50,7 @@ public class UserService implements AuthenticatableService {
     }
 
     public User getAuthenticatableById(long id) {
-        return getUserById(id)
-                .orElseThrow(()-> new UserNotFoundException("User not found"));
+        return getUserById(id).orElseThrow(UserNotFoundException::new);
     }
 
     public long getAuthenticatableId() {
@@ -67,14 +59,9 @@ public class UserService implements AuthenticatableService {
 
     public Authenticatable getAuthenticatable() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        /*
-         * If the user is not authenticated or the principal is not an instance of UserDetail, throw an UnauthorizedAccessException
-         * This case should not happen, because it means caller expects authenticated user to be present
-         * We would not have reached this point if the user was not authenticated
-         * but for security reasons, we should check this case
-         */
+
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetail))
-            throw new UnauthorizedAccessException("User is not authenticated");
+            throw new UnauthorizedAccessException();
 
         return  ((Details) authentication.getPrincipal()).getAuthenticatable();
     }
@@ -84,7 +71,7 @@ public class UserService implements AuthenticatableService {
             throw new NullPointerException("Username cannot be empty");
 
         return getUserByUsername(username)
-                .orElseThrow(()-> new UserNotFoundException("Incorrect email or password"));
+                .orElseThrow(InvalidCredentialsException::new);
     }
 
     public Optional<User> getUserByIdOrUsername(String idOrUsername) {
@@ -136,7 +123,6 @@ public class UserService implements AuthenticatableService {
         user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
         user.setCardRating(0);
-        user.setLineupRating(0.0);
         user.setImgLink(userRegisterDTO.getImgLink());
         user.setSelectedPosition(positionRepository.findPositionByName("GK").orElseThrow());
         user.setSelectedIcon(iconRepository.findIconByName("Default").orElseThrow());
@@ -151,39 +137,44 @@ public class UserService implements AuthenticatableService {
     }
 
     public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, String search, Pageable page) {
-        if(search == null) {
-            search = "";
-        }
+        if(search == null) search = "";
 
         return userRepository.findUsersBySchoolYearPaginated(schoolYear,search + "%", page);
     }
 
-    public List<LeaderboardDTO> getLeaderboard() {
+    public LeaderboardDTO getLeaderboard() {
         Long userId = getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Long schoolYearId = user.getSchoolYear().getId();
-
-        SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId)
-                .orElseThrow(() -> new SchoolYearNotFound("School year not found"));
+        SchoolYear schoolYear = schoolYearRepository.findSchoolYearById(schoolYearId).orElseThrow(SchoolYearNotFound::new);
 
         List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
+//        List<User> users = userRepository.findUsersBySchoolYear(schoolYear);
 
-        return getLeaderboardDTOS(users);
+        return getLeaderboardDTO(users);
     }
 
     @NotNull
-    private List<LeaderboardDTO> getLeaderboardDTOS(List<User> users) {
-        List<LeaderboardDTO> leaderboard = new ArrayList<>();
+    private LeaderboardDTO getLeaderboardDTO(List<User> users) {
+        List<UserInLeaderboardDTO> usersInLeaderboard = new ArrayList<>();
 
-        for (User u : users){
-            LeaderboardDTO dto = new LeaderboardDTO();
+        Double maxRating = 0.0;
+        Double avgRating = 0.0;
+
+        for (User u : users) {
+            UserInLeaderboardDTO dto = new UserInLeaderboardDTO();
             dto.setName(u.getUsername());
             dto.setId(u.getId());
             String position = u.getSelectedPosition().getName();
             dto.setPosition(position);
-            dto.setLineupRating(u.getLineupRating());
+            Double rating = u.getLineupRating();
+
+            dto.setLineupRating(rating);
+
+            if (rating > maxRating) {
+                maxRating = rating;
+            }
+            avgRating += rating;
 
             dto.setImageKey(u.getImgLink());
             dto.setImageUrl(fileService.generateSignedUrl(u.getImgLink()));
@@ -192,15 +183,20 @@ public class UserService implements AuthenticatableService {
             dto.setIconUrl(fileService.generateSignedUrl(u.getSelectedIcon().getImgLink()));
 
             dto.setCardRating(u.getCardRating());
-            leaderboard.add(dto);
+            usersInLeaderboard.add(dto);
         }
+
+        LeaderboardDTO leaderboard = new LeaderboardDTO();
+        leaderboard.setUsers(usersInLeaderboard);
+        leaderboard.setMaxRating(Math.round(maxRating * 100.0) / 100.0);
+        leaderboard.setAvgRating(users.isEmpty() ? 0.0 : avgRating / users.size());
+        leaderboard.setAvgRating(Math.round(leaderboard.getAvgRating() * 100.0) / 100.0);
+
         return leaderboard;
     }
 
     public Integer getCoins() {
-        User user = userRepository.findById(getAuthenticatableId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
+        User user = userRepository.findById(getAuthenticatableId()).orElseThrow(UserNotFoundException::new);
         return user.getCoins();
     }
 

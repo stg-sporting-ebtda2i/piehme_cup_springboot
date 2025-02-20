@@ -17,19 +17,11 @@ public class UserCardController {
 
     @GetMapping
     public ResponseEntity<Object> getUserCardDTO(){
-        try {
-            return ResponseEntity.ok(cardRatingService.getUserCardDTO());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(cardRatingService.getUserCardDTO());
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getUserCardDTO(@PathVariable Long userId){
-        try {
-            return ResponseEntity.ok(cardRatingService.getUserCardDTO(userId));
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(cardRatingService.getUserCardDTO(userId));
     }
 }

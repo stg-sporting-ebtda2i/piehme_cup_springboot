@@ -31,17 +31,21 @@ public class QuizService {
     }
 
     public List<Quiz> getQuizzesForUser() {
-        Authenticatable user = userService.getAuthenticatable();
+        User user = (User) userService.getAuthenticatable();
         SchoolYear schoolYear = user.getSchoolYear();
-        String url = "/groups/" + schoolYear.getSlug();
+        String url = user.getQuizId() == null
+                ? "/groups/" + schoolYear.getSlug()
+                : "/quizzes?entity=" + user.getQuizId();
 
         Response response = httpService.get(url);
 
         List<Quiz> quizzes = new ArrayList<>();
         if (response.isSuccessful()) {
             JSONObject jsonObject = response.getJsonBody();
-            JSONObject data = (JSONObject) jsonObject.get("group");
-            JSONArray quizzesArray = (JSONArray) data.get("quizzes");
+            if(user.getQuizId() == null) {
+                jsonObject = (JSONObject) jsonObject.get("group");
+            }
+            JSONArray quizzesArray = (JSONArray) jsonObject.get("quizzes");
 
             for (Object quizObject : quizzesArray) {
                 JSONObject quizJson = (JSONObject) quizObject;

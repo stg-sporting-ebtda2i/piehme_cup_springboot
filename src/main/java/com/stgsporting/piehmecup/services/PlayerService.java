@@ -3,6 +3,7 @@ package com.stgsporting.piehmecup.services;
 import com.stgsporting.piehmecup.dtos.players.PlayerDTO;
 import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
 import com.stgsporting.piehmecup.entities.Player;
+import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.enums.Positions;
 import com.stgsporting.piehmecup.exceptions.PlayerNotFoundException;
 import com.stgsporting.piehmecup.repositories.PlayerRepository;
@@ -21,10 +22,12 @@ import java.util.Optional;
 public class PlayerService {
     private final PlayerRepository playerRepository;
     private final FileService fileService;
+    private final PositionService positionService;
 
-    public PlayerService(PlayerRepository playerRepository, FileService fileService) {
+    public PlayerService(PlayerRepository playerRepository, FileService fileService, PositionService positionService) {
         this.playerRepository = playerRepository;
         this.fileService = fileService;
+        this.positionService = positionService;
     }
 
     public void createPlayer(PlayerUploadDTO player) {
@@ -36,11 +39,8 @@ public class PlayerService {
     private Player dtoToPlayer(PlayerUploadDTO player) {
         Player newPlayer = new Player();
         newPlayer.setName(player.getName());
-        try {
-            newPlayer.setPosition(Positions.valueOf(player.getPosition().toUpperCase()));
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid position");
-        }
+
+        newPlayer.setPosition(positionService.getPositionByName(player.getPosition()));
 
         newPlayer.setAvailable(player.getAvailable());
         newPlayer.setPrice(player.getPrice());
@@ -61,9 +61,8 @@ public class PlayerService {
     }
 
     public PlayerDTO getPlayerById(Long id) {
-        Player player = playerRepository.findById(id).orElseThrow(
-                () -> new PlayerNotFoundException("Player not found")
-        );
+        Player player = playerRepository.findById(id)
+                .orElseThrow(PlayerNotFoundException::new);
 
         return playerToDTO(player);
     }
@@ -76,7 +75,7 @@ public class PlayerService {
         PlayerDTO playerDTO = new PlayerDTO();
         playerDTO.setId(player.getId());
         playerDTO.setName(player.getName());
-        playerDTO.setPosition(player.getPosition().toString());
+        playerDTO.setPosition(player.getPosition().getName());
         playerDTO.setAvailable(player.getAvailable());
         playerDTO.setPrice(player.getPrice());
 
@@ -115,8 +114,10 @@ public class PlayerService {
          playerRepository.delete(player);
     }
 
-    public List<PlayerDTO> getPlayersByPosition(Positions position){
-        List<Player> players = playerRepository.findPlayersByPosition(position);
+    public List<PlayerDTO> getPlayersByPosition(String positionName){
+        Position position = positionService.getPositionByName(positionName);
+
+        List<Player> players = playerRepository.findPlayersByPositionId(position);
 
         List<PlayerDTO> playerDTOs = new ArrayList<>();
         for(Player player : players)

@@ -10,8 +10,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCardDTO {
+    private Long id;
     private String name;
     private Integer cardRating;
+    private Double lineupRating;
     private String imageUrl;
     private String imageKey;
     private String iconUrl;

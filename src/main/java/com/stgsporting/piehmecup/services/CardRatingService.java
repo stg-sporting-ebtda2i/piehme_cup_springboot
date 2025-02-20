@@ -47,8 +47,10 @@ public class CardRatingService {
         User user = userService.getAuthenticatableById(id);
 
         return new UserCardDTO(
+                user.getId(),
                 user.getUsername(),
                 user.getCardRating(),
+                user.getLineupRating(),
                 fileService.generateSignedUrl(user.getImgLink()),
                 user.getImgLink(),
                 fileService.generateSignedUrl(user.getSelectedIcon().getImgLink()),
@@ -61,8 +63,10 @@ public class CardRatingService {
         User user = userService.getAuthenticatableById(userId);
 
         return new UserCardDTO(
+                user.getId(),
                 user.getUsername(),
                 user.getCardRating(),
+                user.getLineupRating(),
                 fileService.generateSignedUrl(user.getImgLink()),
                 user.getImgLink(),
                 fileService.generateSignedUrl(user.getSelectedIcon().getImgLink()),
