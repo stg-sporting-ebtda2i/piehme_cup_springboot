@@ -28,8 +28,8 @@ jobs:
           distribution: "oracle"
           architecture: x64
 
-      - name: Copy application.properties
-        run: cp src/main/resources/application.example.properties src/main/resources/application.properties
+      - name: Copy .env
+        run: cp .env.example .env
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..10}; do
