@@ -10,6 +10,7 @@ import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.repositories.AttendanceRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -96,5 +97,34 @@ public class AttendanceService {
                 .findByApprovedAndUserContainingSchoolYear(pageable, false, schoolYear);
 
         return unapprovedAttendances.map(AttendanceDTO::new);
+    }
+
+    public Page<AttendanceDTO> getApprovedAttendancesOfUser(Pageable pageable) {
+        Long userId = userService.getAuthenticatableId();
+        return getAttendanceDTOS(userId, pageable, true);
+    }
+
+    public Page<AttendanceDTO> getApprovedAttendancesOfUser(Pageable pageable, Long userId) {
+        return getAttendanceDTOS(userId, pageable, true);
+    }
+
+    public Page<AttendanceDTO> getPendingAttendancesOfUser(Pageable pageable) {
+        Long userId = userService.getAuthenticatableId();
+        return getAttendanceDTOS(userId, pageable, false);
+    }
+
+    public Page<AttendanceDTO> getPendingAttendancesOfUser(Pageable pageable, Long userId) {
+        return getAttendanceDTOS(userId, pageable, false);
+    }
+
+    @NotNull
+    private Page<AttendanceDTO> getAttendanceDTOS(Long userId, Pageable pageable, boolean approved) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Page<Attendance> approvedAttendances = attendanceRepository
+                .findByApprovedAndUser(pageable, approved, user);
+
+        return approvedAttendances.map(AttendanceDTO::new);
     }
 }
