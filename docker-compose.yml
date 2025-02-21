@@ -6,32 +6,5 @@ services:
     container_name: my_spring_app
     ports:
       - "80:9000"  # Map port 80 on host to port 9000 in the container
-    depends_on:
-      db:
-        condition: service_healthy
     env_file:
       - .env
-
-  db:
-    image: mysql:8
-    container_name: mysql_db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DATABASE_NAME}
-      MYSQL_USER: ${DATABASE_USER}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-    env_file:
-      - .env
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD"]
-      interval: 10s
-      retries: 5
-      timeout: 5s
-
-volumes:
-  mysql_data:
