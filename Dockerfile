@@ -19,5 +19,7 @@ RUN cp target/*.jar /app/app.jar
 # Ensure the JAR file has correct permissions
 RUN chmod +x /app/app.jar
 
+EXPOSE 9000
+
 # Command to run the application
-ENTRYPOINT ["java", "-jar", "/app/app.jar", "--server.port=80"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar", "--server.port=9000"]
