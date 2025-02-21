@@ -1,5 +1,5 @@
 # Use an Alpine-based JDK image
-FROM eclipse-temurin:22-jdk-alpine
+FROM eclipse-temurin:23-jdk-alpine
 
 # Install Maven in the Alpine image
 RUN apk add --no-cache maven
