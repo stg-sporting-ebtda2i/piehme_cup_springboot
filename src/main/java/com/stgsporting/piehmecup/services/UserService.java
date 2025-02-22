@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -38,7 +39,8 @@ public class UserService implements AuthenticatableService {
 
     public UserService(UserRepository userRepository, SchoolYearService schoolYearService
             , EntityService entityService, SchoolYearRepository schoolYearRepository
-            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService, RemoveBackgroundService removeBackgroundService) {
+            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService
+            , RemoveBackgroundService removeBackgroundService) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
@@ -111,6 +113,7 @@ public class UserService implements AuthenticatableService {
         save(user);
     }
 
+    @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO) {
         User user = new User();
 
@@ -130,6 +133,15 @@ public class UserService implements AuthenticatableService {
         user.setQuizId(
                 entityService.createEntity(user.getUsername(), user.getSchoolYear())
         );
+
+        Icon icon = iconRepository.findIconByName("Default").orElseThrow();
+        Position position = positionRepository.findPositionByName("GK").orElseThrow();
+        List<Icon> icons = new ArrayList<>();
+        List<Position> positions = new ArrayList<>();
+        icons.add(icon);
+        positions.add(position);
+        user.setIcons(icons);
+        user.setPositions(positions);
 
         save(user);
 
