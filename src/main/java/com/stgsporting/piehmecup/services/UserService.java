@@ -36,13 +36,11 @@ public class UserService implements AuthenticatableService {
     private final IconRepository iconRepository;
     private final FileService fileService;
     private final RemoveBackgroundService removeBackgroundService;
-    private final OwnedPositionsService ownedPositionsService;
-    private final OwnedIconsService ownedIconsService;
 
     public UserService(UserRepository userRepository, SchoolYearService schoolYearService
             , EntityService entityService, SchoolYearRepository schoolYearRepository
             , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService
-            , RemoveBackgroundService removeBackgroundService, OwnedIconsService ownedIconsService, OwnedPositionsService ownedPositionsService) {
+            , RemoveBackgroundService removeBackgroundService) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
@@ -51,8 +49,6 @@ public class UserService implements AuthenticatableService {
         this.iconRepository = iconRepository;
         this.fileService = fileService;
         this.removeBackgroundService = removeBackgroundService;
-        this.ownedIconsService = ownedIconsService;
-        this.ownedPositionsService = ownedPositionsService;
     }
 
     public User getAuthenticatableById(long id) {
@@ -138,10 +134,16 @@ public class UserService implements AuthenticatableService {
                 entityService.createEntity(user.getUsername(), user.getSchoolYear())
         );
 
-        save(user);
+        Icon icon = iconRepository.findIconByName("Default").orElseThrow();
+        Position position = positionRepository.findPositionByName("GK").orElseThrow();
+        List<Icon> icons = new ArrayList<>();
+        List<Position> positions = new ArrayList<>();
+        icons.add(icon);
+        positions.add(position);
+        user.setIcons(icons);
+        user.setPositions(positions);
 
-        ownedPositionsService.addPositionToUser(user.getSelectedPosition().getId());
-        ownedIconsService.addIconToUser(user.getSelectedIcon().getId());
+        save(user);
 
         return user;
     }
