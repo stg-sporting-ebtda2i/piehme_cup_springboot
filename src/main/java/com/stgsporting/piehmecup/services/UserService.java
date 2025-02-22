@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -35,10 +36,13 @@ public class UserService implements AuthenticatableService {
     private final IconRepository iconRepository;
     private final FileService fileService;
     private final RemoveBackgroundService removeBackgroundService;
+    private final OwnedPositionsService ownedPositionsService;
+    private final OwnedIconsService ownedIconsService;
 
     public UserService(UserRepository userRepository, SchoolYearService schoolYearService
             , EntityService entityService, SchoolYearRepository schoolYearRepository
-            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService, RemoveBackgroundService removeBackgroundService) {
+            , PositionRepository positionRepository, IconRepository iconRepository, FileService fileService
+            , RemoveBackgroundService removeBackgroundService, OwnedIconsService ownedIconsService, OwnedPositionsService ownedPositionsService) {
         this.userRepository = userRepository;
         this.schoolYearService = schoolYearService;
         this.entityService = entityService;
@@ -47,6 +51,8 @@ public class UserService implements AuthenticatableService {
         this.iconRepository = iconRepository;
         this.fileService = fileService;
         this.removeBackgroundService = removeBackgroundService;
+        this.ownedIconsService = ownedIconsService;
+        this.ownedPositionsService = ownedPositionsService;
     }
 
     public User getAuthenticatableById(long id) {
@@ -111,6 +117,7 @@ public class UserService implements AuthenticatableService {
         save(user);
     }
 
+    @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO) {
         User user = new User();
 
@@ -132,6 +139,9 @@ public class UserService implements AuthenticatableService {
         );
 
         save(user);
+
+        ownedPositionsService.addPositionToUser(user.getSelectedPosition().getId());
+        ownedIconsService.addIconToUser(user.getSelectedIcon().getId());
 
         return user;
     }
