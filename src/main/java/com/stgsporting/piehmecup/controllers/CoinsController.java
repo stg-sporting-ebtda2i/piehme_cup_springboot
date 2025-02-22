@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/coins")
 public class CoinsController {
@@ -16,10 +18,8 @@ public class CoinsController {
 
     @GetMapping
     public ResponseEntity<Object> getCoins() {
-        try {
-            return ResponseEntity.ok(userService.getCoins());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(
+                Map.of("coins", userService.getCoins())
+        );
     }
 }
