@@ -98,6 +98,10 @@ public class User extends BaseEntity implements Authenticatable {
     }
 
     public Double getLineupRating() {
+        if (lineupRating == null) {
+            return 0.0;
+        }
+
         return lineupRating.getLineupRating();
     }
 }
