@@ -35,6 +35,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "target/*.jar"
           target: "/opt/piehme_cup_app/incoming/"
+          timeout: 600s
 
       - name: Run Deployment Script
         uses: appleboy/ssh-action@v1.2.0
