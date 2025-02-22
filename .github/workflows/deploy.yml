@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, minor-changes ]
 
 jobs:
   build-and-deploy:
