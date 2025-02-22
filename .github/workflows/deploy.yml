@@ -33,7 +33,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "target/*.jar"
+          source: "target/piehme_cup.jar"
           target: "/opt/piehme_cup_app/incoming/"
           timeout: 600s
 
