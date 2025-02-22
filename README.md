@@ -14,7 +14,7 @@
     ```
 1. Copy application.example.properties to application.properties
     ```bash
-    cp src/main/resources/application.example.properties src/main/resources/application.properties
+    cp .env.example .env
     ```
 1. Create a database in MySQL
     ```sql

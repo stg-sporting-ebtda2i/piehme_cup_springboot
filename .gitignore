@@ -29,6 +29,6 @@ replay_pid*
 # Maven target directory
 target/
 
-src/main/resources/application.properties
 src/main/resources/private_key.pem
 private_key.pem
+.env
