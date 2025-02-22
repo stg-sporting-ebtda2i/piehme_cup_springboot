@@ -125,7 +125,7 @@ public class UserService implements AuthenticatableService {
 
         user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
         user.setCoins(0);
-        user.setCardRating(0);
+        user.setCardRating(50);
         user.setImgLink(userRegisterDTO.getImgLink());
         user.setSelectedPosition(positionRepository.findPositionByName("GK").orElseThrow());
         user.setSelectedIcon(iconRepository.findIconByName("Default").orElseThrow());
