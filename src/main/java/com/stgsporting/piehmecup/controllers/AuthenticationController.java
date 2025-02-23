@@ -25,15 +25,9 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserLoginDTO userLoginDTO) {
-        try {
-            return ResponseEntity.ok().body(
-                    authService.login(userLoginDTO)
-            );
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok().body(
+                authService.login(userLoginDTO)
+        );
     }
 
     @PostMapping("/register")
