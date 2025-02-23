@@ -2,6 +2,7 @@ package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.icons.IconUploadDTO;
+import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.IconService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,11 @@ import java.util.Map;
 @RequestMapping("")
 public class IconController {
     private final IconService iconService;
+    private final AdminService adminService;
 
-    public IconController(IconService iconService) {
+    public IconController(IconService iconService, AdminService adminService) {
         this.iconService = iconService;
+        this.adminService = adminService;
     }
 
     @PostMapping("/admin/icons")
@@ -53,7 +56,10 @@ public class IconController {
         Pageable pageable = Pageable.ofSize(10).withPage(page == null ? 0 : page);
 
         return ResponseEntity.ok().body(
-                new PaginationDTO<>(iconService.getAllIcons(pageable))
+                new PaginationDTO<>(iconService.getAllIcons(
+                        pageable,
+                        adminService.getAuthenticatable().getSchoolYear().getLevel()
+                ))
         );
     }
 

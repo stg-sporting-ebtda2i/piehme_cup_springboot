@@ -24,6 +24,10 @@ public class SchoolYear extends BaseEntity {
     @JsonManagedReference
     private List<User> users;
 
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
+    private Level level;
+
     public String getSlug() {
         return name.toLowerCase().replace(" ", "-");
     }

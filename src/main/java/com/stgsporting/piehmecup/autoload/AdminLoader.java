@@ -13,7 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(2)
+@Order(1)
 public class AdminLoader implements CommandLineRunner {
 
     private final AdminService adminService;

@@ -7,6 +7,11 @@ public class DatabaseEnum {
     // School Year TABLE
     public static final String schoolYearTable = "SCHOOL_YEARS";
     public static final String schoolYearName = "name";
+    public static final String levelId = "levelId";
+
+    // School Year TABLE
+    public static final String levelTable = "LEVELS";
+    public static final String levelName = "name";
 
     // USERS TABLE
     public static final String usersTable = "USERS";

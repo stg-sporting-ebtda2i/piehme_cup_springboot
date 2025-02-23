@@ -42,4 +42,9 @@ public class Player extends BaseEntity {
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<User> user;
+
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
+    private Level level;
+
 }

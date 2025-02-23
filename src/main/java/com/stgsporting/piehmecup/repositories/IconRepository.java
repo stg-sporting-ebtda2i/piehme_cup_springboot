@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.repositories;
 
 import com.stgsporting.piehmecup.entities.Icon;
+import com.stgsporting.piehmecup.entities.Level;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,9 @@ public interface IconRepository extends JpaRepository<Icon, Long> {
 
     @Query("SELECT i FROM ICONS i ORDER BY i.price DESC")
     Page<Icon> findAllPaginated(Pageable pageable);
+
+    @Query("SELECT i FROM ICONS i where i.level=:level ORDER BY i.price DESC")
+    Page<Icon> findAllPaginatedLevel(Pageable pageable, Level level);
 
     @NotNull
     @Query("SELECT i FROM ICONS i ORDER BY i.price DESC")

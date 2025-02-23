@@ -1,9 +1,12 @@
 package com.stgsporting.piehmecup.controllers;
 
+import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
 import com.stgsporting.piehmecup.enums.Positions;
+import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.PlayerService;
+import com.stgsporting.piehmecup.services.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -15,15 +18,24 @@ import java.util.Map;
 @RequestMapping("")
 public class PlayerController {
     private final PlayerService playerService;
+    private final AdminService adminService;
+    private final UserService userService;
 
-    public PlayerController(PlayerService playerService) {
+    public PlayerController(PlayerService playerService, AdminService adminService, UserService userService) {
         this.playerService = playerService;
+        this.adminService = adminService;
+        this.userService = userService;
     }
 
     @GetMapping("/admin/players")
     public ResponseEntity<Object> index(@RequestParam @Nullable Integer page) {
+        Authenticatable authenticatable = adminService.getAuthenticatable();
+
         return ResponseEntity.ok().body(
-                new PaginationDTO<>(playerService.getPlayers(PageRequest.of(page == null ? 0 : page, 10)))
+                new PaginationDTO<>(playerService.getPlayers(
+                        PageRequest.of(page == null ? 0 : page, 10),
+                        authenticatable.getSchoolYear().getLevel()
+                ))
         );
     }
 
@@ -57,6 +69,9 @@ public class PlayerController {
 
     @GetMapping("/players/{position}")
     public ResponseEntity<Object> getPlayersByPosition(@PathVariable String position) {
-        return ResponseEntity.ok().body(playerService.getPlayersByPosition(position.toUpperCase()));
+        return ResponseEntity.ok().body(playerService.getPlayersByPosition(
+                position.toUpperCase(),
+                userService.getAuthenticatable().getSchoolYear().getLevel()
+        ));
     }
 }
