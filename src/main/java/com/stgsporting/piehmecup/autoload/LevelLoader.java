@@ -6,7 +6,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(3)
+@Order(1)
 public class LevelLoader implements CommandLineRunner {
 
     private final LevelService schoolYearService;
