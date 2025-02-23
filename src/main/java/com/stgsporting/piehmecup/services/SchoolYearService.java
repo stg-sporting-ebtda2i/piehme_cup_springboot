@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.entities.Level;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.exceptions.SchoolYearNotFound;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
@@ -29,9 +30,10 @@ public class SchoolYearService {
                 );
     }
 
-    public SchoolYear createSchoolYear(String name){
+    public SchoolYear createSchoolYear(String name, Level level) {
         SchoolYear schoolYear = new SchoolYear();
         schoolYear.setName(name);
+        schoolYear.setLevel(level);
         return schoolYearRepository.save(schoolYear);
     }
 

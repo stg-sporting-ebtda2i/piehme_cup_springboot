@@ -3,6 +3,7 @@ package com.stgsporting.piehmecup.services;
 import com.stgsporting.piehmecup.dtos.icons.IconDTO;
 import com.stgsporting.piehmecup.dtos.icons.IconUploadDTO;
 import com.stgsporting.piehmecup.entities.Icon;
+import com.stgsporting.piehmecup.entities.Level;
 import com.stgsporting.piehmecup.exceptions.IconNotFoundException;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 
@@ -18,14 +19,17 @@ import java.util.Optional;
 public class IconService {
     private final IconRepository iconRepository;
     private final FileService fileService;
+    private final AdminService adminService;
 
-    public IconService(IconRepository iconRepository, FileService fileService) {
+    public IconService(IconRepository iconRepository, FileService fileService, AdminService adminService) {
         this.iconRepository = iconRepository;
         this.fileService = fileService;
+        this.adminService = adminService;
     }
 
     public void createIcon(IconUploadDTO icon) {
         Icon newIcon = dtoToIcon(icon);
+        newIcon.setLevel(adminService.getAuthenticatable().getSchoolYear().getLevel());
 
         validateImage(icon.getImage());
 
@@ -98,12 +102,12 @@ public class IconService {
     }
 
     public void updateIcon(Long id, IconUploadDTO iconDTO) {
-        if(id == 1) {
-            throw new IllegalArgumentException("Cannot update default icon");
-        }
-
         Icon icon = iconRepository.findIconById(id)
                 .orElseThrow(() -> new IconNotFoundException("Icon not found"));
+
+        if(icon.getName().equalsIgnoreCase("Default") || icon.getName().equalsIgnoreCase("DefaultIcon")) {
+            throw new IllegalArgumentException("Cannot update default icon");
+        }
 
         Icon updatedIcon = dtoToIcon(iconDTO);
 
@@ -116,8 +120,8 @@ public class IconService {
         iconRepository.save(updatedIcon);
     }
 
-    public Page<IconDTO> getAllIcons(Pageable pageable) {
-        Page<Icon> icons = iconRepository.findAllPaginated(pageable);
+    public Page<IconDTO> getAllIcons(Pageable pageable, Level level) {
+        Page<Icon> icons = iconRepository.findAllPaginatedLevel(pageable, level);
 
         return icons.map(this::iconToDTO);
     }

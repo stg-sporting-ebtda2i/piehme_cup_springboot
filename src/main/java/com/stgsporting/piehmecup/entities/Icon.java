@@ -1,9 +1,7 @@
 package com.stgsporting.piehmecup.entities;
 
 import com.stgsporting.piehmecup.config.DatabaseEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
@@ -42,4 +40,8 @@ public class Icon extends BaseEntity {
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<User> user;
+
+    @ManyToOne
+    @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
+    private Level level;
 }

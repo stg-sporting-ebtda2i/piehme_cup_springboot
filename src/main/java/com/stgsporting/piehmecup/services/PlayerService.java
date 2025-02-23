@@ -1,7 +1,9 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.players.PlayerDTO;
 import com.stgsporting.piehmecup.dtos.players.PlayerUploadDTO;
+import com.stgsporting.piehmecup.entities.Level;
 import com.stgsporting.piehmecup.entities.Player;
 import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.enums.Positions;
@@ -23,15 +25,19 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final FileService fileService;
     private final PositionService positionService;
+    private final AdminService adminService;
 
-    public PlayerService(PlayerRepository playerRepository, FileService fileService, PositionService positionService) {
+    public PlayerService(PlayerRepository playerRepository, FileService fileService, PositionService positionService, AdminService adminService) {
         this.playerRepository = playerRepository;
         this.fileService = fileService;
         this.positionService = positionService;
+        this.adminService = adminService;
     }
 
     public void createPlayer(PlayerUploadDTO player) {
         Player newPlayer = dtoToPlayer(player);
+        Authenticatable authenticatable = adminService.getAuthenticatable();
+        newPlayer.setLevel(authenticatable.getSchoolYear().getLevel());
 
         playerRepository.save(newPlayer);
     }
@@ -67,8 +73,8 @@ public class PlayerService {
         return playerToDTO(player);
     }
 
-    public Page<PlayerDTO> getPlayers(Pageable pageable) {
-        return playerRepository.findAll(pageable).map(this::playerToDTO);
+    public Page<PlayerDTO> getPlayers(Pageable pageable, Level level) {
+        return playerRepository.findPlayersByLevel(pageable, level).map(this::playerToDTO);
     }
 
     public PlayerDTO playerToDTO(Player player) {
@@ -90,7 +96,7 @@ public class PlayerService {
 
     public void updatePlayer(Long playerId, PlayerUploadDTO playerDTO) {
         Player player = playerRepository.findById(playerId)
-                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+                .orElseThrow(PlayerNotFoundException::new);
 
         Player updatedPlayer = dtoToPlayer(playerDTO);
 
@@ -114,10 +120,10 @@ public class PlayerService {
          playerRepository.delete(player);
     }
 
-    public List<PlayerDTO> getPlayersByPosition(String positionName){
+    public List<PlayerDTO> getPlayersByPosition(String positionName, Level level){
         Position position = positionService.getPositionByName(positionName);
 
-        List<Player> players = playerRepository.findPlayersByPositionId(position);
+        List<Player> players = playerRepository.findPlayersByPositionAndLevel(position, level);
 
         List<PlayerDTO> playerDTOs = new ArrayList<>();
         for(Player player : players)
