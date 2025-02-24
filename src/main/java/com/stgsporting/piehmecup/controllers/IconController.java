@@ -4,6 +4,7 @@ import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.icons.IconUploadDTO;
 import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.IconService;
+import com.stgsporting.piehmecup.services.UserService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -17,10 +18,12 @@ import java.util.Map;
 public class IconController {
     private final IconService iconService;
     private final AdminService adminService;
+    private final UserService userService;
 
-    public IconController(IconService iconService, AdminService adminService) {
+    public IconController(IconService iconService, AdminService adminService, UserService userService) {
         this.iconService = iconService;
         this.adminService = adminService;
+        this.userService = userService;
     }
 
     @PostMapping("/admin/icons")
@@ -65,6 +68,8 @@ public class IconController {
 
     @GetMapping("/icons")
     public ResponseEntity<Object> getIcons() {
-        return ResponseEntity.ok().body(iconService.getAllIcons());
+        return ResponseEntity.ok().body(iconService.getAllIconsByLevel(
+                userService.getAuthenticatable().getSchoolYear().getLevel()
+        ));
     }
 }

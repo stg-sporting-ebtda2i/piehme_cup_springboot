@@ -126,6 +126,12 @@ public class IconService {
         return icons.map(this::iconToDTO);
     }
 
+    public List<IconDTO> getAllIconsByLevel(Level level) {
+        List<Icon> icons = iconRepository.findAllByLevel(level);
+
+        return icons.stream().map(this::iconToDTO).toList();
+    }
+
     public List<IconDTO> getAllIcons() {
         List<Icon> icons = iconRepository.findAll();
 

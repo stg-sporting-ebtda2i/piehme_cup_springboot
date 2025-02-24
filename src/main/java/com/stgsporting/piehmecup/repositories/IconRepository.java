@@ -22,6 +22,9 @@ public interface IconRepository extends JpaRepository<Icon, Long> {
     @Query("SELECT i FROM ICONS i where i.level=:level ORDER BY i.price DESC")
     Page<Icon> findAllPaginatedLevel(Pageable pageable, Level level);
 
+    @Query("SELECT i FROM ICONS i where i.level=:level ORDER BY i.price DESC")
+    List<Icon> findAllByLevel(Level level);
+
     @NotNull
     @Query("SELECT i FROM ICONS i ORDER BY i.price DESC")
     List<Icon> findAll();
