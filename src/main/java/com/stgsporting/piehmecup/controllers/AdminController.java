@@ -1,9 +1,12 @@
 package com.stgsporting.piehmecup.controllers;
 
+import com.stgsporting.piehmecup.authentication.Authenticatable;
+import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.admins.AdminFormDTO;
 import com.stgsporting.piehmecup.dtos.admins.AdminDetailsDTO;
 import com.stgsporting.piehmecup.dtos.admins.AdminInListDTO;
 import com.stgsporting.piehmecup.entities.Admin;
+import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.services.AdminService;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +29,7 @@ public class AdminController {
         PageRequest newPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 
         return ResponseEntity.ok(
-                adminService.getAllAdmins(newPage).stream().map(AdminInListDTO::new)
+                new PaginationDTO<>(adminService.getAllAdmins(newPage).map(AdminInListDTO::new))
         );
     }
 
@@ -49,6 +52,10 @@ public class AdminController {
     public ResponseEntity<Object> update(@PathVariable String adminId, @RequestBody AdminFormDTO adminDTO) {
         Admin admin = adminService.getAdminByIdOrUsername(adminId)
                 .orElseThrow(() -> new UserNotFoundException("Admin not found"));
+
+        Admin currentAdmin = (Admin) adminService.getAuthenticatable();
+        if(currentAdmin.equals(admin))
+            throw new UnauthorizedAccessException("You can not update your own account");
 
         adminService.updateAdmin(admin, adminDTO);
 

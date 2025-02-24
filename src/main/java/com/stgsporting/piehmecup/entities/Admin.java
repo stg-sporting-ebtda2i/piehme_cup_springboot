@@ -41,4 +41,8 @@ public class Admin extends BaseEntity implements Authenticatable {
     public boolean hasAccessTo(User user) {
         return user.getSchoolYear().getId().equals(getSchoolYear().getId());
     }
+
+    public boolean equals(Admin admin) {
+        return admin.getId().equals(this.getId());
+    }
 }
