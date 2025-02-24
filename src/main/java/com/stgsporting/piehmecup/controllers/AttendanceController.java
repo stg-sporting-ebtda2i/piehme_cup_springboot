@@ -4,8 +4,10 @@ import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.attendances.RequestAttendanceDTO;
 import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.SchoolYear;
+import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.AttendanceService;
+import com.stgsporting.piehmecup.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +20,15 @@ import java.util.Map;
 @RestController
 @RequestMapping
 public class AttendanceController {
-    @Autowired
-    private AttendanceService attendanceService;
-    @Autowired
-    private AdminService adminService;
+    private final AttendanceService attendanceService;
+    private final AdminService adminService;
+    private final UserService userService;
+
+    public AttendanceController(AttendanceService attendanceService, AdminService adminService, UserService userService) {
+        this.attendanceService = attendanceService;
+        this.adminService = adminService;
+        this.userService = userService;
+    }
 
     @GetMapping("/ostaz/attendances")
     public ResponseEntity<Object> getUnapprovedAttendances(@RequestParam(required = false) Integer page) {
@@ -41,7 +48,13 @@ public class AttendanceController {
     }
 
     @DeleteMapping("attendances/{attendanceId}")
-    public ResponseEntity<Object> deleteAttendance(@PathVariable Long attendanceId) {
+    public ResponseEntity<Object> deleteAttendanceUser(@PathVariable Long attendanceId) {
+        attendanceService.deleteAttendanceForUser(attendanceId, (User) userService.getAuthenticatable());
+        return ResponseEntity.ok().body(Map.of("message", "Attendance deleted"));
+    }
+
+    @DeleteMapping("ostaz/attendances/{attendanceId}")
+    public ResponseEntity<Object> deleteAttendanceAdmin(@PathVariable Long attendanceId) {
         attendanceService.deleteAttendance(attendanceId);
         return ResponseEntity.ok().body(Map.of("message", "Attendance deleted"));
     }

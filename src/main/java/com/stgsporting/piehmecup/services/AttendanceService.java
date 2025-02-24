@@ -61,11 +61,10 @@ public class AttendanceService {
     public void approveAttendance(Long attendanceId) {
         Authenticatable admin = adminService.getAuthenticatable();
 
-        Attendance attendance = attendanceRepository.findById(attendanceId)
-                .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
+        Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(AttendanceNotFoundException::new);
 
         if (!attendance.getUser().getSchoolYear().getId().equals(admin.getSchoolYear().getId()))
-            throw new AttendanceNotFoundException("Attendance not found");
+            throw new AttendanceNotFoundException();
 
         if (attendance.getApproved())
             throw new AttendanceAlreadyApproved("Attendance already approved");
@@ -81,12 +80,24 @@ public class AttendanceService {
 
     @Transactional
     public void deleteAttendance(Long attendanceId) {
-        Attendance attendance = attendanceRepository.findById(attendanceId)
-                .orElseThrow(() -> new AttendanceNotFoundException("Attendance not found"));
+        Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(AttendanceNotFoundException::new);
 
         if (attendance.getApproved()) {
             Price price = attendance.getPrice();
             walletService.debit(attendance.getUser(), price.getCoins(), price.getName() + " deleted");
+        }
+
+        attendanceRepository.delete(attendance);
+    }
+
+    @Transactional
+    public void deleteAttendanceForUser(Long attendanceId, User user) {
+        Attendance attendance = attendanceRepository
+                .findByIdForUser(attendanceId, user)
+                .orElseThrow(AttendanceNotFoundException::new);
+
+        if (attendance.getApproved()) {
+            throw new AttendanceAlreadyApproved("Cannot delete approved attendance");
         }
 
         attendanceRepository.delete(attendance);
