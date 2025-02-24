@@ -15,6 +15,7 @@ import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -99,6 +100,7 @@ public class UserService implements AuthenticatableService {
         userRepository.save((User) user);
     }
 
+    @Async
     public void changeImage(User user, MultipartFile image) {
         image = removeBackgroundService.handle(image);
 
