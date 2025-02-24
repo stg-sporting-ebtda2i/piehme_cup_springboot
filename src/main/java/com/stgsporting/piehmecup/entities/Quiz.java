@@ -27,7 +27,7 @@ public class Quiz {
         quiz.setName((String) quizJson.get("name"));
         quiz.setSlug((String) quizJson.get("slug"));
         quiz.setCoins((Long) quizJson.get("points"));
-        quiz.setCoinsEarned((Long) quizJson.getOrDefault("coins_won", 0));
+        quiz.setCoinsEarned((Long) quizJson.getOrDefault("points_won", 0L));
         quiz.setIsSolved((Boolean) quizJson.getOrDefault("is_solved", false));
         quiz.setSchoolYear(schoolYear);
 
