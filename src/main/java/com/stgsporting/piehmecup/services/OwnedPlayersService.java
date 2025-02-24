@@ -68,6 +68,12 @@ public class OwnedPlayersService {
             throw new PlayerAlreadyPurchasedException();
         }
 
+        for(Player p : user.getPlayers()) {
+            if(p.getPosition().equals(player.getPosition())) {
+                throw new PlayerAlreadyPurchasedException("Player of this position already purchased");
+            }
+        }
+
         walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
 
         user.getPlayers().add(player);

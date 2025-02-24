@@ -19,8 +19,13 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(value = { UsernameTakenException.class, IconAlreadyPurchasedException.class, PlayerAlreadyPurchasedException.class })
+    @ExceptionHandler(value = { UsernameTakenException.class })
     protected ResponseEntity<Object> handleUsernameTaken(UsernameTakenException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = { IconAlreadyPurchasedException.class, PlayerAlreadyPurchasedException.class })
+    protected ResponseEntity<Object> handleAlreadyPurchased(AlreadyPurchasedException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 

@@ -1,6 +1,6 @@
 package com.stgsporting.piehmecup.exceptions;
 
-public class PlayerAlreadyPurchasedException extends RuntimeException {
+public class PlayerAlreadyPurchasedException extends AlreadyPurchasedException {
     public PlayerAlreadyPurchasedException(String message) {
         super(message);
     }
