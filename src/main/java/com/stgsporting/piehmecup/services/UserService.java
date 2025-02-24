@@ -7,6 +7,7 @@ import com.stgsporting.piehmecup.dtos.UserRegisterDTO;
 import com.stgsporting.piehmecup.dtos.users.UserInLeaderboardDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.*;
+import com.stgsporting.piehmecup.helpers.CustomMultipartFile;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
@@ -102,23 +103,20 @@ public class UserService implements AuthenticatableService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<Void> changeImage(User user, MultipartFile image) {
-        try {
-            image = removeBackgroundService.handle(image);
+    public void changeImage(User user, byte[] imageBytes) {
+        MultipartFile image = new CustomMultipartFile(imageBytes, "output.png");
 
-            String key = fileService.uploadFile(image, "/users");
+        image = removeBackgroundService.handle(image);
 
-            if (user.getImgLink() != null && !user.getImgLink().isEmpty()) {
-                fileService.deleteFile(user.getImgLink());
-            }
+        String key = fileService.uploadFile(image, "/users");
 
-            user.setImgLink(key);
-
-            save(user);
-            return CompletableFuture.completedFuture(null);
-        }catch (Exception e) {
-            return CompletableFuture.failedFuture(e);
+        if (user.getImgLink() != null && !user.getImgLink().isEmpty()) {
+            fileService.deleteFile(user.getImgLink());
         }
+
+        user.setImgLink(key);
+
+        save(user);
     }
 
     @Transactional

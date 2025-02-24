@@ -7,6 +7,7 @@ import com.stgsporting.piehmecup.dtos.users.UserDetailsDTO;
 import com.stgsporting.piehmecup.dtos.users.UserInListDTO;
 import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.exceptions.UnknownPositionException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UserNotInSameSchoolYearException;
 import com.stgsporting.piehmecup.services.*;
@@ -21,6 +22,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -126,14 +128,17 @@ public class UserController {
     @PutMapping("/{userId}/change-image")
     public ResponseEntity<Object> changeImage(@ModelAttribute UserChangeImageDTO changeImageDTO, @PathVariable String userId) {
         Admin admin = (Admin) adminService.getAuthenticatable();
-        User user = userService.getUserByIdOrUsername(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userService.getUserByIdOrUsername(userId).orElseThrow(UserNotFoundException::new);
 
         if (!admin.hasAccessTo(user)) {
             throw new UserNotInSameSchoolYearException();
         }
 
-        userService.changeImage(user, changeImageDTO.getImage());
+        try {
+            userService.changeImage(user, changeImageDTO.getImage().getBytes());
+        } catch (IOException e) {
+            throw new UnknownPositionException("Failed to change image");
+        }
 
         return ResponseEntity.ok(Map.of("message", "Image changed successfully"));
     }

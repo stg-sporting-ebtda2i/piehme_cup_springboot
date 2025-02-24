@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.helpers.CustomMultipartFile;
 import com.stgsporting.piehmecup.helpers.Http;
 import okhttp3.*;
 import org.apache.commons.io.FilenameUtils;
@@ -22,60 +23,6 @@ public class RemoveBackgroundService {
     private String BASE_URL;
 
     private Integer counter = 0;
-
-    public class CustomMultipartFile implements MultipartFile {
-
-        private final byte[] fileData;
-        private final String fileName;
-
-
-        public CustomMultipartFile(byte[] fileData, String fileName) {
-            this.fileData = fileData;
-            this.fileName = fileName;
-        }
-
-        @Override
-        public String getName() {
-            return fileName;
-        }
-
-        @Override
-        public String getOriginalFilename() {
-            return fileName;
-        }
-
-        @Override
-        public String getContentType() {
-            return "image/png"; // Adjust based on the file type
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return fileData == null || fileData.length == 0;
-        }
-
-        @Override
-        public long getSize() {
-            return fileData.length;
-        }
-
-        @Override
-        public byte[] getBytes() throws IOException {
-            return fileData;
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return new ByteArrayInputStream(fileData);
-        }
-
-        @Override
-        public void transferTo(File dest) throws IOException, IllegalStateException {
-            try (FileOutputStream fos = new FileOutputStream(dest)) {
-                fos.write(fileData);
-            }
-        }
-    }
 
     public MultipartFile handle(MultipartFile image) {
         try {

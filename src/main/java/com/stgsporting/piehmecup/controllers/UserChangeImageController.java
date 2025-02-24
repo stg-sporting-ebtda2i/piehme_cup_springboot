@@ -1,10 +1,8 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.users.UserChangeImageDTO;
-import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.User;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
-import com.stgsporting.piehmecup.exceptions.UserNotInSameSchoolYearException;
+import com.stgsporting.piehmecup.exceptions.UnknownPositionException;
 import com.stgsporting.piehmecup.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -29,10 +28,11 @@ public class UserChangeImageController {
     public ResponseEntity<Object> changeImageUser(@ModelAttribute UserChangeImageDTO changeImageDTO) {
         User user = (User) userService.getAuthenticatable();
 
-        userService.changeImage(user, changeImageDTO.getImage()).exceptionally(e -> {
-            log.error(e.toString());
-            return null;
-        });
+        try {
+            userService.changeImage(user, changeImageDTO.getImage().getBytes());
+        } catch (IOException e) {
+            throw new UnknownPositionException("Failed to change image");
+        }
 
         return ResponseEntity.ok(Map.of("message", "Image changed successfully"));
     }
