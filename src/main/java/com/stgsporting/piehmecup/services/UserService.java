@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserService implements AuthenticatableService {
@@ -100,19 +101,24 @@ public class UserService implements AuthenticatableService {
         userRepository.save((User) user);
     }
 
-    @Async
-    public void changeImage(User user, MultipartFile image) {
-        image = removeBackgroundService.handle(image);
+    @Async("taskExecutor")
+    public CompletableFuture<Void> changeImage(User user, MultipartFile image) {
+        try {
+            image = removeBackgroundService.handle(image);
 
-        if (user.getImgLink() != null && !user.getImgLink().isEmpty()) {
-            fileService.deleteFile(user.getImgLink());
+            String key = fileService.uploadFile(image, "/users");
+
+            if (user.getImgLink() != null && !user.getImgLink().isEmpty()) {
+                fileService.deleteFile(user.getImgLink());
+            }
+
+            user.setImgLink(key);
+
+            save(user);
+            return CompletableFuture.completedFuture(null);
+        }catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
         }
-
-        String key = fileService.uploadFile(image, "/users");
-
-        user.setImgLink(key);
-
-        save(user);
     }
 
     @Transactional
