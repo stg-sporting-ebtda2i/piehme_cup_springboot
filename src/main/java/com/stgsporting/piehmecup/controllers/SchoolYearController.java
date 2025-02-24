@@ -15,7 +15,6 @@ public class SchoolYearController {
         this.schoolYearService = schoolYearService;
     }
 
-    @Getter
     record SchoolYearDTO(Long id, String name) { }
 
     @GetMapping("/admin/schoolYears")
