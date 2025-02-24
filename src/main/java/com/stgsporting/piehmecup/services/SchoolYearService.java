@@ -7,6 +7,7 @@ import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,5 +40,9 @@ public class SchoolYearService {
 
     public boolean existsSchoolYearById(Long id) {
         return schoolYearRepository.existsById(id);
+    }
+
+    public List<SchoolYear> getAllSchoolYears() {
+        return schoolYearRepository.findAll();
     }
 }

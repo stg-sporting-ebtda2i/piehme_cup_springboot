@@ -1,6 +1,5 @@
 package com.stgsporting.piehmecup.controllers;
 
-import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.admins.AdminFormDTO;
 import com.stgsporting.piehmecup.dtos.admins.AdminDetailsDTO;
