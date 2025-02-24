@@ -13,6 +13,7 @@ public class QuizInListDTO {
     private String slug;
     private Long coins;
     private Boolean isSolved;
+    private Long coinsEarned;
 
     public QuizInListDTO(Quiz quiz) {
         this.id = quiz.getId();
@@ -20,5 +21,6 @@ public class QuizInListDTO {
         this.slug = quiz.getSlug();
         this.coins = quiz.getCoins();
         this.isSolved = quiz.getIsSolved();
+        this.coinsEarned = quiz.getCoinsEarned();
     }
 }

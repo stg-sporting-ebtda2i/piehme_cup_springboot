@@ -15,6 +15,7 @@ public class QuizDTO {
     private String name;
     private String slug;
     private Long coins;
+    private Long coinsEarned;
     private Boolean isSolved;
     private List<Question> questions;
 
@@ -24,6 +25,7 @@ public class QuizDTO {
         this.slug = quiz.getSlug();
         this.coins = quiz.getCoins();
         this.isSolved = quiz.getIsSolved();
+        this.coinsEarned = quiz.getCoinsEarned();
 
         this.questions = quiz.getQuestions();
     }
