@@ -20,6 +20,7 @@ public class Quiz {
     private Long coinsEarned;
     private SchoolYear schoolYear;
     private List<Question> questions;
+    private Long questionsCount;
 
     public static Quiz fromJson(JSONObject quizJson, SchoolYear schoolYear) {
         Quiz quiz = new Quiz();
@@ -29,6 +30,7 @@ public class Quiz {
         quiz.setCoins((Long) quizJson.get("points"));
         quiz.setCoinsEarned((Long) quizJson.getOrDefault("points_won", 0L));
         quiz.setIsSolved((Boolean) quizJson.getOrDefault("is_solved", false));
+        quiz.setQuestionsCount((Long) quizJson.get("questions_count"));
         quiz.setSchoolYear(schoolYear);
 
         JSONArray questionsArray = (JSONArray) quizJson.get("questions");
