@@ -7,10 +7,7 @@ import com.stgsporting.piehmecup.entities.AdminDetail;
 import com.stgsporting.piehmecup.entities.Details;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.enums.Role;
-import com.stgsporting.piehmecup.exceptions.InvalidCredentialsException;
-import com.stgsporting.piehmecup.exceptions.NotFoundException;
-import com.stgsporting.piehmecup.exceptions.UnauthorizedAccessException;
-import com.stgsporting.piehmecup.exceptions.UsernameTakenException;
+import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.AdminRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -99,7 +96,10 @@ public class AdminService implements AuthenticatableService {
                 });
 
         admin.setUsername(adminDTO.getUsername());
+
+        validatePassword(adminDTO.getPassword());
         admin.setPassword(adminDTO.getPassword());
+
         Role role = Role.lookup(adminDTO.getRole()).orElseThrow(() -> new NotFoundException("Invalid role"));
         admin.setRole(role);
 
@@ -119,6 +119,7 @@ public class AdminService implements AuthenticatableService {
             admin.setUsername(adminDTO.getUsername());
         }
         if (adminDTO.getPassword() != null && !adminDTO.getPassword().isEmpty() && !adminDTO.getPassword().isBlank()) {
+            validatePassword(adminDTO.getPassword());
             admin.setPassword(adminDTO.getPassword());
         }
 
@@ -133,5 +134,13 @@ public class AdminService implements AuthenticatableService {
         }
 
         adminRepository.save(admin);
+    }
+
+    private void validatePassword(String password) {
+        if (password == null || password.isEmpty())
+            throw new ChangePasswordException("Password cannot be empty");
+
+        if (password.length() < 4 || password.length() > 64)
+            throw new ChangePasswordException("Password must be between 6 and 64 characters");
     }
 }
