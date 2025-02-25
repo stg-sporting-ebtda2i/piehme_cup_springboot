@@ -17,8 +17,17 @@ public class SchoolYearController {
 
     record SchoolYearDTO(Long id, String name) { }
 
-    @GetMapping("/admin/schoolYears")
+    @GetMapping("/schoolYears")
     public ResponseEntity<Object> index() {
+        return ResponseEntity.ok(
+                schoolYearService.getAllSchoolYears().stream().map(
+                        schoolYear -> new SchoolYearDTO(schoolYear.getId(), schoolYear.getName())
+                )
+        );
+    }
+
+    @GetMapping("/admin/schoolYears")
+    public ResponseEntity<Object> indexAdmins() {
         return ResponseEntity.ok(
                 schoolYearService.getAllSchoolYears().stream().map(
                         schoolYear -> new SchoolYearDTO(schoolYear.getId(), schoolYear.getName())

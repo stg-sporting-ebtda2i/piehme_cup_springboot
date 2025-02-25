@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/register").permitAll()
+                        .requestMatchers("/schoolYears").permitAll()
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/ostaz/**").hasAnyAuthority(Role.OSTAZ.name(), Role.ADMIN.name())
