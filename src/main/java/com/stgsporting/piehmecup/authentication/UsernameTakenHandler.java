@@ -15,8 +15,10 @@ public class UsernameTakenHandler extends RegisterHandler {
     @Override
     public void handleRequest(RegisterDTO userRegisterDTO) {
         try {
-            userService.getAuthenticatableByUsername(userRegisterDTO.getUsername());
-            throw new UsernameTakenException("Username already taken");
+            userService.getUserByUsername(userRegisterDTO.getUsername())
+                    .ifPresent(_ -> {
+                        throw new UsernameTakenException("Username already taken");
+                    });
         }
         catch (UserNotFoundException e) {
             super.handleRequest(userRegisterDTO);
