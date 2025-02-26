@@ -18,6 +18,7 @@ public class UserInListDTO {
     private String imageUrl;
     private String imageKey;
     private String selectedIcon;
+    private Boolean confirmed;
 
     public UserInListDTO(User user, FileService fileService) {
         this.id = user.getId();
@@ -25,6 +26,7 @@ public class UserInListDTO {
         this.coins = user.getCoins();
         this.cardRating = user.getCardRating();
         this.lineupRating = user.getLineupRating();
+        this.confirmed = user.getConfirmed();
         Icon selectedIcon = user.getSelectedIcon();
 
         this.imageKey = user.getImgLink();

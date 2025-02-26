@@ -19,4 +19,5 @@ public class UserInLeaderboardDTO {
     private Double lineupRating;
     private String iconUrl;
     private String iconKey;
+    private Boolean confirmed;
 }

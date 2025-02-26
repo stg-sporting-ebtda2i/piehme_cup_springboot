@@ -21,6 +21,7 @@ public class UserDetailsDTO {
     private String imageKey;
     private String imageUrl;
     private String selectedIcon;
+    private Boolean confirmed;
     private List<AttendanceUserDTO> attendances;
 
 
@@ -31,6 +32,7 @@ public class UserDetailsDTO {
         this.cardRating = user.getCardRating();
         this.lineupRating = user.getLineupRating();
         Icon selectedIcon = user.getSelectedIcon();
+        this.confirmed = user.getConfirmed();
 
         this.imageKey = user.getImgLink();
         this.imageUrl = fileService.generateSignedUrl(user.getImgLink());

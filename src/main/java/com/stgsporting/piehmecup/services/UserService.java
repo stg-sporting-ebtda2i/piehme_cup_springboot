@@ -202,6 +202,7 @@ public class UserService implements AuthenticatableService {
 
         for (User u : users) {
             UserInLeaderboardDTO dto = new UserInLeaderboardDTO();
+            dto.setConfirmed(u.getConfirmed());
             dto.setName(u.getUsername());
             dto.setId(u.getId());
             String position = u.getSelectedPosition().getName();
