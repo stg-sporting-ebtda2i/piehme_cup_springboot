@@ -8,4 +8,5 @@ public interface Authenticatable {
     String getPassword();
     SchoolYear getSchoolYear();
     String getRoleString();
+    Boolean getConfirmed();
 }

@@ -6,7 +6,6 @@ import com.stgsporting.piehmecup.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Setter
@@ -36,6 +35,11 @@ public class Admin extends BaseEntity implements Authenticatable {
 
     public String getRoleString() {
         return getRole().name();
+    }
+
+    @Override
+    public Boolean getConfirmed() {
+        return false;
     }
 
     public boolean hasAccessTo(User user) {
