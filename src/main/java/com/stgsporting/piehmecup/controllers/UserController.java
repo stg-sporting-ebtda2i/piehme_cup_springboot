@@ -120,7 +120,7 @@ public class UserController {
         userDTO.setPassword((String) body.get("password"));
         userDTO.setSchoolYear(admin.getSchoolYear().getName());
 
-        User user = userService.createUser(userDTO);
+        User user = userService.createUser(userDTO, true);
 
         return ResponseEntity.ok(new UserDetailsDTO(user, fileService));
     }

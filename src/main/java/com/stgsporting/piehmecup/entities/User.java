@@ -50,6 +50,10 @@ public class User extends BaseEntity implements Authenticatable {
     @ColumnDefault("0")
     private Integer cardRating;
 
+    @Column(name = DatabaseEnum.confirmed, nullable = false)
+    @ColumnDefault("0")
+    private Boolean confirmed;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = DatabaseEnum.baseId, referencedColumnName = DatabaseEnum.userId)
     private UserRating lineupRating;

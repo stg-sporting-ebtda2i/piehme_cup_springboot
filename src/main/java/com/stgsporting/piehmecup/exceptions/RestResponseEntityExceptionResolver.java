@@ -40,6 +40,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = { UserDeleteException.class })
+    protected ResponseEntity<Object> handleIllegal(UserDeleteException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { InsufficientCoinsException.class })
     protected ResponseEntity<Object> handleInsufficientFunds(InsufficientCoinsException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);

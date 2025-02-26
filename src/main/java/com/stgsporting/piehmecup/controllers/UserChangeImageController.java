@@ -7,6 +7,7 @@ import com.stgsporting.piehmecup.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,5 +36,12 @@ public class UserChangeImageController {
         }
 
         return ResponseEntity.ok(Map.of("message", "Image changed successfully"));
+    }
+
+    @DeleteMapping("/users/delete")
+    public ResponseEntity<Object> deleteUser() {
+        userService.deleteCurrentUser();
+
+        return ResponseEntity.ok(Map.of("message", "Account deleted successfully"));
     }
 }

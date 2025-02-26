@@ -119,8 +119,17 @@ public class UserService implements AuthenticatableService {
         save(user);
     }
 
+    public void deleteCurrentUser() {
+        User user = (User) getAuthenticatable();
+        if(user.getConfirmed()) {
+            throw new UserDeleteException("User is confirmed");
+        }
+
+        userRepository.delete(user);
+    }
+
     @Transactional
-    public User createUser(UserRegisterDTO userRegisterDTO) {
+    public User createUser(UserRegisterDTO userRegisterDTO, Boolean confirmed) {
         User user = new User();
 
         validateUsername(userRegisterDTO.getUsername());
@@ -149,9 +158,16 @@ public class UserService implements AuthenticatableService {
         user.setIcons(icons);
         user.setPositions(positions);
 
+        user.setConfirmed(confirmed);
+
         save(user);
 
         return user;
+    }
+
+
+    public User createUser(UserRegisterDTO userRegisterDTO) {
+        return createUser(userRegisterDTO, false);
     }
 
     public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, String search, Pageable page) {

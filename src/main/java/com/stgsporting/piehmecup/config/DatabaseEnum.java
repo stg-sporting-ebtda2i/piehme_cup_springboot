@@ -20,6 +20,7 @@ public class DatabaseEnum {
     public static final String schoolYearId = "schoolYearId";
     public static final String lineupRating = "lineupRating";
     public static final String cardRating = "cardRating";
+    public static final String confirmed = "confirmed";
     public static final String waladImgLink = "imgLink";
 
     // ADMINS TABLE
