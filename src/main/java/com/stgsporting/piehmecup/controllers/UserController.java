@@ -125,6 +125,19 @@ public class UserController {
         return ResponseEntity.ok(new UserDetailsDTO(user, fileService));
     }
 
+    @PostMapping("/{userId}/confirm")
+    public ResponseEntity<Object> confirmUser(@PathVariable String userId) {
+        Admin admin = (Admin) adminService.getAuthenticatable();
+        User user = userService.getUserByIdOrUsername(userId).orElseThrow(UserNotFoundException::new);
+        if(!admin.hasAccessTo(user)) {
+            throw new UserNotInSameSchoolYearException();
+        }
+
+        userService.confirmUser(user);
+
+        return ResponseEntity.ok(Map.of("message", "User confirmed successfully"));
+    }
+
     @PutMapping("/{userId}/change-image")
     public ResponseEntity<Object> changeImage(@ModelAttribute UserChangeImageDTO changeImageDTO, @PathVariable String userId) {
         Admin admin = (Admin) adminService.getAuthenticatable();

@@ -128,6 +128,11 @@ public class UserService implements AuthenticatableService {
         userRepository.delete(user);
     }
 
+    public void confirmUser(User user) {
+        user.setConfirmed(true);
+        save(user);
+    }
+
     @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO, Boolean confirmed) {
         User user = new User();
