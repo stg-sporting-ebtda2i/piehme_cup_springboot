@@ -49,6 +49,7 @@ public class UserAuthenticationService {
         AuthInfo authUserInfo = new AuthInfo();
         authUserInfo.setUserId(user.getId());
         authUserInfo.setUsername(user.getUsername());
+        authUserInfo.setConfirmed(user.getConfirmed());
         authUserInfo.setJWTToken(jwtService.generateUserToken(authUserInfo));
 
         return authUserInfo;

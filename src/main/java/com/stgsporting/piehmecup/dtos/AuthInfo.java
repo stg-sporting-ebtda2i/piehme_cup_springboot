@@ -10,6 +10,7 @@ public class AuthInfo {
     private Long userId;
     private String username;
     private String role;
+    private Boolean confirmed = false;
 
     @Override
     public String toString() {
