@@ -106,7 +106,7 @@ public class PlayerService {
             updatedPlayer.setImgLink(player.getImgLink());
 
         updatedPlayer.setId(player.getId());
-
+        updatedPlayer.setLevel(player.getLevel());
         playerRepository.save(updatedPlayer);
     }
 

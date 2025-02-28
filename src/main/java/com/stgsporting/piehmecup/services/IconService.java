@@ -117,6 +117,7 @@ public class IconService {
             updatedIcon.setImgLink(icon.getImgLink());
 
         updatedIcon.setId(icon.getId());
+        updatedIcon.setLevel(icon.getLevel());
         iconRepository.save(updatedIcon);
     }
 
