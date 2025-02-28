@@ -75,6 +75,15 @@ public class UserController {
         return ResponseEntity.ok().body(new UserDetailsDTO(user, fileService));
     }
 
+    @DeleteMapping("{userId}")
+    public ResponseEntity<Object> delete(@PathVariable String userId) {
+        User user = getUser(userId);
+
+        userService.delete(user);
+
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+    }
+
     @PostMapping("{userId}/coins/add")
     public ResponseEntity<Object> addCoins(@PathVariable String userId, @RequestBody JSONObject body) {
         User user = getUser(userId);

@@ -263,4 +263,8 @@ public class UserService implements AuthenticatableService {
             throw new UsernameTakenException("Username already exists");
         }
     }
+
+    public void delete(User user) {
+        userRepository.delete(user);
+    }
 }

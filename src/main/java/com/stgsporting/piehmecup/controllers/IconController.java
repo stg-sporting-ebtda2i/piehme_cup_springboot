@@ -48,7 +48,7 @@ public class IconController {
         return ResponseEntity.ok().body(iconService.getIconByName(iconName));
     }
 
-    @DeleteMapping("/admin/icons/delete/{iconName}")
+    @DeleteMapping("/admin/icons/{iconName}")
     public ResponseEntity<Object> deleteIcon(@PathVariable String iconName) {
         iconService.deleteIcon(iconName);
         return ResponseEntity.ok().body(Map.of("message", "Icon deleted successfully"));
