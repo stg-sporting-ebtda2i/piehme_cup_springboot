@@ -61,9 +61,9 @@ public class PlayerController {
         return ResponseEntity.ok().body(playerService.getPlayerByName(playerName));
     }
 
-    @DeleteMapping("/admin/players/{playerName}/delete")
-    public ResponseEntity<Object> deletePlayer(@PathVariable String playerName) {
-        playerService.deletePlayer(playerName);
+    @DeleteMapping("/admin/players/{playerId}")
+    public ResponseEntity<Object> deletePlayer(@PathVariable Long playerId) {
+        playerService.deletePlayer(playerId);
         return ResponseEntity.ok().body(Map.of("message", "Player deleted successfully"));
     }
 

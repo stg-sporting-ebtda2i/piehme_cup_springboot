@@ -110,14 +110,13 @@ public class PlayerService {
         playerRepository.save(updatedPlayer);
     }
 
-    public void deletePlayer(String name) {
-        Player player = playerRepository.findPlayerByName(name).orElseThrow(
-                () -> new PlayerNotFoundException("Player with name " + name + " not found")
-        );
+    public void deletePlayer(Long playerId) {
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(PlayerNotFoundException::new);
 
         fileService.deleteFile(player.getImgLink());
 
-         playerRepository.delete(player);
+        playerRepository.delete(player);
     }
 
     public List<PlayerDTO> getPlayersByPosition(String positionName, Level level){
