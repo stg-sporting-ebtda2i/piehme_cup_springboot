@@ -7,6 +7,7 @@ import com.stgsporting.piehmecup.services.FileService;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -37,7 +38,7 @@ public class UserDetailsDTO {
         this.imageKey = user.getImgLink();
         this.imageUrl = fileService.generateSignedUrl(user.getImgLink());
 
-        this.attendances = user.getAttendances().stream().map(AttendanceUserDTO::new).toList();
+        this.attendances = user.getAttendances() != null ? user.getAttendances().stream().map(AttendanceUserDTO::new).toList() : new ArrayList<>();
 
         this.selectedIcon = selectedIcon != null ? selectedIcon.getImgLink() : null;
     }
