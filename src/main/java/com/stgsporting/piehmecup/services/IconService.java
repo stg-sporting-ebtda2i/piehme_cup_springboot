@@ -105,9 +105,9 @@ public class IconService {
         Icon icon = iconRepository.findIconById(id)
                 .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
-        if(icon.getName().equalsIgnoreCase("Default") || icon.getName().equalsIgnoreCase("DefaultIcon")) {
-            throw new IllegalArgumentException("Cannot update default icon");
-        }
+//        if(icon.getName().equalsIgnoreCase("Default") || icon.getName().equalsIgnoreCase("DefaultIcon")) {
+//            throw new IllegalArgumentException("Cannot update default icon");
+//        }
 
         Icon updatedIcon = dtoToIcon(iconDTO);
 
