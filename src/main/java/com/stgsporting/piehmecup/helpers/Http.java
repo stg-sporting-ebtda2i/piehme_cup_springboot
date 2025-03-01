@@ -1,11 +1,17 @@
 package com.stgsporting.piehmecup.helpers;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import net.minidev.json.JSONObject;
 import okhttp3.*;
 import org.springframework.http.HttpStatus;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 
 public class Http {
@@ -36,14 +42,42 @@ public class Http {
         addHeader("Authorization", token);
     }
 
+    public OkHttpClient client() {
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
+        };
+
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+            clientBuilder.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0]);
+            clientBuilder.hostnameVerifier((hostname, session) -> true);
+        } catch (KeyManagementException | NoSuchAlgorithmException ignored) {}
+
+        return clientBuilder.build();
+    }
+
     public Call call(String method, RequestBody requestBody) {
         Request request = this.builder
                 .method(method, requestBody)
                 .build();
 
-        OkHttpClient client = new OkHttpClient();
-
-        return client.newCall(request);
+        return client().newCall(request);
     }
 
     public Response call(String method, JSONObject body) {
@@ -62,6 +96,7 @@ public class Http {
 
             res.setStatusCode(HttpStatus.valueOf(response.code()));
         }catch (IOException e) {
+            e.printStackTrace();
             res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

@@ -125,7 +125,7 @@ public class UserService implements AuthenticatableService {
             throw new UserDeleteException("User is confirmed");
         }
 
-        userRepository.delete(user);
+        delete(user);
     }
 
     public void confirmUser(User user) {
@@ -265,6 +265,9 @@ public class UserService implements AuthenticatableService {
     }
 
     public void delete(User user) {
+        if(user.getImgLink() != null && !user.getImgLink().isEmpty())
+            fileService.deleteFile(user.getImgLink());
+
         userRepository.delete(user);
     }
 }

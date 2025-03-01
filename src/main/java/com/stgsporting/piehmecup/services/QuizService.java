@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
+import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.Quiz;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.entities.User;
@@ -30,19 +31,17 @@ public class QuizService {
         this.walletService = walletService;
     }
 
-    public List<Quiz> getQuizzesForUser() {
-        User user = (User) userService.getAuthenticatable();
-        SchoolYear schoolYear = user.getSchoolYear();
-        String url = user.getQuizId() == null
+    public List<Quiz> getQuizzes(SchoolYear schoolYear, Long quizId) {
+        String url = quizId == null
                 ? "/groups/" + schoolYear.getSlug()
-                : "/quizzes?entity=" + user.getQuizId();
+                : "/quizzes?entity=" + quizId;
 
         Response response = httpService.get(url);
 
         List<Quiz> quizzes = new ArrayList<>();
         if (response.isSuccessful()) {
             JSONObject jsonObject = response.getJsonBody();
-            if(user.getQuizId() == null) {
+            if(quizId == null) {
                 jsonObject = (JSONObject) jsonObject.get("group");
             }
             JSONArray quizzesArray = (JSONArray) jsonObject.get("quizzes");
@@ -50,11 +49,18 @@ public class QuizService {
             for (Object quizObject : quizzesArray) {
                 JSONObject quizJson = (JSONObject) quizObject;
 
-                quizzes.add(Quiz.fromJson(quizJson, schoolYear));
+                quizzes.add(Quiz.fromJson(quizJson));
             }
         }
 
         return quizzes;
+    }
+
+    public List<Quiz> getQuizzesForUser() {
+        User user = (User) userService.getAuthenticatable();
+        SchoolYear schoolYear = user.getSchoolYear();
+
+        return getQuizzes(schoolYear, user.getQuizId());
     }
 
     public Quiz getQuizBySlug(String slug) {
@@ -68,7 +74,7 @@ public class QuizService {
             JSONObject jsonObject = response.getJsonBody();
             JSONObject data = (JSONObject) jsonObject.get("quiz");
 
-            return Quiz.fromJson(data, schoolYear);
+            return Quiz.fromJson(data);
         }
 
         throw new NotFoundException("Quiz not found");
