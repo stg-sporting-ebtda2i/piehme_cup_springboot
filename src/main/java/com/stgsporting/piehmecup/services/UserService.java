@@ -165,6 +165,7 @@ public class UserService implements AuthenticatableService {
 
             user.setSchoolYear(schoolYear);
             user.setCoins(0);
+            user.setLeaderboardBoolean(true);
             user.setCardRating(50);
 
             user.setSelectedPosition(defaultPos);
@@ -196,6 +197,7 @@ public class UserService implements AuthenticatableService {
         user.setSchoolYear(schoolYear);
         user.setCoins(0);
         user.setCardRating(50);
+        user.setLeaderboardBoolean(true);
         user.setImgLink(userRegisterDTO.getImgLink());
 
         user.setSelectedPosition(defaultPos);
@@ -313,5 +315,15 @@ public class UserService implements AuthenticatableService {
             fileService.deleteFile(user.getImgLink());
 
         userRepository.delete(user);
+    }
+
+    public void showUserInLeaderboard(User user) {
+        user.setLeaderboardBoolean(true);
+        save(user);
+    }
+
+    public void hideUserInLeaderboard(User user) {
+        user.setLeaderboardBoolean(false);
+        save(user);
     }
 }

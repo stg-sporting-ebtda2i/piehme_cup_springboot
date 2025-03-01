@@ -22,6 +22,7 @@ public class DatabaseEnum {
     public static final String cardRating = "cardRating";
     public static final String confirmed = "confirmed";
     public static final String waladImgLink = "imgLink";
+    public static final String leaderboardBoolean = "leaderboardBoolean";
 
     // ADMINS TABLE
     public static final String adminsTable = "ADMINS";
