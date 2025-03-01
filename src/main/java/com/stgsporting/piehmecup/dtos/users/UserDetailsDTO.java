@@ -19,6 +19,7 @@ public class UserDetailsDTO {
     private Integer coins;
     private Integer cardRating;
     private Double lineupRating;
+    private Boolean leaderboardBoolean;
     private String imageKey;
     private String imageUrl;
     private String selectedIcon;
@@ -34,7 +35,7 @@ public class UserDetailsDTO {
         this.lineupRating = user.getLineupRating();
         Icon selectedIcon = user.getSelectedIcon();
         this.confirmed = user.getConfirmed();
-
+        this.leaderboardBoolean = user.getLeaderboardBoolean();
         this.imageKey = user.getImgLink();
         this.imageUrl = fileService.generateSignedUrl(user.getImgLink());
 
