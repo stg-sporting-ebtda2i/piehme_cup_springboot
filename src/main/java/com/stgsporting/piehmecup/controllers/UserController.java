@@ -14,6 +14,7 @@ import com.stgsporting.piehmecup.services.*;
 import lombok.val;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -172,5 +173,34 @@ public class UserController {
         }
 
         return ResponseEntity.ok(Map.of("message", "Image changed successfully"));
+    }
+
+    @PatchMapping("/leaderboard/show/{userId}")
+    public ResponseEntity<Object> showInLeaderboard(@PathVariable Long userId) {
+        User user = getUser(userId);
+
+        userService.showUserInLeaderboard(user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/leaderboard/hide/{userId}")
+    public ResponseEntity<Object> hideInLeaderboard(@PathVariable Long userId) {
+        User user = getUser(userId);
+
+        userService.hideUserInLeaderboard(user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @NotNull
+    private User getUser(Long userId) {
+        Admin admin = (Admin) adminService.getAuthenticatable();
+        User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        if (!admin.hasAccessTo(user)) {
+            throw new UserNotInSameSchoolYearException();
+        }
+        return user;
     }
 }
