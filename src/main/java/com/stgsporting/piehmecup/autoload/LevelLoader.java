@@ -26,5 +26,9 @@ public class LevelLoader implements CommandLineRunner {
             schoolYearService.createLevel("E3dady");
         }
 
+        if(! schoolYearService.existsLevelById(3L)) {
+            schoolYearService.createLevel("App Store");
+        }
+
     }
 }

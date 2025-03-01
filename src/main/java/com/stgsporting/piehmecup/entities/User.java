@@ -13,7 +13,9 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Getter
@@ -97,6 +99,12 @@ public class User extends BaseEntity implements Authenticatable {
         this.password = encoder.encode(password);
     }
 
+    public static String generatePassword() {
+        Random random = new Random();
+        int password = 100000 + random.nextInt(900000);
+        return String.valueOf(password);
+    }
+
     public String getRoleString() {
         return "USER";
     }
@@ -107,5 +115,21 @@ public class User extends BaseEntity implements Authenticatable {
         }
 
         return lineupRating.getLineupRating();
+    }
+
+    public void addIcon(Icon icon) {
+        if (icons == null) {
+            icons = new ArrayList<>();
+        }
+
+        icons.add(icon);
+    }
+
+    public void addPosition(Position position) {
+        if (positions == null) {
+            positions = new ArrayList<>();
+        }
+
+        positions.add(position);
     }
 }

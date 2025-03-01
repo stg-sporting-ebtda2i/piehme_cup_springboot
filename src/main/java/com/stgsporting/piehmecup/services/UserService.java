@@ -13,6 +13,7 @@ import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 
+import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements AuthenticatableService {
@@ -134,6 +136,49 @@ public class UserService implements AuthenticatableService {
     }
 
     @Transactional
+    public JSONObject createUsersBulk(List<String> usernames, SchoolYear schoolYear) {
+
+        List<User> foundUsers = userRepository.findUsersByUsername(usernames);
+        if (! foundUsers.isEmpty()) {
+            throw new UsernameTakenException(
+                    "Following usernames already exists: "
+                            + foundUsers.stream().map(User::getUsername).collect(Collectors.joining(", "))
+            );
+        }
+
+        Position defaultPos = positionRepository.findPositionByName("GK").orElseThrow();
+        Icon defaultIcon = iconRepository.findIconByName(Icon.defaultIcon(schoolYear)).orElseThrow();
+
+        Map<String, Long> quizIds = entityService.createEntities(usernames, schoolYear);
+
+        JSONObject usersWithPassword = new JSONObject();
+        for (String username : usernames) {
+            User user = new User();
+            String password = User.generatePassword();
+
+            user.setUsername(username);
+            user.setPassword(password);
+            usersWithPassword.put(username, password);
+
+            user.setQuizId(quizIds.get(username));
+            user.setConfirmed(true);
+
+            user.setSchoolYear(schoolYear);
+            user.setCoins(0);
+            user.setCardRating(50);
+
+            user.setSelectedPosition(defaultPos);
+            user.setSelectedIcon(defaultIcon);
+            user.addIcon(defaultIcon);
+            user.addPosition(defaultPos);
+
+            userRepository.save(user);
+        }
+
+        return usersWithPassword;
+    }
+
+    @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO, Boolean confirmed) {
         User user = new User();
 
@@ -143,25 +188,24 @@ public class UserService implements AuthenticatableService {
         validatePassword(userRegisterDTO.getPassword());
         user.setPassword(userRegisterDTO.getPassword());
 
-        user.setSchoolYear(schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear()));
+        SchoolYear schoolYear = schoolYearService.getShoolYearByName(userRegisterDTO.getSchoolYear());
+
+        Position defaultPos = positionRepository.findPositionByName("GK").orElseThrow();
+        Icon defaultIcon = iconRepository.findIconByName(Icon.defaultIcon(schoolYear)).orElseThrow();
+
+        user.setSchoolYear(schoolYear);
         user.setCoins(0);
         user.setCardRating(50);
         user.setImgLink(userRegisterDTO.getImgLink());
-        user.setSelectedPosition(positionRepository.findPositionByName("GK").orElseThrow());
-        user.setSelectedIcon(iconRepository.findIconByName("Default").orElseThrow());
+
+        user.setSelectedPosition(defaultPos);
+        user.setSelectedIcon(defaultIcon);
+        user.addIcon(defaultIcon);
+        user.addPosition(defaultPos);
 
         user.setQuizId(
                 entityService.createEntity(user.getUsername(), user.getSchoolYear())
         );
-
-        Icon icon = iconRepository.findIconByName("Default").orElseThrow();
-        Position position = positionRepository.findPositionByName("GK").orElseThrow();
-        List<Icon> icons = new ArrayList<>();
-        List<Position> positions = new ArrayList<>();
-        icons.add(icon);
-        positions.add(position);
-        user.setIcons(icons);
-        user.setPositions(positions);
 
         user.setConfirmed(confirmed);
 

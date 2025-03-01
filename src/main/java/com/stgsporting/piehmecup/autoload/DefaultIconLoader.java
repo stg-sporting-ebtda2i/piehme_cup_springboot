@@ -20,6 +20,7 @@ public class DefaultIconLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Level ebteda2i = levelService.getLevelById(1L);
         Level e3dady = levelService.getLevelById(2L);
+        Level appStore = levelService.getLevelById(3L);
 
         if(iconRepository.findIconByName("Default").isEmpty()){
             Icon icon = new Icon();
@@ -38,6 +39,16 @@ public class DefaultIconLoader implements CommandLineRunner {
             icon.setLevel(e3dady);
             icon.setPrice(0);
             icon.setImgLink("placeholderIcon.png");
+            iconRepository.save(icon);
+        }
+
+        if(iconRepository.findIconByName("Default1").isEmpty()){
+            Icon icon = new Icon();
+            icon.setAvailable(true);
+            icon.setName("Default1");
+            icon.setLevel(appStore);
+            icon.setPrice(0);
+            icon.setImgLink("placeholder.png");
             iconRepository.save(icon);
         }
     }

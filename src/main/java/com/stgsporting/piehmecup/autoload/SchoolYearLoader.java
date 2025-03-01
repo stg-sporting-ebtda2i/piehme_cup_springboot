@@ -23,6 +23,7 @@ public class SchoolYearLoader implements CommandLineRunner {
     public void run(String... args) {
         Level ebteda2i = levelService.getLevelById(1L);
         Level e3dady = levelService.getLevelById(2L);
+        Level appStore = levelService.getLevelById(3L);
 
 
         for (long i = 1; i <= 6; i++) {
@@ -33,6 +34,10 @@ public class SchoolYearLoader implements CommandLineRunner {
 
         if(! schoolYearService.existsSchoolYearById(7L)) {
             schoolYearService.createSchoolYear("E3dady", e3dady);
+        }
+
+        if(! schoolYearService.existsSchoolYearById(8L)) {
+            schoolYearService.createSchoolYear("App Store", appStore);
         }
 
     }

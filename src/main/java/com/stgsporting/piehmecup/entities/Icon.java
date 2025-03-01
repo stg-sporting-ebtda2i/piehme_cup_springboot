@@ -33,7 +33,7 @@ public class Icon extends BaseEntity {
     @NotNull
     private Boolean available;
 
-    @Column(name = DatabaseEnum.iconImgLink, nullable = false, unique = true)
+    @Column(name = DatabaseEnum.iconImgLink, nullable = false)
     private String imgLink;
 
     @ManyToMany(mappedBy = "icons")
@@ -44,4 +44,12 @@ public class Icon extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
     private Level level;
+
+    public static String defaultIcon(SchoolYear schoolYear) {
+        return switch (schoolYear.getName()) {
+            case "e3dady" -> "DefaultIcon";
+            case "App Store" -> "Default1";
+            default -> "Default";
+        };
+    }
 }

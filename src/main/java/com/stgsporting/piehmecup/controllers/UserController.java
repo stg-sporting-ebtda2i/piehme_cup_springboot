@@ -11,21 +11,18 @@ import com.stgsporting.piehmecup.exceptions.UnknownPositionException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UserNotInSameSchoolYearException;
 import com.stgsporting.piehmecup.services.*;
+import lombok.val;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/ostaz/users")
@@ -132,6 +129,18 @@ public class UserController {
         User user = userService.createUser(userDTO, true);
 
         return ResponseEntity.ok(new UserDetailsDTO(user, fileService));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<Object> createBulk(@RequestBody JSONObject body) {
+        Admin admin = (Admin) adminService.getAuthenticatable();
+
+        List<String> usernames = (List<String>) body.get("users");
+        List<String> users = new ArrayList<>(usernames);
+
+        return ResponseEntity.ok(
+                userService.createUsersBulk(users, admin.getSchoolYear())
+        );
     }
 
     @PostMapping("/{userId}/confirm")
