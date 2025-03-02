@@ -2,13 +2,11 @@ package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.attendances.RequestAttendanceDTO;
-import com.stgsporting.piehmecup.entities.Admin;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.AttendanceService;
 import com.stgsporting.piehmecup.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +78,15 @@ public class AttendanceController {
 
         return ResponseEntity.ok(
                 new PaginationDTO<>(attendanceService.getApprovedAttendancesOfUser(pageable, userId))
+        );
+    }
+
+    @GetMapping("attendances/approved/{userId}")
+    public ResponseEntity<Object> getAttendancesByUserId(@PathVariable Long userId, @RequestParam(required = false) Integer page) {
+        Pageable pageable = PageRequest.of(page == null ? 0 : page, 20);
+
+        return ResponseEntity.ok(
+                attendanceService.getAllAttendancesOfUser(pageable, userId)
         );
     }
 

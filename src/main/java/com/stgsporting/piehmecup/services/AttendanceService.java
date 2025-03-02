@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AttendanceService {
@@ -126,6 +128,16 @@ public class AttendanceService {
 
     public Page<AttendanceDTO> getPendingAttendancesOfUser(Pageable pageable, Long userId) {
         return getAttendanceDTOS(userId, pageable, false);
+    }
+
+    public List<AttendanceDTO> getAllAttendancesOfUser(Pageable pageable, Long userId) {
+        Page<AttendanceDTO> pending = getAttendanceDTOS(userId, pageable, false);
+        Page<AttendanceDTO> approved = getAttendanceDTOS(userId, pageable, true);
+        List<AttendanceDTO> combinedContent = new ArrayList<>();
+        combinedContent.addAll(pending.getContent());
+        combinedContent.addAll(approved.getContent());
+
+        return combinedContent.stream().sorted((a1, a2) -> a2.getCreatedAt().compareTo(a1.getCreatedAt())).toList();
     }
 
     @NotNull
