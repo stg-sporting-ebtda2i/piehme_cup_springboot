@@ -216,11 +216,6 @@ public class UserService implements AuthenticatableService {
         return user;
     }
 
-
-    public User createUser(UserRegisterDTO userRegisterDTO) {
-        return createUser(userRegisterDTO, false);
-    }
-
     public Page<User> getUsersBySchoolYear(SchoolYear schoolYear, String search, Pageable page) {
         if(search == null) search = "";
 
