@@ -55,6 +55,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = { InvalidAttendanceException.class })
+    protected ResponseEntity<Object> handleInvalidAttendance(InvalidAttendanceException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { UnauthorizedAccessException.class })
     protected ResponseEntity<Object> handleUnauthorized(UnauthorizedAccessException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.UNAUTHORIZED, request);
