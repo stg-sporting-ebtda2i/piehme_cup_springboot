@@ -81,7 +81,7 @@ public class AttendanceController {
         );
     }
 
-    @GetMapping("attendances/approved/{userId}")
+    @GetMapping("attendances/{userId}")
     public ResponseEntity<Object> getAttendancesByUserId(@PathVariable Long userId, @RequestParam(required = false) Integer page) {
         Pageable pageable = PageRequest.of(page == null ? 0 : page, 20);
 
