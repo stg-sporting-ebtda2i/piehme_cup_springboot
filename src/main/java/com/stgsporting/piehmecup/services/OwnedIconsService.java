@@ -78,6 +78,10 @@ public class OwnedIconsService {
         Icon icon = iconRepository.findById(iconId)
                 .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
+        if (icon.getName().equals("Default")) {
+            throw new IconNotFoundException("You can't sell default icon");
+        }
+
         if (!user.getIcons().contains(icon)) {
             throw new IconNotFoundException("Icon not found");
         }

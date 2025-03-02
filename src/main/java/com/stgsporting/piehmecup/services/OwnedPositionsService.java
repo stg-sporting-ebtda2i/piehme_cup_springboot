@@ -73,6 +73,11 @@ public class OwnedPositionsService {
                     .orElseThrow(() -> new PositionNotFoundException("Position not found"));
 
             if (user.getPositions().contains(position)) {
+
+                if (position.getName().equals("GK")) {
+                    throw new RuntimeException("You can't sell GK position");
+                }
+
                 walletService.credit(user, position.getPrice(), "Position sale: " + position.getName());
 
                 user.getPositions().remove(position);
