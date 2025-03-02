@@ -67,15 +67,27 @@ public class OwnedPlayersService {
         if (user.getPlayers().contains(player)) {
             throw new PlayerAlreadyPurchasedException();
         }
-
-        for(Player p : user.getPlayers()) {
-            if(p.getPosition().equals(player.getPosition())) {
-                throw new PlayerAlreadyPurchasedException("Player of this position already purchased");
+        if (!player.getPosition().getName().equals("CM") && !player.getPosition().getName().equals("CB")) {
+            for(Player p : user.getPlayers()) {
+                if(p.getPosition().equals(player.getPosition())) {
+                    throw new PlayerAlreadyPurchasedException("Player of this position already purchased");
+                }
+                if (p.getName().equals(player.getName())) {
+                    throw new PlayerAlreadyPurchasedException("Cannot purchase same player twice");
+                }
             }
-            if (p.getName().equals(player.getName())) {
-                throw new PlayerAlreadyPurchasedException("Cannot purchase same player twice");
+        } else {
+            int count = 0;
+            for(Player p : user.getPlayers()) {
+                if(p.getPosition().equals(player.getPosition())) {
+                    count++;
+                }
+            }
+            if(count >= 2) {
+                throw new PlayerAlreadyPurchasedException("Cannot purchase more than 2 players of this position");
             }
         }
+
 
         walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
 
