@@ -72,6 +72,9 @@ public class OwnedPlayersService {
             if(p.getPosition().equals(player.getPosition())) {
                 throw new PlayerAlreadyPurchasedException("Player of this position already purchased");
             }
+            if (p.getName().equals(player.getName())) {
+                throw new PlayerAlreadyPurchasedException("Cannot purchase same player twice");
+            }
         }
 
         walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
