@@ -25,8 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.icons FROM User u WHERE u.id = :userId")
     List<Icon> findIconsByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT u.positions FROM User u WHERE u.id = :userId")
-    List<Position> findPositionsByUserId(@Param("userId") Long userId);
+    @Query("SELECT u FROM User u LEFT JOIN u.positions WHERE u.id = :id")
+    Optional<User> findUserByIdWithPositions(Long id);
 
     @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear AND u.leaderboardBoolean = true ORDER BY u.lineupRating.lineupRating desc")
     List<User> findUsersBySchoolYear(SchoolYear schoolYear);
