@@ -5,7 +5,9 @@ import lombok.Setter;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -16,6 +18,7 @@ public class Quiz {
     private String name;
     private String slug;
     private Long coins;
+    private String publishedAt;
     private Boolean isSolved;
     private Long coinsEarned;
 //    private SchoolYear schoolYear;
@@ -30,6 +33,9 @@ public class Quiz {
         quiz.setCoins((Long) quizJson.get("points"));
         quiz.setCoinsEarned((Long) quizJson.getOrDefault("points_won", 0L));
         quiz.setIsSolved((Boolean) quizJson.getOrDefault("is_solved", false));
+//        quiz.setPublishedAt(Date.from(Instant.parse(quizJson.getAsString("published_at"))));
+        quiz.setPublishedAt(quizJson.getAsString("published_at"));
+
         quiz.setQuestionsCount((Long) quizJson.get("questions_count"));
 
 

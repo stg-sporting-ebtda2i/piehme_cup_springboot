@@ -20,6 +20,8 @@ import java.util.List;
 @Entity(name = DatabaseEnum.positionsTable)
 public class Position extends BaseEntity {
 
+    public static final String defaultPosition = "GK";
+
     @Column(name = DatabaseEnum.name, nullable = false, unique = true)
     @NotNull
     private String name;
@@ -32,4 +34,8 @@ public class Position extends BaseEntity {
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<User> user;
+
+    public Boolean isDefault() {
+        return name.equalsIgnoreCase(defaultPosition);
+    }
 }

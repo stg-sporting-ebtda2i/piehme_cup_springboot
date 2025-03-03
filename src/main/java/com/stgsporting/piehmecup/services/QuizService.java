@@ -66,7 +66,15 @@ public class QuizService {
     public Quiz getQuizBySlug(String slug) {
         Authenticatable user = userService.getAuthenticatable();
         SchoolYear schoolYear = user.getSchoolYear();
+
+        return getQuizBySlug(slug, schoolYear, false);
+    }
+
+    public Quiz getQuizBySlug(String slug, SchoolYear schoolYear, Boolean withAnswers) {
         String url = "/quizzes/" + schoolYear.getSlug() + "/" + slug;
+        if (withAnswers) {
+            url += "?withAnswers";
+        }
 
         Response response = httpService.get(url);
 

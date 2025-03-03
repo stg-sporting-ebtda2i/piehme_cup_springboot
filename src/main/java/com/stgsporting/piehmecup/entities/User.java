@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
@@ -119,6 +117,14 @@ public class User extends BaseEntity implements Authenticatable {
         }
 
         return lineupRating.getLineupRating();
+    }
+
+    public boolean doesntOwn(Position position) {
+        return !getPositions().contains(position);
+    }
+
+    public boolean owns(Icon icon) {
+        return getIcons().contains(icon);
     }
 
     public void addIcon(Icon icon) {
