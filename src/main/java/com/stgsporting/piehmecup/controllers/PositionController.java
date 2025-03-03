@@ -13,11 +13,7 @@ public class PositionController {
 
     @GetMapping("/positions")
     public ResponseEntity<Object> getAllPositions(){
-        try {
-            return ResponseEntity.ok(positionService.getAllPositions());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while fetching positions");
-        }
+        return ResponseEntity.ok(positionService.getAllPositions());
     }
 
     @PutMapping("/admin/positions/update/{name}/{price}")

@@ -13,30 +13,18 @@ public class OwnedIconsController {
 
     @GetMapping("/getOwnedIcons")
     public ResponseEntity<Object> getOwnedIcons(){
-        try{
-            return ResponseEntity.ok().body(ownedIconsService.getOwnedIcons());
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok().body(ownedIconsService.getOwnedIcons());
     }
 
     @PatchMapping("/buy/{iconId}")
     public ResponseEntity<Object> addIconToUser(@PathVariable Long iconId){
-        try{
-            ownedIconsService.addIconToUser(iconId);
-            return ResponseEntity.ok().body("Icon purchased successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        ownedIconsService.addIconToUser(iconId);
+        return ResponseEntity.ok().body("Icon purchased successfully");
     }
 
     @PatchMapping("/sell/{iconId}")
     public ResponseEntity<Object> removeIconFromUser(@PathVariable Long iconId){
-        try{
-            ownedIconsService.removeIconFromUser(iconId);
-            return ResponseEntity.ok().body("Icon sold successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        ownedIconsService.removeIconFromUser(iconId);
+        return ResponseEntity.ok().body("Icon sold successfully");
     }
 }
