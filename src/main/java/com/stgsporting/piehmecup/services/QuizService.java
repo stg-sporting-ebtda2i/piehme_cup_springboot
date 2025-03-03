@@ -34,7 +34,7 @@ public class QuizService {
     public List<Quiz> getQuizzes(SchoolYear schoolYear, Long quizId) {
         String url = quizId == null
                 ? "/groups/" + schoolYear.getSlug()
-                : "/quizzes?entity=" + quizId;
+                : "/quizzes?entity=" + quizId + "&published";
 
         Response response = httpService.get(url);
 

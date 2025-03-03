@@ -14,4 +14,23 @@ public enum QuestionType {
             default -> null;
         };
     }
+
+    public static QuestionType fromName(String type) {
+        return switch (type) {
+            case "Choice" -> Choice;
+            case "Written" -> Written;
+            case "Reorder" -> Reorder;
+            case "MultipleCorrectChoices" -> MultipleCorrectChoices;
+            default -> null;
+        };
+    }
+
+    public int toId() {
+        return switch (this) {
+            case Choice -> 1;
+            case MultipleCorrectChoices -> 6;
+            case Written -> 2;
+            case Reorder -> 3;
+        };
+    }
 }
