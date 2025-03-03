@@ -28,7 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u LEFT JOIN u.positions WHERE u.id = :id")
     Optional<User> findUserByIdWithPositions(Long id);
 
-    @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear AND u.leaderboardBoolean = true ORDER BY u.lineupRating.lineupRating desc")
+    @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear AND u.leaderboardBoolean = true " +
+            "AND u.lineupRating.lineupRating > 4.55 ORDER BY u.lineupRating.lineupRating desc")
     List<User> findUsersBySchoolYear(SchoolYear schoolYear);
 
     @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear and u.username LIKE :search ORDER BY u.lineupRating.lineupRating desc, u.id asc")
