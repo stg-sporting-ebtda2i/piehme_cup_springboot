@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
@@ -18,6 +17,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("SELECT a FROM ATTENDANCE a WHERE a.approved = :approved AND a.user = :user order by a.id desc")
     Page<Attendance> findByApprovedAndUser(Pageable pageable, @Param("approved") Boolean approved, @Param("user") User user);
+
+    @Query("SELECT a FROM ATTENDANCE a WHERE a.user = :user order by a.id desc")
+    Page<Attendance> findAttendanceByUser(@Param("user") User user, Pageable pageable);
 
     @Query("SELECT a FROM ATTENDANCE a WHERE a.id = :attendanceId AND a.user = :user")
     Optional<Attendance> findByIdForUser(Long attendanceId, User user);
