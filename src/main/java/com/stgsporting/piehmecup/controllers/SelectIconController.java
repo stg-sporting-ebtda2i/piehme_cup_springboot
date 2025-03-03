@@ -14,20 +14,12 @@ public class SelectIconController {
 
     @GetMapping
     public ResponseEntity<Object> getSelectedIcon(){
-        try {
-            return ResponseEntity.ok().body(selectedIconService.getSelectedIcon());
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok().body(selectedIconService.getSelectedIcon());
     }
 
     @PatchMapping("/{iconId}")
     public ResponseEntity<Object> selectIcon(@PathVariable Long iconId){
-        try {
-            selectedIconService.selectIcon(iconId);
-            return ResponseEntity.ok().body("Icon selected successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        selectedIconService.selectIcon(iconId);
+        return ResponseEntity.ok().body("Icon selected successfully");
     }
 }

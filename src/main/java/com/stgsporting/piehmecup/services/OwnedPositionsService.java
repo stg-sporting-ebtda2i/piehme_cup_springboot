@@ -3,6 +3,7 @@ package com.stgsporting.piehmecup.services;
 import com.stgsporting.piehmecup.dtos.PositionDTO;
 import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.exceptions.IllegalSellingException;
 import com.stgsporting.piehmecup.exceptions.PositionNotFoundException;
 import com.stgsporting.piehmecup.exceptions.UnownedPositionException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;

@@ -14,20 +14,12 @@ public class CardRatingController {
 
     @GetMapping
     public ResponseEntity<Object> getRating(){
-        try {
-            return ResponseEntity.ok(cardRatingService.getCardRating());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(cardRatingService.getCardRating());
     }
 
     @PatchMapping("/{delta}")
     public ResponseEntity<Object> updateRating(@PathVariable Integer delta){
-        try {
-            cardRatingService.updateRating(delta);
-            return ResponseEntity.ok().body("Rating changed successfully");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        cardRatingService.updateRating(delta);
+        return ResponseEntity.ok().body("Rating changed successfully");
     }
 }
