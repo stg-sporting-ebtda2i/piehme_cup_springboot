@@ -20,21 +20,13 @@ public class PositionService {
     }
 
     public List<PositionDTO> getAllPositions() {
-        try {
-            List<Position> positions = positionRepository.findAll();
-            return positions.stream().map(PositionService::positionToDTO).toList();
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching positions");
-        }
+        List<Position> positions = positionRepository.findAll();
+        return positions.stream().map(PositionService::positionToDTO).toList();
     }
 
     @Transactional
     public void updatePrice(String name, Integer price) {
-        try{
-            positionRepository.updatePrice(name, price);
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while updating price");
-        }
+        positionRepository.updatePrice(name, price);
     }
 
     public Position getPositionByName(String position) {

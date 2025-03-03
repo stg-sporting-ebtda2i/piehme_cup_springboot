@@ -44,29 +44,22 @@ public class OwnedIconsService {
 
     @Transactional
     public void addIconToUser(Long iconId) {
-        try{
-            Long userId = userService.getAuthenticatableId();
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-            Icon icon = iconRepository.findById(iconId)
-                    .orElseThrow(() -> new IconNotFoundException("Icon not found"));
+        Icon icon = iconRepository.findById(iconId)
+                .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
-            if (!user.getIcons().contains(icon)) {
-                walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
+        if (!user.getIcons().contains(icon)) {
+            walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
 
-                user.getIcons().add(icon);
-                user.setSelectedIcon(icon);
-                userRepository.save(user);
-            }
-            else
-                throw new IconAlreadyPurchasedException("Icon already purchased");
-
-        } catch (UserNotFoundException | IconNotFoundException | InsufficientCoinsException | IconAlreadyPurchasedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while adding icon to user");
+            user.getIcons().add(icon);
+            user.setSelectedIcon(icon);
+            userRepository.save(user);
         }
+        else
+            throw new IconAlreadyPurchasedException("Icon already purchased");
     }
 
     @Transactional
