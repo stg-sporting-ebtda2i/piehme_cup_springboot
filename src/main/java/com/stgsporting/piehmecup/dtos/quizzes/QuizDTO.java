@@ -17,7 +17,7 @@ public class QuizDTO {
     private Long coins;
     private Long coinsEarned;
     private Boolean isSolved;
-    private List<Question> questions;
+    private List<QuestionDTO> questions;
 
     public QuizDTO(Quiz quiz) {
         this.id = quiz.getId();
@@ -27,6 +27,6 @@ public class QuizDTO {
         this.isSolved = quiz.getIsSolved();
         this.coinsEarned = quiz.getCoinsEarned();
 
-        this.questions = quiz.getQuestions();
+        this.questions = quiz.getQuestions().stream().map(QuestionDTO::new).toList();
     }
 }
