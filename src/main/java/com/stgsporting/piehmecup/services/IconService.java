@@ -4,6 +4,7 @@ import com.stgsporting.piehmecup.dtos.icons.IconDTO;
 import com.stgsporting.piehmecup.dtos.icons.IconUploadDTO;
 import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.entities.Level;
+import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.IconNotFoundException;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 
@@ -94,7 +95,16 @@ public class IconService {
 
     public void deleteIcon(String name) {
         Icon icon = iconRepository.findIconByName(name)
-                .orElseThrow(() -> new IconNotFoundException("Player with name " + name + " not found"));
+                .orElseThrow(() -> new IconNotFoundException("Icon with name " + name + " not found"));
+
+        if(icon.isDefault()) {
+            throw new IllegalArgumentException("Cannot delete default icon");
+        }
+
+        List<User> users = icon.getUsers();
+        if(users != null && !users.isEmpty()) {
+            throw new IllegalArgumentException("Icon is used by users");
+        }
 
         fileService.deleteFile(icon.getImgLink());
 
@@ -105,7 +115,7 @@ public class IconService {
         Icon icon = iconRepository.findIconById(id)
                 .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
-        if(icon.getName().equalsIgnoreCase("Default") || icon.getName().equalsIgnoreCase("DefaultIcon")) {
+        if(icon.isDefault()) {
             throw new IllegalArgumentException("Cannot update default icon");
         }
 

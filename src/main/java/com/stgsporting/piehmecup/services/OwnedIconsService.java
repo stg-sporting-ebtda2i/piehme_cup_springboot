@@ -3,10 +3,7 @@ package com.stgsporting.piehmecup.services;
 import com.stgsporting.piehmecup.dtos.icons.IconDTO;
 import com.stgsporting.piehmecup.entities.Icon;
 import com.stgsporting.piehmecup.entities.User;
-import com.stgsporting.piehmecup.exceptions.IconAlreadyPurchasedException;
-import com.stgsporting.piehmecup.exceptions.IconNotFoundException;
-import com.stgsporting.piehmecup.exceptions.InsufficientCoinsException;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
+import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.IconRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -51,39 +48,41 @@ public class OwnedIconsService {
         Icon icon = iconRepository.findById(iconId)
                 .orElseThrow(() -> new IconNotFoundException("Icon not found"));
 
-        if (!user.getIcons().contains(icon)) {
-            walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
-
-            user.getIcons().add(icon);
-            user.setSelectedIcon(icon);
-            userRepository.save(user);
-        }
-        else
+        if (user.owns(icon)) {
             throw new IconAlreadyPurchasedException("Icon already purchased");
+        }
+
+        if (! icon.getAvailable()) {
+            throw new IconNotFoundException("Icon not available");
+        }
+
+        walletService.debit(user, icon.getPrice(), "Icon purchase: " + icon.getId());
+
+        user.getIcons().add(icon);
+        user.setSelectedIcon(icon);
+        userRepository.save(user);
     }
 
     @Transactional
     public void removeIconFromUser(Long iconId) {
         Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Icon icon = iconRepository.findById(iconId)
-                .orElseThrow(() -> new IconNotFoundException("Icon not found"));
+        Icon icon = iconRepository.findById(iconId).orElseThrow(IconNotFoundException::new);
 
-        if (icon.getName().equals("Default")) {
-            throw new IconNotFoundException("You can't sell default icon");
+        if (icon.isDefault()) {
+            throw new IllegalSellingException("You can't sell default icon");
         }
 
-        if (!user.getIcons().contains(icon)) {
-            throw new IconNotFoundException("Icon not found");
+        if (!user.owns(icon)) {
+            throw new UnownedIconException("User doesn't own this icon");
         }
 
         walletService.credit(user, icon.getPrice(), "Icon sale: " + icon.getId());
 
         user.getIcons().remove(icon);
 
-        Icon defaultIcon = iconRepository.findIconByName("Default")
+        Icon defaultIcon = iconRepository.findIconByName(Icon.defaultIcon(user.getSchoolYear()))
                 .orElseThrow(() -> new IconNotFoundException("Default icon not found"));
 
         user.setSelectedIcon(defaultIcon);

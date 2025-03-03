@@ -39,11 +39,18 @@ public class Icon extends BaseEntity {
     @ManyToMany(mappedBy = "icons")
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<User> user;
+    private List<User> users;
 
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
     private Level level;
+
+    public Boolean isDefault() {
+        return switch (name) {
+            case "DefaultIcon", "Default1", "Default" -> true;
+            default -> false;
+        };
+    }
 
     public static String defaultIcon(SchoolYear schoolYear) {
         return switch (schoolYear.getName()) {
