@@ -3,10 +3,7 @@ package com.stgsporting.piehmecup.services;
 import com.stgsporting.piehmecup.authentication.Authenticatable;
 import com.stgsporting.piehmecup.dtos.attendances.AttendanceDTO;
 import com.stgsporting.piehmecup.entities.*;
-import com.stgsporting.piehmecup.exceptions.AttendanceAlreadyApproved;
-import com.stgsporting.piehmecup.exceptions.AttendanceNotFoundException;
-import com.stgsporting.piehmecup.exceptions.LiturgyNotFoundException;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
+import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.AttendanceRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
@@ -18,6 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 @Service
 public class AttendanceService {
@@ -42,9 +44,38 @@ public class AttendanceService {
     public void requestAttendance(String liturgyName, Date date) {
         Long userId = userService.getAuthenticatableId();
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        priceRepository.findPricesByName(liturgyName).orElseThrow(LiturgyNotFoundException::new);
-
+        Price price = priceRepository.findPricesByName(liturgyName).orElseThrow(LiturgyNotFoundException::new);
+        validateAttendance(price, date, user);
         saveAttendance(liturgyName, date, user);
+    }
+
+    private void validateAttendance(Price price, Date date, User user) {
+        if (date == null) throw new InvalidAttendanceException("Date is required");
+
+        List<Attendance> attendances = attendanceRepository.findAttendancesByUserAndPrice(user, price);
+
+        ZoneId zoneId = ZoneId.of("Africa/Cairo");
+
+        Timestamp timestamp = new Timestamp(date.getTime());
+        LocalDateTime givenDateTime = timestamp.toInstant().
+                atZone(zoneId).toLocalDateTime();
+
+        LocalDateTime previousSunday = givenDateTime
+                .with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
+
+        LocalDateTime nextSunday = givenDateTime
+                .with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+
+        for (Attendance attendance : attendances) {
+
+            Timestamp attendanceTimestamp = new Timestamp(attendance.getDate().getTime());
+            LocalDateTime attendanceDate = attendanceTimestamp.toInstant()
+                    .atZone(zoneId).toLocalDateTime();
+
+            if (!attendanceDate.isBefore(previousSunday) && !attendanceDate.isAfter(nextSunday)) {
+                throw new InvalidAttendanceException("You can't attend the same liturgy twice in the same week");
+            }
+        }
     }
 
     private void saveAttendance(String liturgyName, Date date, User user) {

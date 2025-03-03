@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.repositories;
 
 import com.stgsporting.piehmecup.entities.Attendance;
+import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.entities.User;
 import org.springframework.data.domain.Page;
@@ -23,4 +24,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("SELECT a FROM ATTENDANCE a WHERE a.id = :attendanceId AND a.user = :user")
     Optional<Attendance> findByIdForUser(Long attendanceId, User user);
+
+    List<Attendance> findAttendancesByUserAndPrice(User user, Price price);
 }
