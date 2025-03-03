@@ -159,6 +159,14 @@ public class AttendanceService {
         return getAttendanceDTOS(userId, pageable, false);
     }
 
+    public Page<AttendanceDTO> getAllAttendancesOfUser(Pageable pageable) {
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Page<Attendance> allAttendances = attendanceRepository.findAttendanceByUser(user, pageable);
+        return allAttendances.map(AttendanceDTO::new);
+    }
+
     @NotNull
     private Page<AttendanceDTO> getAttendanceDTOS(Long userId, Pageable pageable, boolean approved) {
         User user = userRepository.findById(userId)
