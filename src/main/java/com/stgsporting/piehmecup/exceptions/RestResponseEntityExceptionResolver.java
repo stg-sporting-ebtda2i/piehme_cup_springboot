@@ -24,6 +24,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = { UnownedPositionException.class, UnownedIconException.class, UnownedException.class })
+    protected ResponseEntity<Object> handleUnowned(UnownedException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { IconAlreadyPurchasedException.class, PlayerAlreadyPurchasedException.class })
     protected ResponseEntity<Object> handleAlreadyPurchased(AlreadyPurchasedException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);

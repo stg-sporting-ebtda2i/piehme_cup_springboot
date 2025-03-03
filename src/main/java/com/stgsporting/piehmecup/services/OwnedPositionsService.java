@@ -5,6 +5,7 @@ import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.IllegalSellingException;
 import com.stgsporting.piehmecup.exceptions.PositionNotFoundException;
+import com.stgsporting.piehmecup.exceptions.UnownedPositionException;
 import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OwnedPositionsService {
@@ -31,9 +31,11 @@ public class OwnedPositionsService {
 
     public List<PositionDTO> getOwnedPositions() {
         Long userId = userService.getAuthenticatableId();
-        List<Position> positions = userRepository.findPositionsByUserId(userId);
+        User user = userRepository.findUserByIdWithPositions(userId)
+                .orElseThrow(UserNotFoundException::new);
+
         List<PositionDTO> positionDTOS = new ArrayList<>();
-        for (Position position : positions)
+        for (Position position : user.getPositions())
             positionDTOS.add(PositionService.positionToDTO(position));
 
         return positionDTOS;
@@ -42,13 +44,13 @@ public class OwnedPositionsService {
     @Transactional
     public void addPositionToUser(Long positionId) {
         Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findUserByIdWithPositions(userId)
+                .orElseThrow(UserNotFoundException::new);
 
         Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new PositionNotFoundException("Position not found"));
+                .orElseThrow(PositionNotFoundException::new);
 
-        if (!user.getPositions().contains(position)) {
+        if (user.doesntOwn(position)) {
             walletService.debit(user, position.getPrice(), "Position purchase: " + position.getName());
 
             user.getPositions().add(position);
@@ -60,30 +62,33 @@ public class OwnedPositionsService {
     @Transactional
     public void removePositionFromUser(Long positionId) {
         Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
+        User user = userRepository.findUserByIdWithPositions(userId)
+                .orElseThrow(UserNotFoundException::new);
         Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new PositionNotFoundException("Position not found"));
+                .orElseThrow(PositionNotFoundException::new);
 
-        if (user.getPositions().contains(position)) {
-
-            if (position.getName().equals("GK")) {
-                throw new IllegalSellingException("You can't sell GK position");
-            }
-
-            walletService.credit(user, position.getPrice(), "Position sale: " + position.getName());
-
-            user.getPositions().remove(position);
-
-            Optional<Position> defaultPosition = positionRepository.findPositionByName("GK");
-
-            if (defaultPosition.isEmpty()) {
-                throw new PositionNotFoundException("Default position not found");
-                }
-
-            user.setSelectedPosition(defaultPosition.get());
+        if(position.isDefault() && user.doesntOwn(position)) {
+            user.addPosition(position);
             userRepository.save(user);
+            throw new UnownedPositionException("You can't sell " + Position.defaultPosition + " position");
         }
+
+        if (position.isDefault()) {
+            throw new UnownedPositionException("You can't sell " + Position.defaultPosition + " position");
+        }
+
+        if (user.doesntOwn(position)) {
+            throw new UnownedPositionException();
+        }
+
+        walletService.credit(user, position.getPrice(), "Position sale: " + position.getName());
+
+        user.getPositions().remove(position);
+
+        Position defaultPosition = positionRepository.findPositionByName(Position.defaultPosition)
+                .orElseThrow(PositionNotFoundException::new);
+
+        user.setSelectedPosition(defaultPosition);
+        userRepository.save(user);
     }
 }

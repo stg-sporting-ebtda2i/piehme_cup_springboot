@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin/quizzes")
+@RequestMapping("/ostaz/quizzes")
 public class AdminQuizController {
 
     private final QuizService quizService;
@@ -52,6 +52,14 @@ public class AdminQuizController {
         return ResponseEntity.ok(quizzes);
     }
 
+    @GetMapping("/{slug}")
+    public ResponseEntity<Object> show(@PathVariable String slug) {
+        return ResponseEntity.ok(
+                quizService.getQuizBySlug(
+                        slug, adminService.getAuthenticatable().getSchoolYear(), true
+        ));
+    }
+
     @PostMapping("")
     public ResponseEntity<Object> store(@RequestBody JSONObject quiz) {
         Response response = httpService.post("/quizzes", quiz);
@@ -68,7 +76,7 @@ public class AdminQuizController {
     }
 
     @PatchMapping("/{quizId}")
-    public ResponseEntity<Object> store(@RequestBody JSONObject quiz, @PathVariable Long quizId) {
+    public ResponseEntity<Object> update(@RequestBody JSONObject quiz, @PathVariable Long quizId) {
         Response response = httpService.patch("/quizzes/" + quizId, quiz);
 
         if (! response.isSuccessful()) {
