@@ -18,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class AttendanceService {
@@ -131,13 +128,12 @@ public class AttendanceService {
         return getAttendanceDTOS(userId, pageable, false);
     }
 
-    public List<AttendanceDTO> getAllAttendancesOfUser(Pageable pageable, Long userId) {
-        return Stream.concat(
-                        getAttendanceDTOS(userId, pageable, false).getContent().stream(),
-                        getAttendanceDTOS(userId, pageable, true).getContent().stream()
-                )
-                .sorted((a1, a2) -> a2.getCreatedAt().compareTo(a1.getCreatedAt()))
-                .collect(Collectors.toList());
+    public Page<AttendanceDTO> getAllAttendancesOfUser(Pageable pageable) {
+        Long userId = userService.getAuthenticatableId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Page<Attendance> allAttendances = attendanceRepository.findAttendanceByUser(user, pageable);
+        return allAttendances.map(AttendanceDTO::new);
     }
 
     @NotNull

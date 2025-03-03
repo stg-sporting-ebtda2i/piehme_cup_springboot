@@ -81,12 +81,12 @@ public class AttendanceController {
         );
     }
 
-    @GetMapping("attendances/{userId}")
-    public ResponseEntity<Object> getAttendancesByUserId(@PathVariable Long userId, @RequestParam(required = false) Integer page) {
+    @GetMapping("attendances")
+    public ResponseEntity<Object> getAttendancesByUserId(@RequestParam(required = false) Integer page) {
         Pageable pageable = PageRequest.of(page == null ? 0 : page, 20);
 
         return ResponseEntity.ok(
-                attendanceService.getAllAttendancesOfUser(pageable, userId)
+                new PaginationDTO<>(attendanceService.getAllAttendancesOfUser(pageable))
         );
     }
 
