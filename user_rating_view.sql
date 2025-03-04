@@ -10,7 +10,6 @@ FROM
     LEFT JOIN owned_players ON users.id = owned_players.user_id
     LEFT JOIN players ON players.id = owned_players.player_id
 WHERE
-    players.position_id != users.position_id
-    OR players.position_id IS NULL
+    players.position_id IS NULL
 GROUP BY
     users.id;

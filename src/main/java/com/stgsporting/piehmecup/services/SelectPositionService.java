@@ -1,11 +1,10 @@
 package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.dtos.PositionDTO;
+import com.stgsporting.piehmecup.entities.Player;
 import com.stgsporting.piehmecup.entities.Position;
 import com.stgsporting.piehmecup.entities.User;
-import com.stgsporting.piehmecup.exceptions.PositionNotFoundException;
-import com.stgsporting.piehmecup.exceptions.UnownedPositionException;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
+import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.PositionRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,24 @@ public class SelectPositionService {
 
         if (!user.getPositions().contains(position)) {
             throw new UnownedPositionException();
+        }
+
+        if (position.getName().equals("CM") || position.getName().equals("CB")) {
+            for (Player player : user.getPlayers()) {
+                if (player.getPosition().equals(position)) {
+                    throw new PositionOccupiedException("Position already occupied by player " + player.getName());
+                }
+            }
+        } else {
+            int count = 0;
+            for(Player player : user.getPlayers()) {
+                if(player.getPosition().equals(position)) {
+                    count++;
+                }
+            }
+            if(count >= 2) {
+                throw new PositionOccupiedException("Position already occupied by 2 players");
+            }
         }
 
         user.setSelectedPosition(position);
