@@ -30,7 +30,7 @@ public class SelectPositionService {
             throw new UnownedPositionException();
         }
 
-        if (position.getName().equals("CM") || position.getName().equals("CB")) {
+        if (!(position.getName().equals("CM") || position.getName().equals("CB"))) {
             for (Player player : user.getPlayers()) {
                 if (player.getPosition().equals(position)) {
                     throw new PositionOccupiedException("Position already occupied by player " + player.getName());
