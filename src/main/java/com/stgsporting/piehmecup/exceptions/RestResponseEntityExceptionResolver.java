@@ -55,6 +55,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = { PositionOccupiedException.class })
+    protected ResponseEntity<Object> handlePositionOccupied(PositionOccupiedException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { InvalidCredentialsException.class })
     protected ResponseEntity<Object> handleInvalidCred(InvalidCredentialsException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
