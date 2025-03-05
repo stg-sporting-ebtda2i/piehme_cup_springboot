@@ -16,6 +16,7 @@ public class UserResponseDTO {
     private Integer coins;
     private Map<String, Answer> answers;
     private Integer correctQuestionsCount;
+    private String submittedAt;
 
     @Getter
     @Setter
@@ -33,6 +34,7 @@ public class UserResponseDTO {
         response.setUsername(((JSONObject) responseJSON.get("entity")).getAsString("name"));
         response.setId(responseJSON.getAsNumber("id").longValue());
         response.setCoins(responseJSON.getAsNumber("points").intValue());
+        response.setSubmittedAt(responseJSON.getAsString("created_at"));
 
         JSONObject answersJSON = (JSONObject) responseJSON.get("answers");
         response.answers = new HashMap<>();
