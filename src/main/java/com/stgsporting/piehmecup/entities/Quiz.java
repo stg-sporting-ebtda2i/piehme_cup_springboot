@@ -79,10 +79,10 @@ public class Quiz {
         return quiz;
     }
 
-    public Date getBonusBeforeDate() {
+    public Date bonusBeforeDate() {
         if (this.bonusBefore == null) return null;
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(this.bonusBefore, formatter);
 
         return Date.from(dateTime.toInstant(ZoneOffset.UTC));
@@ -91,7 +91,7 @@ public class Quiz {
     public Boolean shouldAddBonus() {
         return this.getBonus() != null
                 && this.bonusBefore != null
-                && this.getBonusBeforeDate().getTime() > System.currentTimeMillis();
+                && this.bonusBeforeDate().getTime() > System.currentTimeMillis();
     }
 
     public void addResponse(UserResponseDTO responseDTO) {
