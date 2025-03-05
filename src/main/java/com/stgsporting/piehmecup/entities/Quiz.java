@@ -44,11 +44,13 @@ public class Quiz {
 //        quiz.setPublishedAt(Date.from(Instant.parse(quizJson.getAsString("published_at"))));
         quiz.setPublishedAt(quizJson.getAsString("published_at"));
 
-        JSONObject data = (JSONObject) quizJson.get("data");
-        if (data.containsKey("bonusBefore") && data.containsKey("bonus")) {
+        if(quizJson.get("data") != null) {
+            JSONObject data = (JSONObject) quizJson.get("data");
+            if (data.containsKey("bonusBefore") && data.containsKey("bonus")) {
 
-            quiz.setBonusBefore(data.getAsString("bonusBefore"));
-            quiz.setBonus((Long) data.get("bonus"));
+                quiz.setBonusBefore(data.getAsString("bonusBefore"));
+                quiz.setBonus((Long) data.get("bonus"));
+            }
         }
 
         if(quizJson.containsKey("responses")) {
