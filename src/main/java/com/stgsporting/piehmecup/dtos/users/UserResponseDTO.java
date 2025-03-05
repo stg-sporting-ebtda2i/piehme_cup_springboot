@@ -1,8 +1,5 @@
 package com.stgsporting.piehmecup.dtos.users;
 
-import com.stgsporting.piehmecup.entities.Icon;
-import com.stgsporting.piehmecup.entities.User;
-import com.stgsporting.piehmecup.services.FileService;
 import lombok.Getter;
 import lombok.Setter;
 import net.minidev.json.JSONObject;
@@ -18,6 +15,7 @@ public class UserResponseDTO {
     private String username;
     private Integer coins;
     private Map<String, Answer> answers;
+    private Integer correctQuestionsCount;
 
     @Getter
     @Setter
@@ -48,6 +46,8 @@ public class UserResponseDTO {
             answer.setAnswer(answerJSON.get("answer"));
             response.answers.put(key, answer);
         }
+
+        response.setCorrectQuestionsCount(response.answers.values().stream().mapToInt(answer -> answer.isCorrect ? 1 : 0).sum());
 
         return response;
     }
