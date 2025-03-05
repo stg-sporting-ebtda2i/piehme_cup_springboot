@@ -151,6 +151,10 @@ public class QuizService {
 
             walletService.credit(user, points.intValue(), "Quiz: " + quiz.getId());
 
+            if(quiz.shouldAddBonus()) {
+                walletService.credit(user, quiz.getBonus().intValue(), "Bonus for Quiz: " + quiz.getId());
+            }
+
             return points;
         }
 

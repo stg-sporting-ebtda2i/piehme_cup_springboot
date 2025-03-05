@@ -7,6 +7,9 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +46,7 @@ public class Quiz {
 
         JSONObject data = (JSONObject) quizJson.get("data");
         if (data.containsKey("bonusBefore") && data.containsKey("bonus")) {
+
             quiz.setBonusBefore(data.getAsString("bonusBefore"));
             quiz.setBonus((Long) data.get("bonus"));
         }
@@ -71,6 +75,21 @@ public class Quiz {
         }
 
         return quiz;
+    }
+
+    public Date getBonusBeforeDate() {
+        if (this.bonusBefore == null) return null;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(this.bonusBefore, formatter);
+
+        return Date.from(dateTime.toInstant(ZoneOffset.UTC));
+    }
+
+    public Boolean shouldAddBonus() {
+        return this.getBonus() != null
+                && this.bonusBefore != null
+                && this.getBonusBeforeDate().getTime() > System.currentTimeMillis();
     }
 
     public void addResponse(UserResponseDTO responseDTO) {
