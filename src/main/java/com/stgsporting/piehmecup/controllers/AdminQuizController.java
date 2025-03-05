@@ -82,6 +82,14 @@ public class AdminQuizController {
             newQuestions.add(question);
         }
         quiz.put("questions", newQuestions);
+
+        if(quiz.containsKey("bonus") && quiz.containsKey("bonusBefore")) {
+            JSONObject data = new JSONObject();
+
+            data.put("bonus", quiz.get("bonus"));
+            data.put("bonusBefore", quiz.get("bonusBefore"));
+            quiz.put("data", data);
+        }
     }
 
     @PostMapping("")

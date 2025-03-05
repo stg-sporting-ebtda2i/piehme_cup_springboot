@@ -20,6 +20,9 @@ public class Quiz {
     private String slug;
     private Long coins;
     private String publishedAt;
+    private String bonusBefore;
+    private Long bonus;
+
     private Boolean isSolved;
     private Long coinsEarned;
 //    private SchoolYear schoolYear;
@@ -37,6 +40,12 @@ public class Quiz {
         quiz.setIsSolved((Boolean) quizJson.getOrDefault("is_solved", false));
 //        quiz.setPublishedAt(Date.from(Instant.parse(quizJson.getAsString("published_at"))));
         quiz.setPublishedAt(quizJson.getAsString("published_at"));
+
+        JSONObject data = (JSONObject) quizJson.get("data");
+        if (data.containsKey("bonusBefore") && data.containsKey("bonus")) {
+            quiz.setBonusBefore(data.getAsString("bonusBefore"));
+            quiz.setBonus((Long) data.get("bonus"));
+        }
 
         if(quizJson.containsKey("responses")) {
             JSONArray responsesArray = (JSONArray) quizJson.get("responses");
