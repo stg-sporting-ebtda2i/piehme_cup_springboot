@@ -54,11 +54,20 @@ public class AdminQuizController {
     }
 
     @GetMapping("/{slug}")
-    public ResponseEntity<Object> show(@PathVariable String slug) {
+    public ResponseEntity<Object> show(@PathVariable String slug, @RequestParam(required = false) boolean withResponses) {
         return ResponseEntity.ok(
                 quizService.getQuizBySlug(
-                        slug, adminService.getAuthenticatable().getSchoolYear(), true
+                        slug, adminService.getAuthenticatable().getSchoolYear(), true, withResponses
         ));
+    }
+
+    @PatchMapping("/responses/{id}/correct")
+    public ResponseEntity<Object> correctResponse(@PathVariable Long id) {
+        quizService.correctResponse(id);
+
+        return ResponseEntity.ok(
+                Map.of("message", "Response Corrected Successfully")
+        );
     }
 
     private void mapQuiz(JSONObject quiz) {

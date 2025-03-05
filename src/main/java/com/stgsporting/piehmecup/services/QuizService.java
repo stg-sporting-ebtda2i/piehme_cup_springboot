@@ -8,6 +8,7 @@ import com.stgsporting.piehmecup.entities.User;
 import com.stgsporting.piehmecup.exceptions.ChangePasswordException;
 import com.stgsporting.piehmecup.exceptions.InvalidCredentialsException;
 import com.stgsporting.piehmecup.exceptions.NotFoundException;
+import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
 import com.stgsporting.piehmecup.helpers.Response;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -29,6 +30,31 @@ public class QuizService {
         this.entityService = entityService;
         this.httpService = httpService;
         this.walletService = walletService;
+    }
+
+    public void correctResponse(Long responseId) {
+        String url = "/responses/" + responseId + "/correct";
+
+        Response response = httpService.patch(url, new JSONObject());
+
+        if (!response.isSuccessful()) {
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                JSONObject jsonObject = response.getJsonBody();
+                throw new IllegalArgumentException(jsonObject.getAsString("message"));
+            }
+
+            throw new IllegalArgumentException("Could not correct response");
+        }
+
+        JSONObject jsonObject = response.getJsonBody();
+        Long entityId = jsonObject.getAsNumber("entity_id").longValue();
+        long quizId = jsonObject.getAsNumber("quiz_id").longValue();
+        long questionId = jsonObject.getAsNumber("question_id").longValue();
+        int coins = jsonObject.getAsNumber("points").intValue();
+        User user = userService.getUserByQuizId(entityId)
+                .orElseThrow(UserNotFoundException::new);
+
+        walletService.credit(user, coins, "Corrected Question: " + questionId + " in Quiz: " + quizId);
     }
 
     public List<Quiz> getQuizzes(SchoolYear schoolYear, Long quizId) {
@@ -67,13 +93,25 @@ public class QuizService {
         Authenticatable user = userService.getAuthenticatable();
         SchoolYear schoolYear = user.getSchoolYear();
 
-        return getQuizBySlug(slug, schoolYear, false);
+        return getQuizBySlug(slug, schoolYear, false, false);
     }
 
-    public Quiz getQuizBySlug(String slug, SchoolYear schoolYear, Boolean withAnswers) {
+    public Quiz getQuizBySlug(String slug, SchoolYear schoolYear, Boolean withAnswers, Boolean withResponses) {
         String url = "/quizzes/" + schoolYear.getSlug() + "/" + slug;
-        if (withAnswers) {
-            url += "?withAnswers";
+
+        if (withAnswers || withResponses) {
+            StringBuilder urlBuilder = new StringBuilder(url);
+            urlBuilder.append("?");
+
+            if (withAnswers) {
+                urlBuilder.append("withAnswers");
+            }
+
+            if (withResponses) {
+                if (withAnswers) urlBuilder.append("&");
+                urlBuilder.append("withResponses");
+            }
+            url = urlBuilder.toString();
         }
 
         Response response = httpService.get(url);

@@ -321,4 +321,8 @@ public class UserService implements AuthenticatableService {
         user.setLeaderboardBoolean(false);
         save(user);
     }
+
+    public Optional<User> getUserByQuizId(Long quizId) {
+        return userRepository.findUserByQuizId(quizId);
+    }
 }
