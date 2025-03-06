@@ -50,6 +50,8 @@ public class OwnedPositionsService {
         Position position = positionRepository.findById(positionId)
                 .orElseThrow(PositionNotFoundException::new);
 
+        SelectPositionService.validatePosition(position, user);
+
         if (user.doesntOwn(position)) {
             walletService.debit(user, position.getPrice(), "Position purchase: " + position.getName());
 
