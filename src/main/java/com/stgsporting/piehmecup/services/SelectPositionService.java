@@ -30,6 +30,13 @@ public class SelectPositionService {
             throw new UnownedPositionException();
         }
 
+        validatePosition(position, user);
+
+        user.setSelectedPosition(position);
+        userRepository.save(user);
+    }
+
+    public static void validatePosition(Position position, User user) {
         if (!(position.getName().equals("CM") || position.getName().equals("CB"))) {
             for (Player player : user.getPlayers()) {
                 if (player.getPosition().equals(position)) {
@@ -47,9 +54,6 @@ public class SelectPositionService {
                 throw new PositionOccupiedException("Position already occupied by 2 players");
             }
         }
-
-        user.setSelectedPosition(position);
-        userRepository.save(user);
     }
 
     public PositionDTO getSelectedPosition() {
