@@ -17,12 +17,12 @@ public class PricesLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Map<String, Integer> prices = new HashMap<>(Map.of(
-                "Rating Price", 74,
-                "Madares el Ahad", 200,
-                "Odas Atfal", 150,
-                "Pisagi", 150,
-                "Tasbeha", 125,
-                "Al7an", 125
+                "Rating Price", 1100,
+                "Madares el Ahad", 1140,
+                "Odas" , 1900,
+                "Odas El-Gom3a", 1900,
+                "Pisagi", 1140,
+                "Tasbeha", 1520
         ));
 
         prices.forEach((name, price) -> {
