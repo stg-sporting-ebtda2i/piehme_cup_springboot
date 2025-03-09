@@ -8,6 +8,7 @@ import com.stgsporting.piehmecup.repositories.AttendanceRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class AttendanceService {
     private final PriceService priceService;
     private final AdminService adminService;
 
+    @Value("${system.event_start_date}")
+    private String eventStartDate;
+
     public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, UserRepository userRepository, PriceRepository priceRepository, WalletService walletService, PriceService priceService, AdminService adminService) {
         this.attendanceRepository = attendanceRepository;
         this.userService = userService;
@@ -51,6 +55,9 @@ public class AttendanceService {
 
     private void validateAttendance(Price price, Date date, User user) {
         if (date == null) throw new InvalidAttendanceException("Date is required");
+
+        if (date.before(Date.valueOf(eventStartDate)))
+            throw new InvalidAttendanceException("This date is before the mosab2a start date");
 
         List<Attendance> attendances = attendanceRepository.findAttendancesByUserAndPrice(user, price);
 
