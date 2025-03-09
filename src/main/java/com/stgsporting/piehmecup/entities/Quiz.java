@@ -88,10 +88,25 @@ public class Quiz {
         return Date.from(dateTime.toInstant(ZoneOffset.UTC));
     }
 
+    public static Date dateFromString(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
+
+        return Date.from(dateTime.toInstant(ZoneOffset.UTC));
+    }
+
     public Boolean shouldAddBonus() {
+        return shouldAddBonus(Date.from(Instant.now()));
+    }
+
+    public Boolean shouldAddBonus(String time) {
+        return shouldAddBonus(dateFromString(time));
+    }
+
+    public Boolean shouldAddBonus(Date time) {
         return this.getBonus() != null
                 && this.bonusBefore != null
-                && this.bonusBeforeDate().getTime() > System.currentTimeMillis();
+                && this.bonusBeforeDate().getTime() > time.getTime();
     }
 
     public void addResponse(UserResponseDTO responseDTO) {

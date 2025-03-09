@@ -19,12 +19,17 @@ public class WalletService {
 
     @Transactional
     public void debit(User user, Integer amount) {
-        debit(user, amount, null);
+        debit(user, amount, null, false);
     }
 
     @Transactional
     public void debit(User user, Integer amount, String description) {
-        if (user.getCoins() < amount) {
+        debit(user, amount, description, false);
+    }
+
+    @Transactional
+    public void debit(User user, Integer amount, String description, boolean ignoreCoins) {
+        if (!ignoreCoins && user.getCoins() < amount) {
             throw new InsufficientCoinsException("Not enough coins");
         }
 
@@ -33,6 +38,11 @@ public class WalletService {
         userService.save(user);
 
         transactionService.makeTransaction(user, amount, TransactionType.DEBIT, description);
+    }
+
+    @Transactional
+    public void forceDebit(User user, Integer amount, String description) {
+        debit(user, amount, description, true);
     }
 
     @Transactional

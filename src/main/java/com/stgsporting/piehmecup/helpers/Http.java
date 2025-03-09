@@ -120,4 +120,8 @@ public class Http {
     public Response patch(JSONObject body) {
         return call("PATCH", body);
     }
+
+    public Response delete() {
+        return call("DELETE");
+    }
 }

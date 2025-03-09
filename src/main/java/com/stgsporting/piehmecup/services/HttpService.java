@@ -29,4 +29,8 @@ public class HttpService {
     public Response patch(String url, JSONObject body) {
         return new Http(BASE_URL + url, API_KEY, API_SECRET).patch(body);
     }
+
+    public Response delete(String url) {
+        return new Http(BASE_URL + url, API_KEY, API_SECRET).delete();
+    }
 }

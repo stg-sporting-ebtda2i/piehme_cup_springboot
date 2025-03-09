@@ -53,6 +53,13 @@ public class AdminQuizController {
         return ResponseEntity.ok(quizzes);
     }
 
+    @DeleteMapping("/responses/{id}")
+    public ResponseEntity<Object> deleteResponse(@PathVariable Long id) {
+        quizService.deleteResponse(id);
+
+        return ResponseEntity.ok(Map.of("message", "Response Deleted Successfully"));
+    }
+
     @GetMapping("/{slug}")
     public ResponseEntity<Object> show(@PathVariable String slug, @RequestParam(required = false) boolean withResponses) {
         return ResponseEntity.ok(

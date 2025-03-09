@@ -57,6 +57,29 @@ public class QuizService {
         walletService.credit(user, coins, "Corrected Question: " + questionId + " in Quiz: " + quizId);
     }
 
+    public void deleteResponse(Long responseId) {
+        String url = "/responses/" + responseId;
+
+        Response response = httpService.delete(url);
+
+        if (!response.isSuccessful()) {
+            throw new IllegalArgumentException("Could not delete response");
+        }
+
+        JSONObject res = response.getJsonBody();
+        int pointsToRemove = res.getAsNumber("points").intValue();
+        Quiz quiz = Quiz.fromJson((JSONObject) res.get("quiz"));
+        String responseAt = res.getAsString("response_at");
+        if (quiz.shouldAddBonus(responseAt)) {
+            pointsToRemove += quiz.getBonus().intValue();
+        }
+
+        User user = userService.getUserByQuizId(res.getAsNumber("entity_id").longValue())
+                .orElseThrow(UserNotFoundException::new);
+
+        walletService.forceDebit(user, pointsToRemove, "Deleted Response in Quiz: " + quiz.getId());
+    }
+
     public List<Quiz> getQuizzes(SchoolYear schoolYear, Long quizId) {
         String url = quizId == null
                 ? "/groups/" + schoolYear.getSlug()
