@@ -61,8 +61,8 @@ public class AttendanceService {
         LocalDateTime givenDateTime = timestamp.toInstant().
                 atZone(zoneId).toLocalDateTime();
 
-        LocalDateTime previousSunday = givenDateTime
-                .with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
+        LocalDateTime previousSaturday = givenDateTime
+                .with(TemporalAdjusters.previous(DayOfWeek.SATURDAY));
 
         LocalDateTime nextSunday = givenDateTime
                 .with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
@@ -73,7 +73,7 @@ public class AttendanceService {
             LocalDateTime attendanceDate = attendanceTimestamp.toInstant()
                     .atZone(zoneId).toLocalDateTime();
 
-            if (!attendanceDate.isBefore(previousSunday) && !attendanceDate.isAfter(nextSunday)) {
+            if (!attendanceDate.isBefore(previousSaturday) && !attendanceDate.isAfter(nextSunday)) {
                 throw new InvalidAttendanceException("You can't attend the same liturgy twice in the same week");
             }
         }
