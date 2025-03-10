@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.services.InsightsService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,7 +14,7 @@ public class InsightsController {
     }
 
     @GetMapping("/top-players")
-    public void getBestSellingPlayers(@RequestParam Long levelId) {
-        insightsService.findBestSeller(levelId);
+    public ResponseEntity<Object> getBestSellingPlayers(@RequestParam Long levelId) {
+        return ResponseEntity.ok(insightsService.findBestSeller(levelId));
     }
 }
