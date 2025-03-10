@@ -1,10 +1,7 @@
 package com.stgsporting.piehmecup.controllers;
 
 import com.stgsporting.piehmecup.services.InsightsService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/insights")
@@ -15,8 +12,8 @@ public class InsightsController {
         this.insightsService = insightsService;
     }
 
-    @GetMapping("/top-players/{levelId}")
-    public void getBestSellingPlayers(@PathVariable Long levelId) {
+    @GetMapping("/top-players")
+    public void getBestSellingPlayers(@RequestParam Long levelId) {
         insightsService.findBestSeller(levelId);
     }
 }
