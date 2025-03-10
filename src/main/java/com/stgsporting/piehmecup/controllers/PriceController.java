@@ -6,6 +6,7 @@ import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.enums.Role;
 import com.stgsporting.piehmecup.services.AdminService;
 import com.stgsporting.piehmecup.services.PriceService;
+import com.stgsporting.piehmecup.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,13 @@ public class PriceController {
     private PriceService priceService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/admin/prices")
     public ResponseEntity<Object> createPrice(@RequestBody Price price) {
-        return ResponseEntity.ok(priceService.save(price));
+        Long schoolYearId =  adminService.getAuthenticatable().getSchoolYear().getId();
+        return ResponseEntity.ok(priceService.save(price, schoolYearId));
     }
 
     @PutMapping("/admin/prices/{priceId}")
@@ -34,9 +38,9 @@ public class PriceController {
                 throw new IllegalArgumentException("You don't have permission to update rating price");
             }
         }
-
+        Long schoolYearId =  adminService.getAuthenticatable().getSchoolYear().getId();
         price.setId(priceId);
-        priceService.save(price);
+        priceService.save(price, schoolYearId);
 
         return ResponseEntity.ok(Map.of("message", "Price updated successfully"));
     }
@@ -59,25 +63,29 @@ public class PriceController {
 
     @GetMapping("/prices/{name}")
     public ResponseEntity<Object> getPrice(@PathVariable String name) {
-        return ResponseEntity.ok(priceService.getPrice(name));
+        Long schoolYearId =  userService.getAuthenticatable().getSchoolYear().getId();
+        return ResponseEntity.ok(priceService.getPrice(name, schoolYearId));
     }
 
     @GetMapping("/admin/prices")
     public ResponseEntity<Object> index(@RequestParam Integer page) {
         Pageable pageable = Pageable.ofSize(10).withPage(page);
+        Long schoolYearId =  adminService.getAuthenticatable().getSchoolYear().getId();
 
         return ResponseEntity.ok(
-                new PaginationDTO<>(priceService.getPrices(pageable))
+                new PaginationDTO<>(priceService.getPrices(pageable, schoolYearId))
         );
     }
 
     @GetMapping("/prices/all")
     public ResponseEntity<Object> getAllPrices() {
-        return ResponseEntity.ok(priceService.getAllPrices());
+        Long schoolYearId =  userService.getAuthenticatable().getSchoolYear().getId();
+        return ResponseEntity.ok(priceService.getAllPrices(schoolYearId));
     }
 
     @GetMapping("/prices")
     public ResponseEntity<Object> getAllPricesForUser() {
-        return ResponseEntity.ok(priceService.getAllPricesForUser());
+        Long schoolYearId =  userService.getAuthenticatable().getSchoolYear().getId();
+        return ResponseEntity.ok(priceService.getAllPricesForUser(schoolYearId));
     }
 }

@@ -2,10 +2,6 @@ package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.dtos.UserCardDTO;
 import com.stgsporting.piehmecup.entities.User;
-import com.stgsporting.piehmecup.exceptions.InsufficientCoinsException;
-import com.stgsporting.piehmecup.exceptions.UserNotFoundException;
-import com.stgsporting.piehmecup.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,7 +29,7 @@ public class CardRatingService {
         long id = userService.getAuthenticatableId();
         User user = userService.getAuthenticatableById(id);
 
-        Integer deltaPrice = priceService.getPrice("Rating Price").getCoins();
+        Integer deltaPrice = priceService.getPrice("Rating Price", user.getSchoolYear().getId()).getCoins();
 
         walletService.debit(user, deltaPrice*delta, "Rating increase by " + delta);
 

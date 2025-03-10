@@ -2,6 +2,7 @@ package com.stgsporting.piehmecup.autoload;
 
 import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
+ import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import java.util.Map;
 public class PricesLoader implements CommandLineRunner {
     @Autowired
     private PriceRepository priceRepository;
+    @Autowired
+    private SchoolYearRepository schoolYearRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -22,12 +25,13 @@ public class PricesLoader implements CommandLineRunner {
                 "Odas" , 1900,
                 "Odas El-Gom3a", 1900,
                 "Pisagi", 1140,
-                "Tasbeha", 1520
+                "Tasbeha", 1520,
+                "Al7an", 1000
         ));
 
         prices.forEach((name, price) -> {
-            if(priceRepository.findPricesByName(name).isEmpty()) {
-                priceRepository.save(new Price(name, price));
+            if(priceRepository.findPricesByNameAndSchoolYear(name, 1L).isEmpty()) {
+                priceRepository.save(new Price(name, price, schoolYearRepository.getReferenceById(1L)));
             }
         });
     }

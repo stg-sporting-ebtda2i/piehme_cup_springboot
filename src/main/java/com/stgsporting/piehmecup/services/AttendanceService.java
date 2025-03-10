@@ -42,7 +42,7 @@ public class AttendanceService {
     public void requestAttendance(String liturgyName, Date date) {
         long userId = userService.getAuthenticatableId();
         User user = userService.findOrFail(userId);
-        Price price = priceService.getPrice(liturgyName);
+        Price price = priceService.getPrice(liturgyName, user.getSchoolYear().getId());
         validateAttendance(price, date, user);
         saveAttendance(liturgyName, date, user);
     }
@@ -81,7 +81,7 @@ public class AttendanceService {
 
     private void saveAttendance(String liturgyName, Date date, User user) {
         Attendance attendance = new Attendance();
-        attendance.setPrice(priceService.getPrice(liturgyName));
+        attendance.setPrice(priceService.getPrice(liturgyName, user.getSchoolYear().getId()));
         attendance.setUser(user);
         attendance.setDate(date);
         attendance.setCreatedAt(new Timestamp(System.currentTimeMillis()));

@@ -25,8 +25,8 @@ public class PriceService {
     }
 
     @Transactional
-    public void updatePrice(String name, Integer price) {
-        priceRepository.updatePrice(name, price);
+    public void updatePrice(String name, Integer price, Long schoolYearId) {
+        priceRepository.updatePrice(name, price, schoolYearId);
     }
 
     @Transactional
@@ -34,25 +34,25 @@ public class PriceService {
         priceRepository.deleteById(id);
     }
 
-    public Price getPrice(String name) {
-        return priceRepository.findPricesByName(name)
+    public Price getPrice(String name,Long schoolYearId) {
+        return priceRepository.findPricesByNameAndSchoolYear(name, schoolYearId)
                 .orElseThrow(PriceNotFoundException::new);
     }
 
-    public Page<Price> getPrices(Pageable pageable) {
-        return priceRepository.findAll(pageable);
+    public Page<Price> getPrices(Pageable pageable, Long schoolYearId) {
+        return priceRepository.findAll(pageable, schoolYearId);
     }
 
-    public List<Price> getAllPrices() {
-        return priceRepository.findAll();
+    public List<Price> getAllPrices(Long schoolYearId) {
+        return priceRepository.findAllBySchoolYearId(schoolYearId);
     }
 
-    public List<Price> getAllPricesForUser() {
-        return priceRepository.findAllExcept(1L);
+    public List<Price> getAllPricesForUser(Long schoolYearId) {
+        return priceRepository.findAllExcept(1L, schoolYearId);
     }
 
-    public Price save(Price price) {
-        Optional<Price> existingPrice = priceRepository.findPricesByName(price.getName());
+    public Price save(Price price, Long schoolYearId) {
+        Optional<Price> existingPrice = priceRepository.findPricesByNameAndSchoolYear(price.getName(), schoolYearId);
 
         if (existingPrice.isPresent() && !existingPrice.get().getId().equals(price.getId())) {
             throw new IllegalArgumentException("Price with name " + price.getName() + " already exists");
