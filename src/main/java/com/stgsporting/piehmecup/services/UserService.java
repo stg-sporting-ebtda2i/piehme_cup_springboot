@@ -96,6 +96,10 @@ public class UserService implements AuthenticatableService {
         return userRepository.findById(id);
     }
 
+    public User findOrFail(long id) {
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    }
+
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findUsersByUsername(username);
     }

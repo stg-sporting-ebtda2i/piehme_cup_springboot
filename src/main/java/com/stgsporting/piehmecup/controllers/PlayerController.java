@@ -28,12 +28,13 @@ public class PlayerController {
     }
 
     @GetMapping("/admin/players")
-    public ResponseEntity<Object> index(@RequestParam @Nullable Integer page) {
+    public ResponseEntity<Object> index(@RequestParam @Nullable Integer page, @RequestParam @Nullable String search) {
         Authenticatable authenticatable = adminService.getAuthenticatable();
 
         return ResponseEntity.ok().body(
                 new PaginationDTO<>(playerService.getPlayers(
                         PageRequest.of(page == null ? 0 : page, 10),
+                        search,
                         authenticatable.getSchoolYear().getLevel()
                 ))
         );

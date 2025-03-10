@@ -5,8 +5,6 @@ import com.stgsporting.piehmecup.dtos.attendances.AttendanceDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.exceptions.*;
 import com.stgsporting.piehmecup.repositories.AttendanceRepository;
-import com.stgsporting.piehmecup.repositories.PriceRepository;
-import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -26,8 +24,6 @@ import java.util.List;
 public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final PriceRepository priceRepository;
     private final WalletService walletService;
     private final PriceService priceService;
     private final AdminService adminService;
@@ -35,20 +31,18 @@ public class AttendanceService {
     @Value("${system.event_start_date}")
     private String eventStartDate;
 
-    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, UserRepository userRepository, PriceRepository priceRepository, WalletService walletService, PriceService priceService, AdminService adminService) {
+    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, WalletService walletService, PriceService priceService, AdminService adminService) {
         this.attendanceRepository = attendanceRepository;
         this.userService = userService;
-        this.userRepository = userRepository;
-        this.priceRepository = priceRepository;
         this.walletService = walletService;
         this.priceService = priceService;
         this.adminService = adminService;
     }
 
     public void requestAttendance(String liturgyName, Date date) {
-        Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Price price = priceRepository.findPricesByName(liturgyName).orElseThrow(LiturgyNotFoundException::new);
+        long userId = userService.getAuthenticatableId();
+        User user = userService.findOrFail(userId);
+        Price price = priceService.getPrice(liturgyName);
         validateAttendance(price, date, user);
         saveAttendance(liturgyName, date, user);
     }
@@ -167,17 +161,15 @@ public class AttendanceService {
     }
 
     public Page<AttendanceDTO> getAllAttendancesOfUser(Pageable pageable) {
-        Long userId = userService.getAuthenticatableId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        long userId = userService.getAuthenticatableId();
+        User user = userService.findOrFail(userId);
         Page<Attendance> allAttendances = attendanceRepository.findAttendanceByUser(user, pageable);
         return allAttendances.map(AttendanceDTO::new);
     }
 
     @NotNull
     private Page<AttendanceDTO> getAttendanceDTOS(Long userId, Pageable pageable, boolean approved) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userService.findOrFail(userId);
 
         Page<Attendance> approvedAttendances = attendanceRepository
                 .findByApprovedAndUser(pageable, approved, user);

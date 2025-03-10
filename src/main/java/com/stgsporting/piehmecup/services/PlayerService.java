@@ -73,8 +73,13 @@ public class PlayerService {
         return playerToDTO(player);
     }
 
-    public Page<PlayerDTO> getPlayers(Pageable pageable, Level level) {
-        return playerRepository.findPlayersByLevel(pageable, level).map(this::playerToDTO);
+    public Page<PlayerDTO> getPlayers(Pageable pageable, String search, Level level) {
+        if(search == null) {
+            search = "";
+        }
+        search = search + "%";
+
+        return playerRepository.findPlayersByLevel(pageable, search, level).map(this::playerToDTO);
     }
 
     public PlayerDTO playerToDTO(Player player) {

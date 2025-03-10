@@ -20,5 +20,6 @@ public interface PlayerRepository extends JpaRepository<Player,Long> {
     @Query("SELECT p FROM PLAYERS p WHERE p.position = ?1 AND p.level=?2 AND p.available = true ORDER BY p.rating DESC")
     List<Player> findPlayersByPositionAndLevel(Position position, Level level);
 
-    Page<Player> findPlayersByLevel(Pageable pageable, Level level);
+    @Query("SELECT p FROM PLAYERS p WHERE p.level =:level AND p.name LIKE :search ORDER BY p.available ASC, p.rating DESC")
+    Page<Player> findPlayersByLevel(Pageable pageable, String search, Level level);
 }
