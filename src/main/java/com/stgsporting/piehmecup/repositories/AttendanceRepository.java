@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,5 +27,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query("SELECT a FROM ATTENDANCE a WHERE a.id = :attendanceId AND a.user = :user")
     Optional<Attendance> findByIdForUser(Long attendanceId, User user);
 
-    List<Attendance> findAttendancesByUserAndPrice(User user, Price price);
+    @Query("SELECT count(a) > 0  FROM ATTENDANCE a WHERE a.date >= :startDate AND a.date < :endDate AND a.user = :user AND a.price = :price")
+    Boolean existsAttendancesBetween(User user, Price price, LocalDate startDate, LocalDate endDate);
 }

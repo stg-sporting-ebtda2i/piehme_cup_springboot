@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
@@ -53,30 +54,22 @@ public class AttendanceService {
         if (date.before(Date.valueOf(eventStartDate)))
             throw new InvalidAttendanceException("This date is before the mosab2a start date");
 
-        List<Attendance> attendances = attendanceRepository.findAttendancesByUserAndPrice(user, price);
-
         ZoneId zoneId = ZoneId.of("Africa/Cairo");
 
         Timestamp timestamp = new Timestamp(date.getTime());
         LocalDateTime givenDateTime = timestamp.toInstant().
                 atZone(zoneId).toLocalDateTime();
 
-        LocalDateTime previousSunday = givenDateTime
-                .with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
+        LocalDate previousSaturday = givenDateTime
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                .toLocalDate();
 
-        LocalDateTime nextSunday = givenDateTime
-                .with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+        LocalDate nextSunday = givenDateTime
+                .with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).toLocalDate();
 
-        for (Attendance attendance : attendances) {
+        Boolean alreadyExists = attendanceRepository.existsAttendancesBetween(user, price, previousSaturday, nextSunday);
 
-            Timestamp attendanceTimestamp = new Timestamp(attendance.getDate().getTime());
-            LocalDateTime attendanceDate = attendanceTimestamp.toInstant()
-                    .atZone(zoneId).toLocalDateTime();
-
-            if (!attendanceDate.isBefore(previousSunday) && !attendanceDate.isAfter(nextSunday)) {
-                throw new InvalidAttendanceException("You can't attend the same liturgy twice in the same week");
-            }
-        }
+        if (alreadyExists) throw new InvalidAttendanceException("You can't attend the same liturgy twice in the same week");
     }
 
     private void saveAttendance(String liturgyName, Date date, User user) {
