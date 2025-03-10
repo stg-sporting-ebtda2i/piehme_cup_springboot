@@ -1,7 +1,9 @@
 package com.stgsporting.piehmecup.autoload;
 
 import com.stgsporting.piehmecup.entities.Price;
+import com.stgsporting.piehmecup.repositories.LevelRepository;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
+ import com.stgsporting.piehmecup.repositories.SchoolYearRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -11,8 +13,13 @@ import java.util.Map;
 
 @Component
 public class PricesLoader implements CommandLineRunner {
-    @Autowired
-    private PriceRepository priceRepository;
+    private final PriceRepository priceRepository;
+    private final LevelRepository levelRepository;
+
+    public PricesLoader(PriceRepository priceRepository, LevelRepository levelRepository) {
+        this.priceRepository = priceRepository;
+        this.levelRepository = levelRepository;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -25,10 +32,10 @@ public class PricesLoader implements CommandLineRunner {
                 "Tasbeha", 1520
         ));
 
-        prices.forEach((name, price) -> {
-            if(priceRepository.findPricesByName(name).isEmpty()) {
-                priceRepository.save(new Price(name, price));
+        levelRepository.findAllOrderById().forEach(level -> prices.forEach((name, price) -> {
+            if(priceRepository.findPricesByNameAndLevel(name, level.getId()).isEmpty()) {
+                priceRepository.save(new Price(name, price, level));
             }
-        });
+        }));
     }
 }
