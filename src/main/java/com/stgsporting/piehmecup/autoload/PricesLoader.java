@@ -25,14 +25,13 @@ public class PricesLoader implements CommandLineRunner {
                 "Odas" , 1900,
                 "Odas El-Gom3a", 1900,
                 "Pisagi", 1140,
-                "Tasbeha", 1520,
-                "Al7an", 1000
+                "Tasbeha", 1520
         ));
 
-        prices.forEach((name, price) -> {
-            if(priceRepository.findPricesByNameAndSchoolYear(name, 1L).isEmpty()) {
-                priceRepository.save(new Price(name, price, schoolYearRepository.getReferenceById(1L)));
+        schoolYearRepository.findAll().forEach(schoolYear -> prices.forEach((name, price) -> {
+            if(priceRepository.findPricesByNameAndSchoolYear(name, schoolYear.getId()).isEmpty()) {
+                priceRepository.save(new Price(name, price, schoolYear));
             }
-        });
+        }));
     }
 }
