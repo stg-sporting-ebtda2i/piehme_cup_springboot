@@ -1,16 +1,22 @@
 package com.stgsporting.piehmecup.repositories;
 
-import com.stgsporting.piehmecup.entities.User;
+import com.stgsporting.piehmecup.dtos.insights.BestSellerDTO;
+import com.stgsporting.piehmecup.entities.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-public interface InsightsRepository extends JpaRepository<User, Long> {
-    @Query("SELECT COUNT(op.id) as count, p.name " +
-            "FROM  User.players op " +
-            "JOIN PLAYERS p ON op.id = p.id " +
-            "WHERE p.level.id = 1 " +
-            "GROUP BY op.id, p.name " +
-            "ORDER BY count DESC " +
-            "LIMIT 10")
-    void getBestSellingPlayers(Long levelId);
+import java.util.List;
+
+@Repository
+public interface InsightsRepository extends JpaRepository<Player, Long> {
+
+    @Query("SELECT new com.stgsporting.piehmecup.dtos.insights.BestSellerDTO(COUNT(p.id), p.name) " +
+            "FROM PLAYERS p " +
+            "JOIN p.user u " +
+            "WHERE p.level.id = :levelId " +
+            "GROUP BY p.id, p.name " +
+            "ORDER BY COUNT(p.id) DESC")
+    List<BestSellerDTO> findBestSeller(@Param("levelId") Long levelId);
 }

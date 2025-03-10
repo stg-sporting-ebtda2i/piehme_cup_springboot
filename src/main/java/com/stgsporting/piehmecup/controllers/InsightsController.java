@@ -17,6 +17,6 @@ public class InsightsController {
 
     @GetMapping("/top-players/{levelId}")
     public void getBestSellingPlayers(@PathVariable Long levelId) {
-        insightsService.getBestSellingPlayers(levelId);
+        insightsService.findBestSeller(levelId);
     }
 }

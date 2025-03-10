@@ -1,9 +1,12 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.dtos.insights.BestSellerDTO;
 import com.stgsporting.piehmecup.repositories.InsightsRepository;
 import com.stgsporting.piehmecup.repositories.TransactionRepository;
 import com.stgsporting.piehmecup.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class InsightsService {
@@ -18,7 +21,7 @@ public class InsightsService {
         this.insightsRepository = insightsRepository;
     }
 
-    public void getBestSellingPlayers(Long levelId) {
-        insightsRepository.getBestSellingPlayers(levelId);
+    public List<BestSellerDTO> findBestSeller(Long levelId) {
+        return insightsRepository.findBestSeller(levelId);
     }
 }
