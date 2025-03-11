@@ -3,7 +3,6 @@ package com.stgsporting.piehmecup.controllers;
 import com.stgsporting.piehmecup.dtos.PaginationDTO;
 import com.stgsporting.piehmecup.dtos.PriceDTO;
 import com.stgsporting.piehmecup.entities.Admin;
-import com.stgsporting.piehmecup.entities.Level;
 import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.enums.Role;
 import com.stgsporting.piehmecup.services.AdminService;
@@ -114,7 +113,7 @@ public class PriceController {
     @GetMapping("/prices")
     public ResponseEntity<Object> getAllPricesForUser() {
         return ResponseEntity.ok(
-                priceService.getAllPrices(userService.getAuthenticatable().getSchoolYear().getLevel()).stream().map(PriceDTO::new).toList()
+                priceService.getAllPricesForUser(userService.getAuthenticatable().getSchoolYear().getLevel()).stream().map(PriceDTO::new).toList()
         );
     }
 }
