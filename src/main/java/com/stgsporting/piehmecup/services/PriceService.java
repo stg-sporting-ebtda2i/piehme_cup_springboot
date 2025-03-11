@@ -1,5 +1,6 @@
 package com.stgsporting.piehmecup.services;
 
+import com.stgsporting.piehmecup.entities.Level;
 import com.stgsporting.piehmecup.entities.Price;
 import com.stgsporting.piehmecup.exceptions.PriceNotFoundException;
 import com.stgsporting.piehmecup.repositories.PriceRepository;
@@ -25,8 +26,8 @@ public class PriceService {
     }
 
     @Transactional
-    public void updatePrice(String name, Integer price) {
-        priceRepository.updatePrice(name, price);
+    public void updatePrice(String name, Integer price, Long levelId) {
+        priceRepository.updatePrice(name, price, levelId);
     }
 
     @Transactional
@@ -34,25 +35,25 @@ public class PriceService {
         priceRepository.deleteById(id);
     }
 
-    public Price getPrice(String name) {
-        return priceRepository.findPricesByName(name)
+    public Price getPrice(String name, Level level) {
+        return priceRepository.findPricesByNameAndLevel(name, level.getId())
                 .orElseThrow(PriceNotFoundException::new);
     }
 
-    public Page<Price> getPrices(Pageable pageable) {
-        return priceRepository.findAll(pageable);
+    public Page<Price> getPrices(Pageable pageable, Level level) {
+        return priceRepository.findAll(pageable, level.getId());
     }
 
-    public List<Price> getAllPrices() {
-        return priceRepository.findAll();
+    public List<Price> getAllPrices(Level level) {
+        return priceRepository.findAllByLevelId(level.getId());
     }
 
-    public List<Price> getAllPricesForUser() {
-        return priceRepository.findAllExcept(1L);
+    public List<Price> getAllPricesForUser(Level level) {
+        return priceRepository.findAllExcept("Rating Price", level.getId());
     }
 
     public Price save(Price price) {
-        Optional<Price> existingPrice = priceRepository.findPricesByName(price.getName());
+        Optional<Price> existingPrice = priceRepository.findPricesByNameAndLevel(price.getName(), price.getLevel().getId());
 
         if (existingPrice.isPresent() && !existingPrice.get().getId().equals(price.getId())) {
             throw new IllegalArgumentException("Price with name " + price.getName() + " already exists");
