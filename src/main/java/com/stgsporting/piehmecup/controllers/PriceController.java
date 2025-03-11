@@ -114,7 +114,7 @@ public class PriceController {
     @GetMapping("/prices")
     public ResponseEntity<Object> getAllPricesForUser() {
         return ResponseEntity.ok(
-                priceService.getAllPrices(userService.getAuthenticatable().getSchoolYear().getLevel()).stream().map(PriceDTO::new).toList()
+                priceService.getAllPricesForUser(userService.getAuthenticatable().getSchoolYear().getLevel()).stream().map(PriceDTO::new).toList()
         );
     }
 }

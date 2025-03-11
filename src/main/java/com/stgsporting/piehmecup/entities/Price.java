@@ -28,6 +28,6 @@ public class Price extends BaseEntity {
     private Integer coins;
 
     @ManyToOne
-    @JoinColumn(name = DatabaseEnum.levelId)
+    @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
     private Level level;
 }
