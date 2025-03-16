@@ -65,6 +65,11 @@ public class RestResponseEntityExceptionResolver extends ResponseEntityException
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = { MinRatingException.class })
+    protected ResponseEntity<Object> handleMinRating(MinRatingException ex, WebRequest request) {
+        return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(value = { InvalidAttendanceException.class })
     protected ResponseEntity<Object> handleInvalidAttendance(InvalidAttendanceException ex, WebRequest request) {
         return handleExceptionDefault(ex, HttpStatus.BAD_REQUEST, request);
