@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
 
 @Service
 public class AttendanceService {
@@ -109,7 +108,7 @@ public class AttendanceService {
 
         if (attendance.getApproved()) {
             Price price = attendance.getPrice();
-            walletService.debit(attendance.getUser(), price.getCoins(), price.getName() + " deleted");
+            walletService.forceDebit(attendance.getUser(), price.getCoins(), price.getName() + " deleted");
         }
 
         attendanceRepository.delete(attendance);
