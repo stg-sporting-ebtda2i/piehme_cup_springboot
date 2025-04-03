@@ -37,4 +37,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.schoolYear = :schoolYear and u.username LIKE :search ORDER BY u.lineupRating.lineupRating desc, u.id asc")
     Page<User> findUsersBySchoolYearPaginated(SchoolYear schoolYear, String search, Pageable pageable);
+
+    List<User> findAllBySchoolYear(SchoolYear schoolYear);
 }
