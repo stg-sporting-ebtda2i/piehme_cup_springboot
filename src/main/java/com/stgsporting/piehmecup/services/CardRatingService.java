@@ -86,7 +86,7 @@ public class CardRatingService {
                 .forEach(user -> {
                     int oldRating = user.getCardRating();
                     user.setCardRating(50);
-                    walletService.credit(user, oldRating * oldPrice, "Card reset");
+                    walletService.credit(user, (oldRating-50) * oldPrice, "Card reset");
                     userService.save(user);
                 });
     }
