@@ -3,6 +3,7 @@ package com.stgsporting.piehmecup.controllers;
 import com.stgsporting.piehmecup.entities.SchoolYear;
 import com.stgsporting.piehmecup.services.CardRatingService;
 import com.stgsporting.piehmecup.services.SchoolYearService;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ public class ResetCardsController {
         this.cardRatingService = cardRatingService;
     }
 
-    @RequestMapping("/{schoolYearId}")
+    @PatchMapping("/{schoolYearId}")
     public void resetCards(@PathVariable Long schoolYearId) {
         SchoolYear schoolYear = schoolYearService.getShoolYearById(schoolYearId);
         cardRatingService.resetAllCards(schoolYear);
