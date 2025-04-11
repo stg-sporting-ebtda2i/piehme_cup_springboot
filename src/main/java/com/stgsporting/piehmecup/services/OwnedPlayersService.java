@@ -87,7 +87,9 @@ public class OwnedPlayersService {
                 throw new PlayerAlreadyPurchasedException("Cannot purchase more than 2 players of this position");
             }
         }
-
+        if(user.getSelectedPosition().getName().equals(player.getPosition().getName())) {
+            throw new PlayerAlreadyPurchasedException("Cannot purchase player of this position");
+        }
 
         walletService.debit(user, player.getPrice(), "Player purchase: " + player.getId());
 
