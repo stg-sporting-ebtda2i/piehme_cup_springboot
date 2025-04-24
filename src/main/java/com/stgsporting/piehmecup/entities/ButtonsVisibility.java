@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Getter
 @Setter
@@ -15,7 +17,7 @@ import lombok.Setter;
 @Entity(name = DatabaseEnum.buttonsTable)
 public class ButtonsVisibility extends BaseEntity {
 
-    @Column(name = DatabaseEnum.buttonName, nullable = false, unique = true)
+    @Column(name = DatabaseEnum.buttonName, nullable = false)
     private String name;
 
     @Column(name = DatabaseEnum.visible, nullable = false)
@@ -27,5 +29,6 @@ public class ButtonsVisibility extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
+    @ColumnDefault("3")
     private Level level;
 }
