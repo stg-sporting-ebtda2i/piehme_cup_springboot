@@ -25,11 +25,14 @@ public class ButtonsVisibilityService {
     private UserRepository userRepository;
 
     public List<ButtonsVisibility> findButtonsVisibilityByUserRole(Role role) {
+        Admin admin = (Admin) adminService.getAuthenticatable();
+        SchoolYear schoolYear = admin.getSchoolYear();
+        Level level = schoolYear.getLevel();
         if(role == Role.ADMIN)
-            return buttonsVisibilityRepository.findAll();
+            return buttonsVisibilityRepository.findAllByLevel(level);
 
         if(role == Role.OSTAZ)
-            return buttonsVisibilityRepository.findButtonsVisibilityByRole(Role.OSTAZ);
+            return buttonsVisibilityRepository.findButtonsVisibilityByRoleAndLevel(Role.OSTAZ, level);
 
         throw new NotFoundException("Role not found");
     }
@@ -46,8 +49,9 @@ public class ButtonsVisibilityService {
     @Transactional
     public void changeVisibilityByName(String name, Boolean visible) {
         Admin admin = (Admin) adminService.getAuthenticatable();
-
-        ButtonsVisibility visibility = buttonsVisibilityRepository.findByName(name)
+        SchoolYear schoolYear = admin.getSchoolYear();
+        Level level = schoolYear.getLevel();
+        ButtonsVisibility visibility = buttonsVisibilityRepository.findByNameAndLevel(name, level)
                 .orElseThrow(() -> new NotFoundException("Button not found"));
 
         if(admin.getRole() != Role.ADMIN && admin.getRole() != visibility.getRole()) {

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface ButtonsVisibilityRepository extends JpaRepository<ButtonsVisibility, Long> {
     List<ButtonsVisibility> findButtonsVisibilityByRole(Role role);
+    List<ButtonsVisibility> findButtonsVisibilityByRoleAndLevel(Role role, Level level);
 
     @Query("SELECT bv FROM BUTTONS_VISIBILITY bv WHERE bv.visible = true")
     List<ButtonsVisibility> findAllVisible();
@@ -20,4 +21,6 @@ public interface ButtonsVisibilityRepository extends JpaRepository<ButtonsVisibi
 
     Optional<ButtonsVisibility> findByName(String name);
     Optional<ButtonsVisibility> findByNameAndLevel(String name, Level level);
+
+    List<ButtonsVisibility> findAllByLevel(Level level);
 }
