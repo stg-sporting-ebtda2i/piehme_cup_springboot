@@ -15,6 +15,9 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = DatabaseEnum.buttonsTable)
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {DatabaseEnum.buttonName, DatabaseEnum.levelId})
+)
 public class ButtonsVisibility extends BaseEntity {
 
     @Column(name = DatabaseEnum.buttonName, nullable = false)
