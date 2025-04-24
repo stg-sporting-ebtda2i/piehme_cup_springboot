@@ -29,6 +29,6 @@ public class ButtonsVisibility extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = DatabaseEnum.levelId, nullable = false)
-    @ColumnDefault("3")
+    @ColumnDefault("1")
     private Level level;
 }
