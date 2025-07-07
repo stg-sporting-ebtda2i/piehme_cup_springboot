@@ -35,6 +35,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "target/piehme_cup.jar"
           target: "/opt/piehme/incoming/"
+          strip_components: 1
           timeout: 600s
 
       - name: Run Deployment Script
