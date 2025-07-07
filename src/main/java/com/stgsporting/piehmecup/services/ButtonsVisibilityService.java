@@ -1,6 +1,7 @@
 package com.stgsporting.piehmecup.services;
 
 import com.stgsporting.piehmecup.authentication.Authenticatable;
+import com.stgsporting.piehmecup.dtos.ButtonsVisibilityDTO;
 import com.stgsporting.piehmecup.entities.*;
 import com.stgsporting.piehmecup.enums.Role;
 import com.stgsporting.piehmecup.exceptions.NotFoundException;
@@ -24,15 +25,19 @@ public class ButtonsVisibilityService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<ButtonsVisibility> findButtonsVisibilityByUserRole(Role role) {
+    public List<ButtonsVisibilityDTO> findButtonsVisibilityByUserRole(Role role) {
         Admin admin = (Admin) adminService.getAuthenticatable();
         SchoolYear schoolYear = admin.getSchoolYear();
         Level level = schoolYear.getLevel();
         if(role == Role.ADMIN)
-            return buttonsVisibilityRepository.findAllByLevel(level);
+            return buttonsVisibilityRepository
+                    .findAllByLevel(level)
+                    .stream().map(ButtonsVisibilityDTO::from).toList();
 
         if(role == Role.OSTAZ)
-            return buttonsVisibilityRepository.findButtonsVisibilityByRoleAndLevel(Role.OSTAZ, level);
+            return buttonsVisibilityRepository
+                    .findButtonsVisibilityByRoleAndLevel(Role.OSTAZ, level)
+                    .stream().map(ButtonsVisibilityDTO::from).toList();
 
         throw new NotFoundException("Role not found");
     }

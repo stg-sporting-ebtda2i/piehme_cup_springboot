@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "target/piehme_cup.jar"
-          target: "/opt/piehme_cup_app/incoming/"
+          target: "/opt/piehme/incoming/"
           timeout: 600s
 
       - name: Run Deployment Script
